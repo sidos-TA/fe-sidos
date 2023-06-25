@@ -11,7 +11,7 @@ function App() {
           onClick={() => setCount((count) => count + 1)}
           propsMobile={{ color: "primary" }}
         >
-          Whats up baby gorl {count}
+          Tes {count}
         </BtnSidos>
       </div>
     </>
