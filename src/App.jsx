@@ -1,19 +1,40 @@
-import { useState } from "react";
-import BtnSidos from "./lib/src/components/BtnSidos";
+import { Form } from "antd";
+import FormSidos from "./lib/src/components/FormSidos/form/FormSidos";
+import Field from "./lib/src/components/FormSidos/fields";
+import TableSidos from "./lib/src/components/TableSidos";
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [form] = Form.useForm();
+
+  const dummyListOptions = Array.from({ length: 50 }, (_, index) => ({
+    label: `Data ${index + 1}`,
+    value: index + 1,
+  }));
 
   return (
     <>
-      <div className="card">
-        <BtnSidos
-          onClick={() => setCount((count) => count + 1)}
-          propsMobile={{ color: "primary" }}
-        >
-          Tes {count}
-        </BtnSidos>
-      </div>
+      <FormSidos form={form}>
+        <Field
+          type="text"
+          name="judul_ta"
+          label="Judul TA yang diajukan"
+          onChange={(val) => form?.setFieldValue("judul_ta", val)}
+        />
+        <Field
+          type="select"
+          name="topik_ta"
+          label="Pilih topik TA yang diajukan"
+          listOptions={dummyListOptions}
+        />
+        <Field
+          type="switch"
+          name="is_fromDosen"
+          label="Apakah judul dari dosen"
+          checkText="Ya"
+          uncheckText="Tidak"
+        />
+      </FormSidos>
+      <TableSidos />
     </>
   );
 }
