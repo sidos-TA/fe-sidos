@@ -1,39 +1,34 @@
 import { Form } from "antd";
-import FormSidos from "./lib/src/components/FormSidos/form/FormSidos";
-import Field from "./lib/src/components/FormSidos/fields";
 import TableSidos from "./lib/src/components/TableSidos";
+import { useEffect } from "react";
+import useFetch from "./lib/src/helpers/useFetch";
+import BtnSidos from "./lib/src/components/BtnSidos";
+import { useNavigate } from "react-router-dom";
 
 function App() {
-  const [form] = Form.useForm();
+  const navigate = useNavigate();
 
-  const dummyListOptions = Array.from({ length: 50 }, (_, index) => ({
-    label: `Data ${index + 1}`,
-    value: index + 1,
-  }));
+  const fetch = useFetch();
+  const fetchData = () => {
+    fetch({
+      endpoint: "getAllMhs",
+    })
+      .then((res) => {
+        console.log("res : ", res);
+      })
+      .catch((er) => {
+        console.log("er : ", er);
+      });
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <>
-      <FormSidos form={form}>
-        <Field
-          type="text"
-          name="judul_ta"
-          label="Judul TA yang diajukan"
-          onChange={(val) => form?.setFieldValue("judul_ta", val)}
-        />
-        <Field
-          type="select"
-          name="topik_ta"
-          label="Pilih topik TA yang diajukan"
-          listOptions={dummyListOptions}
-        />
-        <Field
-          type="switch"
-          name="is_fromDosen"
-          label="Apakah judul dari dosen"
-          checkText="Ya"
-          uncheckText="Tidak"
-        />
-      </FormSidos>
+      <BtnSidos onClick={() => navigate("/usulan")}>Tes</BtnSidos>
+
       <TableSidos />
     </>
   );
