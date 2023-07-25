@@ -5,11 +5,13 @@ import tingkatanProdiList from "../../constants/tingkatanProdiList";
 import InputSidos from "../../lib/src/components/FormSidos/fields/InputSidos";
 import SelectSidos from "../../lib/src/components/FormSidos/fields/SelectSidos";
 import TableSidos from "../../lib/src/components/TableSidos";
+import decodeCookie from "../../lib/src/helpers/decodeCookie";
 
 const { Column } = Table;
 const ForbiddenMethods = () => {
   const [payload, setPayload] = useState();
   let timeout;
+  const dataCookie = decodeCookie("token");
 
   const searchFilter = ({ key, value }) => {
     clearTimeout(timeout);
@@ -22,7 +24,12 @@ const ForbiddenMethods = () => {
   };
   return (
     <Fragment>
-      <TitlePage title="Metod yang tidak diterima" />
+      <TitlePage
+        {...(dataCookie?.roles === 1 && {
+          addRoute: "forbidden_methods_Add",
+        })}
+        title="Metode yang tidak diterima"
+      />
       <TableSidos
         payload={payload}
         endpoint="getforbidmethods"

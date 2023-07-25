@@ -3,14 +3,16 @@ import { useNavigate } from "react-router-dom";
 import TitlePage from "../../components/TitlePage";
 import PieChartSidos from "../../lib/src/components/PieChartSidos";
 import TableSidos from "../../lib/src/components/TableSidos/TableSidos";
+import decodeCookie from "../../lib/src/helpers/decodeCookie";
 import greetingHandler from "../../lib/src/helpers/greetingHandler";
 
 const { Column } = Table;
 const Dashboard = () => {
   const navigate = useNavigate();
+  const dataCookie = decodeCookie("token");
   return (
     <Space direction="vertical" size={50} style={{ width: "100%" }}>
-      <TitlePage title={`${greetingHandler()}, Kaprodi`} />
+      <TitlePage title={`${greetingHandler()}, ${dataCookie?.username}`} />
       <Row gutter={8} justify="center" align="middle">
         <Col span={12} style={{ textAlign: "center" }}>
           <PieChartSidos endpoint="dashboardUsulanMhs" />

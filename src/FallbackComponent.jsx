@@ -26,10 +26,10 @@ const FallbackComponent = ({ error }) => {
           type="primary"
           position="center"
           onClick={() => {
-            window.location.href = "/";
+            window.location.reload();
           }}
         >
-          Kembali ke home
+          Refresh
         </BtnSidos>
       </Space>
     </Col>

@@ -3,12 +3,14 @@ import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import LoadingSidos from "./lib/src/components/LoadingSidos";
+import decodeCookie from "./lib/src/helpers/decodeCookie";
 import getCookie from "./lib/src/helpers/getCookie";
 import UnAuthPage from "./pages/403Page";
 import TestPage from "./pages/TestPage";
 import BimbinganRoute from "./routes/BimbinganRoute";
 import DashboardRoute from "./routes/DashboardRoute";
 import DosenRoute from "./routes/DosenRoute";
+import ForbiddenMethodsRoute from "./routes/ForbiddenMethodsRoute";
 import JudulRoute from "./routes/JudulRoute";
 import KategoriRoute from "./routes/KategoriRoute";
 import MahasiswaRoute from "./routes/MahasiswaRoute";
@@ -22,6 +24,7 @@ const Login = lazy(() => import("./pages/Login"));
 
 const Routing = () => {
   const cookie = getCookie("token");
+  const dataCookie = decodeCookie("token");
 
   const ArrRoute = [
     ...DashboardRoute,
@@ -33,6 +36,7 @@ const Routing = () => {
     ...JudulRoute,
     ...ProdiRoute,
     ...KategoriRoute,
+    ...ForbiddenMethodsRoute,
   ];
 
   const arrRouteNotLogin = [...RouteNotLogin];
@@ -47,7 +51,15 @@ const Routing = () => {
                 <Route
                   key="base"
                   path="/"
-                  element={<Navigate to="/usulan/usulan_Add" />}
+                  element={
+                    <Navigate
+                      to={
+                        dataCookie?.roles === 1
+                          ? "/dashboard"
+                          : "/usulan/usulan_Add"
+                      }
+                    />
+                  }
                 />
                 <Route
                   key="spk"

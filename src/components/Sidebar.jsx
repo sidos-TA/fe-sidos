@@ -40,7 +40,7 @@ const Sidebar = ({ children }) => {
     {
       key: "/forbidden_methods",
       icon: <PieChartOutlined />,
-      label: "Method yang tidak diterima",
+      label: "Metode yang tidak diterima",
     },
   ];
 
@@ -75,6 +75,11 @@ const Sidebar = ({ children }) => {
               key: "/judul",
               icon: <PieChartOutlined />,
               label: "Judul",
+            },
+            {
+              key: "/forbidden_methods",
+              icon: <PieChartOutlined />,
+              label: "Metode yang tidak diterima",
             },
             dataCookie?.roles === 1 && {
               key: "/mahasiswa",
