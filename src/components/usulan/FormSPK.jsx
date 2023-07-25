@@ -40,7 +40,7 @@ const FormSPK = ({ ...props }) => {
             value: "tidak",
           },
         ]}
-        onChange={({ target: { value } }) => {
+        onChange={(value) => {
           setState({
             ...state,
             isJdlFromDosen: value,

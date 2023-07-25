@@ -1,10 +1,9 @@
-import { Col, Image, Row, Space, Typography } from "antd";
+import { Col, Row, Space, Typography } from "antd";
 import { Fragment, useState } from "react";
 import BtnSidos from "../../../lib/src/components/BtnSidos";
 import TitleSection from "../../../components/TitleSection";
 import { useTabsContext } from "../../../context/TabsContext";
 import UploadSidos from "../../../lib/src/components/FormSidos/fields/UploadSidos";
-import getBase64 from "../../../lib/src/helpers/getBase64";
 import { fallbackImage } from "../../../lib/src/constants";
 import ImageSidos from "../../../lib/src/components/ImageSidos";
 import getBlobUrl from "../../../lib/src/helpers/getBlobUrl";
@@ -67,7 +66,11 @@ const Profile = () => {
           >
             <ImageSidos src={state?.previewImg} />
             <Space>
-              <UploadSidos handleChange={handleChange} showUploadList={false}>
+              <UploadSidos
+                handleChange={handleChange}
+                showUploadList={false}
+                isImage
+              >
                 <BtnSidos>Upload</BtnSidos>
               </UploadSidos>
               {state?.previewImg !== fallbackImage && (

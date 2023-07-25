@@ -1,9 +1,9 @@
 import { Fragment } from "react";
-import { useUsulanAddContext } from "../../../context/Usulan/UsulanAddContext";
+import { useUsulanFormContext } from "../../../context/Usulan/UsulanFormContext";
 import TagSidos from "../../../lib/src/components/TagSidos";
 
 const UsulanDetailBidang = () => {
-  const { state } = useUsulanAddContext();
+  const { state } = useUsulanFormContext();
   const dosenDetail = state?.objDosenDetail;
 
   return (

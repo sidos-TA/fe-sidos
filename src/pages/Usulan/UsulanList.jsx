@@ -1,26 +1,53 @@
 import { Table } from "antd";
+import { useState } from "react";
 import { Fragment } from "react";
 import { useNavigate } from "react-router-dom";
 import TitlePage from "../../components/TitlePage";
 import SelectSidos from "../../lib/src/components/FormSidos/fields/SelectSidos";
 import TableSidos from "../../lib/src/components/TableSidos";
+import decodeCookie from "../../lib/src/helpers/decodeCookie";
 
 const { Column } = Table;
 const UsulanList = () => {
   const navigate = useNavigate();
+  const [payload, setPayload] = useState();
+  let timeout;
+  const dataCookie = decodeCookie("token");
+
+  const searchFilter = ({ key, value }) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      setPayload({
+        ...payload,
+        [key]: value,
+      });
+    }, 300);
+  };
 
   return (
     <Fragment>
       <TitlePage title="Data Usulan" addRoute="usulan_Add" />
       <TableSidos
+        payload={{
+          ...payload,
+          ...(dataCookie?.roles === 2 && {
+            no_bp: dataCookie?.no_bp,
+          }),
+        }}
         tableLayout="fixed"
         endpoint="getUsulan"
         customFilter={[
           <SelectSidos
             key="bidang"
             label="bidang"
+            allowClear
             endpoint={"getDataBidang"}
-            formItemObj={{ labelCol: { span: 24 } }}
+            onChange={(value) => {
+              searchFilter({
+                key: "bidang",
+                value,
+              });
+            }}
           />,
         ]}
       >

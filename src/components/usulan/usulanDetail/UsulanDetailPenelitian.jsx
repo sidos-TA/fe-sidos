@@ -1,11 +1,11 @@
 import { Col, Row, Table } from "antd";
 import { Fragment } from "react";
-import { useUsulanAddContext } from "../../../context/Usulan/UsulanAddContext";
+import { useUsulanFormContext } from "../../../context/Usulan/UsulanFormContext";
 import TableSidos from "../../../lib/src/components/TableSidos";
 
 const { Column } = Table;
 const UsulanDetailPenelitian = () => {
-  const { state } = useUsulanAddContext();
+  const { state } = useUsulanFormContext();
   const dosenDetail = state?.objDosenDetail;
   return (
     <Fragment>
@@ -18,8 +18,8 @@ const UsulanDetailPenelitian = () => {
               onRow={(record) => {
                 return {
                   onClick: () => {
-                    if (record?.link) {
-                      window.open(record?.link, "_blank");
+                    if (record?.link_title) {
+                      window.open(record?.link_title, "_blank");
                     }
                   },
                 };

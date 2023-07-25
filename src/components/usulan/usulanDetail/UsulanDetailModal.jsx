@@ -1,14 +1,14 @@
 import { Col, Collapse, Modal, Row, Typography } from "antd";
-import { useUsulanAddContext } from "../../../context/Usulan/UsulanAddContext";
 import { CaretRightOutlined } from "@ant-design/icons";
 import ImageSidos from "../../../lib/src/components/ImageSidos";
 import UsulanDetailPenelitian from "./UsulanDetailPenelitian";
 import UsulanDetailBidang from "./UsulanDetailBidang";
 import UsulanDetailInformasiPribadi from "./UsulanDetailInformasiPribadi";
+import { useUsulanFormContext } from "../../../context/Usulan/UsulanFormContext";
 
 const { Panel } = Collapse;
 const UsulanDetailModal = () => {
-  const { state, setState } = useUsulanAddContext();
+  const { state, setState } = useUsulanFormContext();
 
   return (
     <Modal

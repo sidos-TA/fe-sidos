@@ -1,5 +1,5 @@
-import { Table, Tag } from "antd";
-import { Fragment } from "react";
+import { Table } from "antd";
+import { Fragment, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import TitlePage from "../../components/TitlePage";
 import InputSidos from "../../lib/src/components/FormSidos/fields/InputSidos";
@@ -11,14 +11,28 @@ import colorTagHandler from "../../lib/src/helpers/colorTagHandler";
 const { Column } = Table;
 const MahasiswaList = () => {
   const navigate = useNavigate();
+  const [payload, setPayload] = useState();
+  let timeout;
+
+  const searchFilter = ({ key, value }) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      setPayload({
+        ...payload,
+        [key]: value,
+      });
+    }, 300);
+  };
+
   return (
     <Fragment>
       <TitlePage title="Data Mahasiswa" />
       <TableSidos
+        payload={payload}
         onRow={(record) => {
           return {
             onClick: () => {
-              navigate(`/mahasiswa/mahasiswa_info/${record?.no_bp}/profilemhs`);
+              navigate(`/mahasiswa/mahasiswa_Info/${record?.no_bp}/profilemhs`);
             },
           };
         }}
@@ -26,24 +40,53 @@ const MahasiswaList = () => {
           <InputSidos
             label="Nama Mahasiswa"
             formItemObj={{ labelCol: { span: 24 } }}
-            key="1"
+            key="namamhs"
             placeholder="Nama Mahasiswa"
+            onChange={(value) => {
+              searchFilter({
+                key: "name",
+                value,
+              });
+            }}
           />,
           <SelectSidos
+            allowClear
+            endpoint="getAllProdi"
             label="Prodi"
             formItemObj={{ labelCol: { span: 24 } }}
             key="prodi"
+            onSelect={(value) => {
+              searchFilter({
+                key: "prodi",
+                value,
+              });
+            }}
+            selectLabel="prodiName"
+            selectValue="prodiName"
           />,
           <InputSidos
             label="Judul TA"
             formItemObj={{ labelCol: { span: 24 } }}
-            key="2"
+            key="jdltamahasiswa"
             placeholder="Judul TA"
+            onChange={(value) => {
+              searchFilter({
+                key: "judul",
+                value,
+              });
+            }}
           />,
           <SelectSidos
+            allowClear
             label="Status Judul"
             formItemObj={{ labelCol: { span: 24 } }}
             key="status_judul"
+            onChange={(value) => {
+              searchFilter({
+                key: "status_judul",
+                value,
+              });
+            }}
             listOptions={[
               {
                 label: "terima",

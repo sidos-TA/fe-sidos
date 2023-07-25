@@ -1,9 +1,9 @@
 import { Col, Row, Space } from "antd";
 import { Fragment } from "react";
-import { useUsulanAddContext } from "../../../context/Usulan/UsulanAddContext";
+import { useUsulanFormContext } from "../../../context/Usulan/UsulanFormContext";
 
 const UsulanDetailInformasiPribadi = () => {
-  const { state } = useUsulanAddContext();
+  const { state } = useUsulanFormContext();
   const dosenDetail = state?.objDosenDetail;
 
   return (
@@ -32,6 +32,12 @@ const UsulanDetailInformasiPribadi = () => {
             Pendidikan
           </Col>
           <Col span={24}>{dosenDetail?.pendidikan}</Col>
+        </Row>
+        <Row>
+          <Col span={24} style={{ fontWeight: "bold" }}>
+            SKS
+          </Col>
+          <Col span={24}>{dosenDetail?.sks}</Col>
         </Row>
       </Space>
     </Fragment>

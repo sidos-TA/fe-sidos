@@ -1,6 +1,6 @@
 import { Form, message } from "antd";
-import { Fragment, useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Fragment, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import TitlePage from "../../components/TitlePage";
 import FormSPK from "../../components/usulan/FormSPK";
 import TableSPK from "../../components/usulan/TableSPK";
@@ -13,20 +13,32 @@ import {
   responseError,
   responseSuccess,
 } from "../../lib/src/helpers/formatRespons";
+import RadioSidos from "../../lib/src/components/FormSidos/fields/RadioSidos";
+import FormSidos from "../../lib/src/components/FormSidos/form/FormSidos";
+import decodeCookie from "../../lib/src/helpers/decodeCookie";
 
 const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const fetch = useFetch();
+  const { pathname } = useLocation();
+  const { no_bp } = useParams();
+  const dataCookie = decodeCookie("token");
+
+  const [messageApi, contextHolder] = message.useMessage();
+
   const [state, setState] = useState({
-    isJdlFromDosen: false,
-    isVisibleSPK: false,
-    isOpenModal: false,
+    mhsName: "",
     objDosenDetail: {},
     arrUsulanDospem: [],
     arrDatasSPK: [],
     isLoadingSPK: false,
-    mhsName: "",
+    isJdlFromDosen: false,
+    isVisibleSPK: false,
+    isOpenModal: false,
+    isLoadingAdd: false,
+    is_usul: false,
+    status_usulan: "",
   });
   const params = useParams();
 
@@ -80,8 +92,21 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
           setState((prev) => ({
             ...prev,
             arrDatasSPK: response?.data,
+            isVisibleSPK: true,
           }));
         }
+      })
+      ?.catch((e) => {
+        const err = responseError(e);
+        messageApi.open({
+          type: "error",
+          content: err?.error,
+          key: "error_get_spk",
+        });
+        setState((prev) => ({
+          ...prev,
+          isVisibleSPK: false,
+        }));
       })
       ?.finally(() => {
         setState((prev) => ({
@@ -93,10 +118,6 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
 
   const visibleSPKTable = async () => {
     form?.validateFields()?.then(() => {
-      setState({
-        ...state,
-        isVisibleSPK: true,
-      });
       getSPKHandler({
         ...form?.getFieldsValue(),
         ...(form?.getFieldValue("isJdlFromDosen") === "tidak" && {
@@ -107,36 +128,41 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
   };
 
   const submitUsulan = () => {
+    setState((prev) => ({ ...prev, isLoadingAdd: true }));
     fetch({
       endpoint: submitEndpoint,
       payload: {
         nip: state?.arrUsulanDospem,
-        no_bp: "1911082004",
+        no_bp: no_bp && type === "edit" ? no_bp : "1911082006",
         judul: form?.getFieldValue("judul"),
         bidang: form?.getFieldValue("bidang"),
         jdl_from_dosen: form?.getFieldValue("jdl_from_dosen"),
+        ...(type === "edit" && {
+          status_judul: form?.getFieldValue("status_judul"),
+        }),
       },
     })
       ?.then((res) => {
         const response = responseSuccess(res);
         if (response?.status === 200) {
-          message.success({
-            key: "send",
+          messageApi.open({
+            type: "success",
+            key: "success_submit_usulan",
             content: response?.message,
-            duration: 1.3,
             onClose: () => {
-              navigate("/usulan");
+              navigate(type === "edit" ? "/bimbingan" : "/usulan");
             },
           });
         }
       })
       ?.catch((e) => {
         const err = responseError(e);
-        message.error({
-          key: "send",
+        messageApi.open({
+          type: "error",
+          key: "error_submit_usulan",
           content: err?.error,
-          duration: 2,
         });
+        setState((prev) => ({ ...prev, isLoadingAdd: false }));
       });
   };
 
@@ -151,75 +177,118 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
         mhsName: formDataValue?.mh?.name,
         arrDatasSPK: formDataValue?.dosen?.map((data) => ({
           ...data,
-          isDisable: true,
+          // isDisable: true,
         })),
+        is_usul: formDataValue?.mh?.is_usul,
+        status_usulan: formDataValue?.status_usulan,
       }));
 
       form.setFieldsValue(formDataValue);
     } else {
-      message.warning({
+      messageApi.open({
+        type: "warning",
         content: "Data tidak tersedia",
         key: "not available",
       });
+
       navigate("/usulan");
     }
   };
 
   return (
-    <UsulanFormContext.Provider
-      value={{
-        state,
-        setState,
-        form,
-        openModalHandler,
-        rowSelectionHandler,
-        getSPKHandler,
-        type,
-      }}
-    >
-      <TitlePage isBack title={titlePage} backFn={() => navigate("/usulan")} />
-      <FormSPK
-        form={form}
-        state={state}
-        setState={setState}
-        {...(type === "edit" && {
-          customFetch: customFetchHandler,
-          endpoint: "getUsulanById",
-          ...(Object.keys(params || {})?.length && {
-            payload: {
-              no_bp: params?.no_bp,
-            },
-          }),
-        })}
-      />
-
-      <BtnSidos
-        disabled={type === "edit"}
-        loading={state?.isLoadingSPK}
-        position="center"
-        type="primary"
-        onClick={visibleSPKTable}
+    <>
+      {contextHolder}
+      <UsulanFormContext.Provider
+        value={{
+          state,
+          setState,
+          form,
+          openModalHandler,
+          rowSelectionHandler,
+          getSPKHandler,
+          type,
+        }}
       >
-        Lihat Rekomendasi
-      </BtnSidos>
+        <TitlePage
+          title={pathname === "/spk" ? "Rekomendasi Dospem" : titlePage}
+          {...(pathname !== "/spk" && {
+            backFn: () => navigate("/usulan"),
+          })}
+        />
+        <FormSPK
+          form={form}
+          state={state}
+          setState={setState}
+          {...(type === "edit" && {
+            customFetch: customFetchHandler,
+            endpoint: "getUsulanById",
+            ...(Object.keys(params || {})?.length && {
+              payload: {
+                no_bp: params?.no_bp,
+              },
+            }),
+          })}
+        />
 
-      {state?.isVisibleSPK && (
-        <Fragment>
-          <TableSPK />
+        <BtnSidos
+          disabled={type === "edit" && state?.arrUsulanDospem?.length === 2}
+          loading={state?.isLoadingSPK}
+          position="center"
+          type="primary"
+          onClick={visibleSPKTable}
+        >
+          Lihat Rekomendasi
+        </BtnSidos>
 
-          <BtnSidos
-            disabled={state?.arrUsulanDospem?.length < 3}
-            position="center"
-            type="primary"
-            onClick={() => submitUsulan()}
-          >
-            {type === "edit" ? "Tambah Bimbingan" : "Usulkan"}
-          </BtnSidos>
-        </Fragment>
-      )}
+        {state?.isVisibleSPK && (
+          <Fragment>
+            <TableSPK />
 
-      <UsulanDetailModal />
-    </UsulanFormContext.Provider>
+            {type === "edit" && (
+              <FormSidos form={form}>
+                <RadioSidos
+                  required
+                  label="Status Judul"
+                  name="status_judul"
+                  listOptions={[
+                    {
+                      label: "Terima",
+                      value: "terima",
+                    },
+                    {
+                      label: "Tolak",
+                      value: "tolak",
+                    },
+                  ]}
+                />
+              </FormSidos>
+            )}
+            {dataCookie?.roles !== 1 ||
+            (state?.is_usul && state?.status_usulan === "confirm") ? (
+              <Fragment />
+            ) : (
+              <BtnSidos
+                loading={state?.isLoadingAdd}
+                disabled={
+                  state?.arrUsulanDospem?.length !== (type === "edit" ? 2 : 3)
+                }
+                position="center"
+                type="primary"
+                onClick={() => {
+                  form.validateFields()?.then(() => {
+                    submitUsulan();
+                  });
+                }}
+              >
+                {type === "edit" ? "Tambah Bimbingan" : "Usulkan"}
+              </BtnSidos>
+            )}
+          </Fragment>
+        )}
+
+        <UsulanDetailModal />
+      </UsulanFormContext.Provider>
+    </>
   );
 };
 export default UsulanForm;

@@ -9,6 +9,7 @@ const TitlePage = ({
   isBack = false,
   addRoute = "",
   backRoute = "",
+  styleRow,
 }) => {
   const navigate = useNavigate();
 
@@ -26,10 +27,15 @@ const TitlePage = ({
     navigate(addRoute);
   };
   return (
-    <Row align="middle" justify="space-between" style={{ marginBottom: 20 }}>
+    <Row
+      align="middle"
+      justify="space-between"
+      style={{ marginBottom: 20 }}
+      {...styleRow}
+    >
       <Col>
         <Row gutter={32} align="middle">
-          {(isBack || backRoute) && (
+          {(isBack || backRoute || backFn) && (
             <Col>
               <ArrowLeftOutlined
                 style={{ fontSize: 26, paddingTop: 20 }}

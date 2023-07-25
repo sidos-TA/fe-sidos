@@ -1,5 +1,5 @@
 import { Table, Tag } from "antd";
-import { Fragment, useEffect } from "react";
+import { Fragment } from "react";
 import { useUsulanFormContext } from "../../context/Usulan/UsulanFormContext";
 import TableSidos from "../../lib/src/components/TableSidos";
 
@@ -11,7 +11,7 @@ const TableSPK = ({ ...props }) => {
 
   return (
     <TableSidos
-      isLoading={state?.isLoadingSPK}
+      isLoading={state?.isLoadingSPK || state?.isLoadingAdd}
       arrDatas={state?.arrDatasSPK}
       rowSelection={{
         columnTitle: "Usulkan Dospem",

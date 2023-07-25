@@ -1,10 +1,14 @@
 import { Fragment, lazy } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import TabsSegmented from "../../components/TabsSegmented";
 import TitlePage from "../../components/TitlePage";
+import decodeCookie from "../../lib/src/helpers/decodeCookie";
 
 const MahasiswaInfo = () => {
   const { no_bp } = useParams();
+  const { pathname } = useLocation();
+  const dataCookie = decodeCookie("token");
+
   const listTabs = [
     {
       label: <>Informasi</>,
@@ -25,16 +29,20 @@ const MahasiswaInfo = () => {
 
   return (
     <Fragment>
-      <TitlePage title="Info Mahasiswa" backRoute={`/mahasiswa`} />
+      <TitlePage
+        title="Info Mahasiswa"
+        {...(dataCookie?.roles === 1 && {
+          backRoute: "/mahasiswa",
+        })}
+      />
       <TabsSegmented
         listTabs={listTabs}
-        routes={listTabs?.map((tab) => ({
-          element: tab?.element,
-          path: tab?.value,
-        }))}
         endpoint="getMhsByNoBp"
         payload={{
-          no_bp,
+          no_bp:
+            pathname?.includes("/profile") && dataCookie?.roles === 2
+              ? dataCookie?.no_bp
+              : no_bp,
         }}
       />
     </Fragment>

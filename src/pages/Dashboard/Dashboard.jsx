@@ -1,11 +1,9 @@
 import { Col, Row, Space, Table, Typography } from "antd";
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import TitlePage from "../../components/TitlePage";
 import PieChartSidos from "../../lib/src/components/PieChartSidos";
 import TableSidos from "../../lib/src/components/TableSidos/TableSidos";
 import greetingHandler from "../../lib/src/helpers/greetingHandler";
-import randomColors from "../../lib/src/helpers/randomColors";
 
 const { Column } = Table;
 const Dashboard = () => {
