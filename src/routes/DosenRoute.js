@@ -16,6 +16,10 @@ const DosenRoute = [
     path: "/dosen/dosen_Info/:nip/*",
     Component: lazy(() => import("../pages/Dosen/DosenInfo")),
   },
+  dataCookie()?.roles === 1 && {
+    path: "dosen_prfl/*",
+    Component: lazy(() => import("../pages/Dosen/DosenInfo")),
+  },
 ];
 
 export default DosenRoute;

@@ -1,8 +1,7 @@
 import { Form } from "antd";
 import { Fragment } from "react";
-import { useNavigate } from "react-router-dom";
 import TitlePage from "../../components/TitlePage";
-import InputSidos from "../../lib/src/components/FormSidos/fields/InputSidos";
+import Field from "../../lib/src/components/FormSidos/fields/Field";
 import FormSidos from "../../lib/src/components/FormSidos/form/FormSidos";
 import setCookie from "../../lib/src/helpers/setCookie";
 
@@ -15,16 +14,27 @@ const Login = () => {
         submitText="Login"
         form={form}
         submitEndpoint="login"
-        afterSubmitHandler={(response) => {
-          setCookie("token", response?.token, 60);
+        afterMessageActionClose={(response) => {
+          setCookie("token", response?.token);
         }}
-        onSubmitSuccess={() => {
-          window.location.href = "/";
-          // navigate("/");
+        onSuccessAction={() => {
+          const currRoute = sessionStorage.getItem("currRoute");
+          if (currRoute) {
+            window.location.href = currRoute;
+          } else {
+            window.location.href = "/";
+          }
         }}
       >
-        <InputSidos required name="username" label="Username/No. BP" />
-        <InputSidos type="password" required name="password" label="Password" />
+        <Field type="text" required name="username" label="Username/No. BP" />
+        <Field
+          type="text"
+          InputSidos
+          isPassword
+          required
+          name="password"
+          label="Password"
+        />
       </FormSidos>
     </Fragment>
   );

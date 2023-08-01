@@ -1,7 +1,7 @@
 import { Form } from "antd";
 import { Fragment } from "react";
 import TitlePage from "../../components/TitlePage";
-import InputSidos from "../../lib/src/components/FormSidos/fields/InputSidos";
+import Field from "../../lib/src/components/FormSidos/fields/Field";
 import FormSidos from "../../lib/src/components/FormSidos/form/FormSidos";
 
 const BimbinganAdd = () => {
@@ -10,7 +10,7 @@ const BimbinganAdd = () => {
     <Fragment>
       <TitlePage title="Tambah Bimbingan" backRoute="/bimbingan" />
       <FormSidos form={form}>
-        <InputSidos label="Judul" name="name" required />
+        <Field type="text" label="Judul" name="name" required />
       </FormSidos>
     </Fragment>
   );

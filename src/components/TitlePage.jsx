@@ -29,11 +29,11 @@ const TitlePage = ({
   return (
     <Row
       align="middle"
-      justify="space-between"
+      justify={addRoute !== "" && "space-between"}
       style={{ marginBottom: 20 }}
       {...styleRow}
     >
-      <Col>
+      <Col span={addRoute === "" && 24}>
         <Row gutter={32} align="middle">
           {(isBack || backRoute || backFn) && (
             <Col>
@@ -43,7 +43,7 @@ const TitlePage = ({
               />
             </Col>
           )}
-          <Col>
+          <Col style={{ textAlign: "center" }}>
             <Typography.Title level={2}>{title}</Typography.Title>
           </Col>
         </Row>

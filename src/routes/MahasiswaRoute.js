@@ -8,6 +8,10 @@ const MahasiswaRoute = [
     Component: lazy(() => import("../pages/Mahasiswa")),
   },
   dataCookie()?.roles === 1 && {
+    path: "/mahasiswa/mahasiswa_Add/*",
+    Component: lazy(() => import("../pages/Mahasiswa/MahasiswaAdd")),
+  },
+  dataCookie()?.roles === 1 && {
     path: "/mahasiswa/mahasiswa_Info/:no_bp/*",
     Component: lazy(() => import("../pages/Mahasiswa/MahasiswaInfo")),
   },

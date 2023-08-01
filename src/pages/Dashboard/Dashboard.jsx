@@ -1,18 +1,24 @@
 import { Col, Row, Space, Table, Typography } from "antd";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import TitlePage from "../../components/TitlePage";
 import PieChartSidos from "../../lib/src/components/PieChartSidos";
 import TableSidos from "../../lib/src/components/TableSidos/TableSidos";
 import decodeCookie from "../../lib/src/helpers/decodeCookie";
+import formattedDate from "../../lib/src/helpers/formattedDate";
 import greetingHandler from "../../lib/src/helpers/greetingHandler";
 
 const { Column } = Table;
 const Dashboard = () => {
+  const [arrDataUsulans, setArrDataUsulans] = useState([]);
   const navigate = useNavigate();
   const dataCookie = decodeCookie("token");
+
   return (
     <Space direction="vertical" size={50} style={{ width: "100%" }}>
-      <TitlePage title={`${greetingHandler()}, ${dataCookie?.username}`} />
+      <TitlePage
+        title={`${greetingHandler()}, ${dataCookie?.name || "User"}`}
+      />
       <Row gutter={8} justify="center" align="middle">
         <Col span={12} style={{ textAlign: "center" }}>
           <PieChartSidos endpoint="dashboardUsulanMhs" />
@@ -29,6 +35,10 @@ const Dashboard = () => {
         </Col>
         <Col span={24}>
           <TableSidos
+            arrDatas={arrDataUsulans}
+            customFetch={(dataFetch) => {
+              setArrDataUsulans(dataFetch?.data?.arrDatas);
+            }}
             endpoint="getUsulan"
             tableLayout="fixed"
             onRow={(record) => {
@@ -51,7 +61,7 @@ const Dashboard = () => {
             <Column
               title="Waktu Mengusulkan"
               render={(record) => {
-                return <>{record?.createdAt}</>;
+                return <>{formattedDate(record?.createdAt)}</>;
               }}
             />
           </TableSidos>

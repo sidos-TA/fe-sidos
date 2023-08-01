@@ -1,3 +1,3 @@
-import JudulList from "./JudulList";
+import JudulLists from "./JudulLists";
 
-export default JudulList;
+export default JudulLists;

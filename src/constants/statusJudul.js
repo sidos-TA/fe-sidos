@@ -1,5 +1,9 @@
 const statusJudul = [
   {
+    label: "All",
+    value: "",
+  },
+  {
     label: "terima",
     value: "terima",
   },

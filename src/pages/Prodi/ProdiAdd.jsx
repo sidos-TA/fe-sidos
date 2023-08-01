@@ -1,24 +1,20 @@
-import { Form } from "antd";
 import { Fragment } from "react";
+import ProdiAddComponents from "../../components/prodi/prodiAdd";
 import TitlePage from "../../components/TitlePage";
-import tingkatanProdiList from "../../constants/tingkatanProdiList";
-import InputSidos from "../../lib/src/components/FormSidos/fields/InputSidos";
-import SelectSidos from "../../lib/src/components/FormSidos/fields/SelectSidos";
-import FormSidos from "../../lib/src/components/FormSidos/form/FormSidos";
+import decodeCookie from "../../lib/src/helpers/decodeCookie";
 
 const ProdiAdd = () => {
-  const [FormProdi] = Form.useForm();
+  const dataCookie = decodeCookie("token");
+
   return (
     <Fragment>
-      <TitlePage title="Tambah Prodi" />
-      <FormSidos form={FormProdi} submitEndpoint="addProdi">
-        <InputSidos name="prodiName" label="Prodi" />
-        <SelectSidos
-          name="tingkatan"
-          label="Tingkatan"
-          listOptions={tingkatanProdiList}
-        />
-      </FormSidos>
+      <TitlePage
+        title="Tambah Prodi"
+        {...(dataCookie?.roles === 1 && {
+          backRoute: "/prodi",
+        })}
+      />
+      <ProdiAddComponents />
     </Fragment>
   );
 };

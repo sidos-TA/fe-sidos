@@ -5,7 +5,7 @@ const dataCookie = decodeCookie("token");
 const BimbinganRoute = [
   dataCookie?.roles === 1 && {
     path: "/bimbingan/",
-    Component: lazy(() => import("../pages/Bimbingan/BimbinganList")),
+    Component: lazy(() => import("../pages/Bimbingan/BimbinganLists")),
   },
   dataCookie?.roles === 1 && {
     path: "/bimbingan/bimbingan_Add",

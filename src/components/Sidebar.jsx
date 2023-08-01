@@ -1,25 +1,39 @@
-import { Avatar, Col, Layout, Menu, Modal, Row } from "antd";
+import { Col, Layout, Menu, message, Modal, Row } from "antd";
 import {
   PieChartOutlined,
   DashboardOutlined,
   SettingOutlined,
-  AntDesignOutlined,
   LogoutOutlined,
 } from "@ant-design/icons";
 import LayoutWrapper from "../styled/LayoutWrapper";
 import { useLocation, useNavigate } from "react-router-dom";
-import getCookie from "../lib/src/helpers/getCookie";
 import deleteCookie from "../lib/src/helpers/deleteCookie";
-import { Fragment } from "react";
+import { Fragment, useMemo } from "react";
 import BtnSidos from "../lib/src/components/BtnSidos";
 import decodeCookie from "../lib/src/helpers/decodeCookie";
+import useFetch from "../lib/src/helpers/useFetch";
+import { useEffect } from "react";
+import {
+  responseError,
+  responseSuccess,
+  unAuthResponse,
+} from "../lib/src/helpers/formatRespons";
+import { useState } from "react";
+import decodeBlob from "../lib/src/helpers/decodeBlob";
+import ImageSidos from "../lib/src/components/ImageSidos";
+import LoadingSidos from "../lib/src/components/LoadingSidos";
+import { Suspense } from "react";
 
 const { Sider, Content } = Layout;
 const Sidebar = ({ children }) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const [modal, contextHolder] = Modal.useModal();
   const dataCookie = decodeCookie("token");
+  const fetch = useFetch();
+  const [profile, setProfile] = useState({});
+  const [loadingFetchProfile, setLoadingFetchProfile] = useState(false);
+  const [messageApi, contextHolderMessage] = message.useMessage();
+  const [modal, contextHolder] = Modal.useModal();
 
   const childrenDatasNotLogin = [
     {
@@ -106,132 +120,196 @@ const Sidebar = ({ children }) => {
     },
   ];
 
-  return (
-    <LayoutWrapper>
-      <Layout>
-        <Layout hasSider>
-          <Sider
-            width={280}
-            style={{
-              overflow: "auto",
-              height: "100vh",
-              position: "fixed",
-              left: 0,
-              top: 0,
-              bottom: 0,
-            }}
-          >
-            <Row style={{ margin: "30px 0" }}>
-              <Col span={24} style={{ textAlign: "center" }}>
-                Logo Aplikasi
-              </Col>
-            </Row>
-            <Row justify="space-around" align="middle" gutter={[16, 16]}>
-              <Col
-                style={{ textAlign: "center", cursor: "pointer" }}
-                span={24}
-                onClick={() => {
-                  if (dataCookie?.no_bp) {
-                    navigate(`/profile/profilemhs`);
-                  } else if (dataCookie?.nip) {
-                    navigate(
-                      `/dosen/dosen_Info/${dataCookie?.nip}/profiledosen`
-                    );
-                  } else {
-                    navigate("/login");
-                  }
-                }}
-              >
-                <Row gutter={[16, 16]}>
-                  <Col span={24}>
-                    <Avatar
-                      size={{
-                        xs: 24,
-                        sm: 32,
-                        md: 40,
-                        lg: 64,
-                        xl: 92,
-                        xxl: 120,
-                      }}
-                      style
-                      icon={<AntDesignOutlined />}
-                    />
-                  </Col>
-                  <Col span={24}>
-                    {dataCookie?.username ? dataCookie?.username : "Guest"}
-                  </Col>
-                </Row>
-              </Col>
-              <Col span={24}>
-                <Menu
-                  style={{ padding: "0 10px 100px" }}
-                  selectedKeys={[`/${pathname?.split("/")?.[1]}`]}
-                  mode="inline"
-                  items={menuDatas}
-                  onClick={({ key }) => {
-                    navigate(key);
-                  }}
-                />
-              </Col>
-              {Object.keys(dataCookie)?.length ? (
-                <Col
-                  span={24}
-                  style={{
-                    position: "fixed",
-                    backgroundColor: "white",
-                    bottom: 10,
-                    left: 0,
-                    width: 240,
-                    cursor: "pointer",
-                  }}
-                  onClick={() => {
-                    modal.confirm({
-                      title: "Apakah yakin untuk keluar ?",
-                      onOk: () => {
-                        deleteCookie("token");
-                        window.location.href = "/spk";
-                      },
-                    });
-                  }}
-                >
-                  <BtnSidos
-                    icon={
-                      <LogoutOutlined
-                        style={{ rotate: "180deg", color: "red" }}
-                      />
-                    }
-                    style={{ padding: "12px 28px 38px" }}
-                    danger
-                    type="ghost"
-                  >
-                    Log out
-                  </BtnSidos>
-                </Col>
-              ) : (
-                <Fragment />
-              )}
-            </Row>
-          </Sider>
+  const fetchDatas = () => {
+    setLoadingFetchProfile(true);
+    fetch({
+      endpoint: dataCookie?.roles === 1 ? "getDosenByNIP" : "getMhsByNoBp",
+      payload: {
+        ...(dataCookie?.roles === 1
+          ? { nip: dataCookie?.nip }
+          : { no_bp: dataCookie?.no_bp }),
+      },
+    })
+      ?.then(async (response) => {
+        const res = responseSuccess(response);
 
-          <Layout
-            style={{
-              marginLeft: 280,
-              overflow: "auto",
-            }}
-          >
-            <Content
+        if (res?.status === 200) {
+          setProfile({
+            ...profile,
+            name: res?.data?.name,
+            photo: decodeBlob(res?.data?.photo),
+          });
+        }
+      })
+      ?.catch((e) => {
+        const err = responseError(e);
+
+        if (err?.status === 401) {
+          unAuthResponse({
+            err,
+            messageApi,
+            isBackToLogin: pathname !== "/login",
+          });
+        } else {
+          messageApi.open({
+            type: "error",
+            key: "errMsg",
+            content: err?.error,
+          });
+        }
+      })
+      ?.finally(() => {
+        setLoadingFetchProfile(false);
+      });
+  };
+
+  const saveCurrRouteHandler = useMemo(() => {
+    if (Object.keys(dataCookie)?.length) {
+      sessionStorage?.setItem("currRoute", pathname);
+    }
+  }, [pathname]);
+
+  useEffect(() => {
+    if (Object.keys(dataCookie)?.length && pathname !== "login") {
+      fetchDatas();
+    }
+  }, []);
+
+  saveCurrRouteHandler;
+
+  // useEffect(() => {
+  //   saveCurrRouteHandler;
+  // }, [pathname]);
+
+  return (
+    <>
+      {contextHolderMessage}
+      <LayoutWrapper>
+        <Layout>
+          <Layout hasSider>
+            <Sider
+              width={280}
               style={{
-                margin: "24px 16px 0",
-                overflow: "initial",
+                overflow: "auto",
+                height: "100vh",
+                position: "fixed",
+                left: 0,
+                top: 0,
+                bottom: 0,
               }}
             >
-              {children}
-            </Content>
+              <Row style={{ margin: "30px 0" }}>
+                <Col span={24} style={{ textAlign: "center" }}>
+                  Logo Aplikasi
+                </Col>
+              </Row>
+              <Row justify="space-around" align="middle" gutter={[16, 16]}>
+                <Col
+                  style={{ textAlign: "center", cursor: "pointer" }}
+                  span={24}
+                  onClick={() => {
+                    if (dataCookie?.no_bp) {
+                      navigate(`/profile/profilemhs`);
+                    } else if (dataCookie?.nip) {
+                      navigate(`/dosen_prfl/profiledosen`);
+                    } else {
+                      navigate("/login");
+                    }
+                  }}
+                >
+                  <Row gutter={[16, 16]}>
+                    <Col span={24}>
+                      {loadingFetchProfile ? (
+                        <LoadingSidos style={{ height: "20vh" }} />
+                      ) : (
+                        <ImageSidos
+                          preview={false}
+                          width={160}
+                          src={profile?.photo}
+                        />
+                      )}
+                    </Col>
+                    <Col span={24}>
+                      {profile?.name ? profile?.name : "Guest"}
+                    </Col>
+                  </Row>
+                </Col>
+                <Col span={24}>
+                  <Menu
+                    style={{ padding: "0 10px 100px" }}
+                    selectedKeys={[`/${pathname?.split("/")?.[1]}`]}
+                    mode="inline"
+                    items={menuDatas}
+                    onClick={({ key }) => {
+                      navigate(key);
+                    }}
+                  />
+                </Col>
+                {Object.keys(dataCookie)?.length ? (
+                  <Col
+                    span={24}
+                    style={{
+                      position: "fixed",
+                      backgroundColor: "white",
+                      bottom: 10,
+                      left: 0,
+                      width: 240,
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {
+                      modal.confirm({
+                        title: "Apakah yakin untuk keluar ?",
+                        onOk: () => {
+                          deleteCookie("token");
+                          window.location.href = "/spk";
+                          sessionStorage?.removeItem("currRoute");
+                        },
+                      });
+                    }}
+                  >
+                    <BtnSidos
+                      icon={
+                        <LogoutOutlined
+                          style={{ rotate: "180deg", color: "red" }}
+                        />
+                      }
+                      style={{ padding: "12px 28px 38px" }}
+                      danger
+                      type="ghost"
+                    >
+                      Log out
+                    </BtnSidos>
+                  </Col>
+                ) : (
+                  <Fragment />
+                )}
+              </Row>
+            </Sider>
+
+            <Layout
+              style={{
+                marginLeft: 280,
+                overflow: "auto",
+              }}
+            >
+              <Content
+                style={{
+                  margin: "24px 16px 0",
+                  overflow: "initial",
+                }}
+              >
+                <Suspense
+                  fallback={<LoadingSidos style={{ height: "100vh" }} />}
+                >
+                  {children}
+                </Suspense>
+              </Content>
+            </Layout>
           </Layout>
         </Layout>
-      </Layout>
-      {contextHolder}
-    </LayoutWrapper>
+        {contextHolder}
+      </LayoutWrapper>
+    </>
   );
 };
 

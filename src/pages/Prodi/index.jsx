@@ -1,3 +1,3 @@
-import ProdiList from "./ProdiList";
+import ProdiLists from "./ProdiLists";
 
-export default ProdiList;
+export default ProdiLists;

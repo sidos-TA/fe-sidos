@@ -1,10 +1,10 @@
 import { Affix, message, Segmented } from "antd";
-import { Suspense, useEffect, useState } from "react";
+import { memo, Suspense, useEffect, useState } from "react";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import TabsContext from "../context/TabsContext";
 import LoadingSidos from "../lib/src/components/LoadingSidos";
-import deleteCookie from "../lib/src/helpers/deleteCookie";
 import {
+  forbiddenResponse,
   responseError,
   responseSuccess,
   unAuthResponse,
@@ -51,7 +51,17 @@ const TabsSegmented = ({
         })
         ?.catch((e) => {
           const err = responseError(e);
-          unAuthResponse({ messageApi, err });
+          if (err?.status === 401) {
+            unAuthResponse({ messageApi, err });
+          } else if (err?.status === 403) {
+            forbiddenResponse({ navigate, err });
+          } else {
+            messageApi.open({
+              type: "error",
+              key: "errMsg",
+              content: err?.error,
+            });
+          }
         });
     }
   };
@@ -101,4 +111,6 @@ const TabsSegmented = ({
     </>
   );
 };
-export default TabsSegmented;
+
+const TabsSidos = memo(TabsSegmented);
+export default TabsSidos;

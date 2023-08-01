@@ -1,3 +1,3 @@
-import DosenList from "./DosenList";
+import DosenLists from "./DosenLists";
 
-export default DosenList;
+export default DosenLists;

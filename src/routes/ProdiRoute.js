@@ -9,8 +9,12 @@ const ProdiRoute = [
     Component: lazy(() => import("../pages/Prodi")),
   },
   dataCookie?.roles === 1 && {
-    path: "/prodi/prodi_Add",
+    path: "/prodi/prodi_Add/*",
     Component: lazy(() => import("../pages/Prodi/ProdiAdd")),
+  },
+  dataCookie?.roles === 1 && {
+    path: "/prodi/prodi_Edit/:id",
+    Component: lazy(() => import("../pages/Prodi/ProdiEdit")),
   },
 ];
 

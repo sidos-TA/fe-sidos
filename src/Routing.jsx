@@ -1,8 +1,6 @@
 import { Fragment } from "react";
-import { lazy, Suspense } from "react";
+import { lazy } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
-import Sidebar from "./components/Sidebar";
-import LoadingSidos from "./lib/src/components/LoadingSidos";
 import decodeCookie from "./lib/src/helpers/decodeCookie";
 import getCookie from "./lib/src/helpers/getCookie";
 import UnAuthPage from "./pages/403Page";
@@ -24,7 +22,7 @@ const Login = lazy(() => import("./pages/Login"));
 
 const Routing = () => {
   const cookie = getCookie("token");
-  const dataCookie = decodeCookie("token");
+  const dataCookie = () => decodeCookie("token");
 
   const ArrRoute = [
     ...DashboardRoute,
@@ -43,49 +41,54 @@ const Routing = () => {
 
   return (
     <Fragment>
-      <Sidebar>
-        <Suspense fallback={<LoadingSidos style={{ height: "100vh" }} />}>
-          <Routes>
-            {cookie ? (
-              <Fragment>
-                <Route
-                  key="base"
-                  path="/"
-                  element={
-                    <Navigate
-                      to={
-                        dataCookie?.roles === 1
-                          ? "/dashboard"
-                          : "/usulan/usulan_Add"
-                      }
-                    />
+      <Routes>
+        {cookie ? (
+          <Fragment>
+            <Route
+              key="base"
+              path="/"
+              element={
+                <Navigate
+                  to={dataCookie()?.roles === 1 ? "/dashboard" : "/usulan"}
+                />
+              }
+            />
+            <Route
+              key="spk"
+              path="/spk"
+              element={<Navigate to="/usulan/usulan_Add" />}
+            />
+            <Route
+              key="try_to_access_login"
+              path="/login"
+              element={
+                <Navigate
+                  to={
+                    dataCookie()?.roles === 1
+                      ? "/dosen_prfl/profiledosen"
+                      : "/profile/profilemhs"
                   }
                 />
-                <Route
-                  key="spk"
-                  path="/spk"
-                  element={<Navigate to="/usulan/usulan_Add" />}
-                />
+              }
+            />
 
-                {ArrRoute?.map((route, idx) => (
-                  <Route key={idx} {...route} />
-                ))}
-              </Fragment>
-            ) : (
-              <Fragment>
-                <Route path="/" element={<Navigate to="/spk" />} />
-                <Route path="/login" element={<Login />} />
-                {arrRouteNotLogin?.map((route, idx) => (
-                  <Route key={idx} {...route} />
-                ))}
-              </Fragment>
-            )}
-            <Route element={<UnAuthPage />} path="/unauth" />
-            <Route key="test_page" path="/test_page" element={<TestPage />} />
-            <Route key="not_found" path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
-      </Sidebar>
+            {ArrRoute?.map((route, idx) => (
+              <Route key={idx} {...route} />
+            ))}
+          </Fragment>
+        ) : (
+          <Fragment>
+            <Route path="/" element={<Navigate to="/spk" />} />
+            <Route path="/login" element={<Login />} />
+            {arrRouteNotLogin?.map((route, idx) => (
+              <Route key={idx} {...route} />
+            ))}
+          </Fragment>
+        )}
+        <Route element={<UnAuthPage />} path="/unauth" />
+        <Route key="test_page" path="/test_page" element={<TestPage />} />
+        <Route key="not_found" path="*" element={<NotFound />} />
+      </Routes>
     </Fragment>
   );
 };

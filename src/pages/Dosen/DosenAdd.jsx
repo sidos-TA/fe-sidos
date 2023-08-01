@@ -1,20 +1,8 @@
-import { Form } from "antd";
-import { Fragment, lazy, useState } from "react";
-import TabsSegmented from "../../components/TabsSegmented";
+import { Fragment, lazy } from "react";
+import TabsSidos from "../../components/TabsSegmented";
 import TitlePage from "../../components/TitlePage";
 
 const DosenAdd = () => {
-  const [FormDosen] = Form.useForm();
-  const [FormScrape] = Form.useForm();
-  const [FormUpload] = Form.useForm();
-
-  const [state, setState] = useState({
-    isShowPreviewScrape: false,
-    isShowPreviewUploadFile: false,
-    isLoadingBtnScrape: false,
-    arrDatasFiles: [],
-  });
-
   const listTabs = [
     {
       label: <>Input Manual</>,
@@ -41,16 +29,7 @@ const DosenAdd = () => {
   return (
     <Fragment>
       <TitlePage title="Tambah Dosen" backRoute="/dosen" />
-      <TabsSegmented
-        listTabs={listTabs}
-        tabsContext={{
-          FormDosen,
-          FormScrape,
-          state,
-          setState,
-          FormUpload,
-        }}
-      />
+      <TabsSidos listTabs={listTabs} />
     </Fragment>
   );
 };

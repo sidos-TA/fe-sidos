@@ -1,32 +1,45 @@
 import { Table, Tag } from "antd";
 import { Fragment } from "react";
 import { useUsulanFormContext } from "../../context/Usulan/UsulanFormContext";
+import ImageSidos from "../../lib/src/components/ImageSidos";
 import TableSidos from "../../lib/src/components/TableSidos";
+import decodeBlob from "../../lib/src/helpers/decodeBlob";
+import decodeCookie from "../../lib/src/helpers/decodeCookie";
 
 const { Column } = Table;
 
 const TableSPK = ({ ...props }) => {
   const { openModalHandler, state, rowSelectionHandler } =
     useUsulanFormContext();
+  const dataCookie = decodeCookie("token");
 
   return (
     <TableSidos
       isLoading={state?.isLoadingSPK || state?.isLoadingAdd}
       arrDatas={state?.arrDatasSPK}
-      rowSelection={{
-        columnTitle: "Usulkan Dospem",
-        columnWidth: "50px",
-        hideSelectAll: true,
-        onChange: rowSelectionHandler,
-        selectedRowKeys: state?.arrUsulanDospem,
-        getCheckboxProps: (record) => {
-          return {
-            disabled: record?.isDisable && state?.arrUsulanDospem?.length === 3,
-          };
+      {...(Object.keys(dataCookie)?.length && {
+        rowSelection: {
+          columnTitle: "Usulkan Dospem",
+          columnWidth: "50px",
+          hideSelectAll: true,
+          onChange: rowSelectionHandler,
+          selectedRowKeys: state?.arrUsulanDospem,
+          getCheckboxProps: (record) => {
+            return {
+              disabled:
+                record?.isDisable && state?.arrUsulanDospem?.length === 3,
+            };
+          },
         },
-      }}
+      })}
       {...props}
     >
+      <Column
+        title="Foto Dosen"
+        render={(record) => {
+          return <ImageSidos width={200} src={decodeBlob(record?.photo)} />;
+        }}
+      />
       <Column
         onCell={(record) => {
           return {
@@ -47,7 +60,9 @@ const TableSPK = ({ ...props }) => {
           };
         }}
         title="Mahasiswa yang Mengusulkan"
-        dataIndex="n_mhs_usulan"
+        render={(record) => {
+          return record?.n_mhs_usulan;
+        }}
       />
       <Column
         onCell={(record) => {

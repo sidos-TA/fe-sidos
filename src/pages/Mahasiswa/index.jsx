@@ -1,3 +1,3 @@
-import MahasiswaList from "./MahasiswaList";
+import MahasiswaLists from "./MahasiswaLists";
 
-export default MahasiswaList;
+export default MahasiswaLists;

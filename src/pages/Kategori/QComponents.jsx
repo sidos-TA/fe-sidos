@@ -1,9 +1,14 @@
 import { Col, Grid, Row, Typography } from "antd";
-import InputNumberAHP from "../../components/kategori/InputNumberAHP";
+import { lazy, Suspense } from "react";
+// import InputNumberAHP from "../../components/kategori/InputNumberAHP";
 import { benefitCost } from "../../constants/benefitCost";
 import InputSidos from "../../lib/src/components/FormSidos/fields/InputSidos";
 import RadioSidos from "../../lib/src/components/FormSidos/fields/RadioSidos";
+import LoadingSidos from "../../lib/src/components/LoadingSidos";
 
+const InputNumberAHP = lazy(() =>
+  import("../../components/kategori/InputNumberAHP")
+);
 const QComponents = ({ item, idxItem }) => {
   const { xs } = Grid.useBreakpoint();
   const { Text } = Typography;
@@ -24,7 +29,9 @@ const QComponents = ({ item, idxItem }) => {
       </Col>
       <Col span={12}>
         <Text type="secondary">Skala prioritas</Text>
-        <InputNumberAHP item={item} idxItem={idxItem} />
+        <Suspense fallback={<LoadingSidos style={{ height: "30vh" }} />}>
+          <InputNumberAHP item={item} idxItem={idxItem} />
+        </Suspense>
       </Col>
       <Col span={5}>
         <RadioSidos

@@ -1,38 +1,17 @@
-import { Col, Image, Space } from "antd";
-import Typography from "antd/es/typography/Typography";
-import { useNavigate } from "react-router-dom";
 import ErrorIllustrate from "./assets/error.svg";
-import TitlePage from "./components/TitlePage";
-import BtnSidos from "./lib/src/components/BtnSidos";
+import IllustrasiSidos from "./components/IllustrasiSidos";
 
 const FallbackComponent = ({ error }) => {
   return (
-    <Col
-      span={24}
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
+    <IllustrasiSidos
+      title="Upps... Terjadi Kesalahan"
+      subTitle={`Pesan Error : ${error}`}
+      onBtnText="Refresh"
+      onClickBtn={() => {
+        window.location.reload();
       }}
-    >
-      <Space direction="vertical" style={{ textAlign: "center" }}>
-        <TitlePage
-          title="Upps... Terjadi Kesalahan"
-          styleRow={{ justifyContent: "center" }}
-        />
-        <Typography.Text>{error}</Typography.Text>
-        <Image src={ErrorIllustrate} preview={false} width={450} />
-        <BtnSidos
-          type="primary"
-          position="center"
-          onClick={() => {
-            window.location.reload();
-          }}
-        >
-          Refresh
-        </BtnSidos>
-      </Space>
-    </Col>
+      src={ErrorIllustrate}
+    />
   );
 };
 

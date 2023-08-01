@@ -1,4 +1,5 @@
 import { Col, Row, Select, Typography } from "antd";
+import { Suspense } from "react";
 import { useEffect } from "react";
 import { Fragment } from "react";
 import { consIndexDatas } from "../../constants/cosIndexDatas";

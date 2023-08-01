@@ -1,3 +1,3 @@
-import ForbiddenMethods from "./ForbiddenMethods";
+import ForbiddenMethodLists from "./ForbiddenMethodLists";
 
-export default ForbiddenMethods;
+export default ForbiddenMethodLists;

@@ -10,12 +10,16 @@ import UsulanFormContext from "../../context/Usulan/UsulanFormContext";
 import UsulanDetailModal from "../../components/usulan/usulanDetail/UsulanDetailModal";
 import useFetch from "../../lib/src/helpers/useFetch";
 import {
+  forbiddenResponse,
   responseError,
   responseSuccess,
+  unAuthResponse,
 } from "../../lib/src/helpers/formatRespons";
-import RadioSidos from "../../lib/src/components/FormSidos/fields/RadioSidos";
 import FormSidos from "../../lib/src/components/FormSidos/form/FormSidos";
 import decodeCookie from "../../lib/src/helpers/decodeCookie";
+import Field from "../../lib/src/components/FormSidos/fields/Field";
+import decodeBlob from "../../lib/src/helpers/decodeBlob";
+import BtnActionUsulan from "../../components/usulan/BtnActionUsulan";
 
 const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
   const [form] = Form.useForm();
@@ -37,8 +41,9 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
     isVisibleSPK: false,
     isOpenModal: false,
     isLoadingAdd: false,
-    is_usul: false,
     status_usulan: "",
+    is_usul: false,
+    tingkatan: "",
   });
   const params = useParams();
 
@@ -132,14 +137,19 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
     fetch({
       endpoint: submitEndpoint,
       payload: {
+        ...(state?.status_usulan && {
+          status_usulan: state?.status_usulan,
+        }),
         nip: state?.arrUsulanDospem,
-        no_bp: no_bp && type === "edit" ? no_bp : "1911082006",
+        no_bp: no_bp && type === "edit" ? no_bp : dataCookie?.no_bp,
         judul: form?.getFieldValue("judul"),
         bidang: form?.getFieldValue("bidang"),
         jdl_from_dosen: form?.getFieldValue("jdl_from_dosen"),
         ...(type === "edit" && {
           status_judul: form?.getFieldValue("status_judul"),
+          tingkatan: state?.tingkatan,
         }),
+        file_pra_proposal: form?.getFieldValue("file_pra_proposal"),
       },
     })
       ?.then((res) => {
@@ -150,49 +160,53 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
             key: "success_submit_usulan",
             content: response?.message,
             onClose: () => {
-              navigate(type === "edit" ? "/bimbingan" : "/usulan");
+              navigate(
+                type === "edit" && state?.arrUsulanDospem?.length === 2
+                  ? "/bimbingan"
+                  : "/usulan"
+              );
             },
           });
         }
       })
       ?.catch((e) => {
         const err = responseError(e);
-        messageApi.open({
-          type: "error",
-          key: "error_submit_usulan",
-          content: err?.error,
-        });
+        if (err?.status === 401) {
+          unAuthResponse({ messageApi, err });
+        } else if (err?.status === 403) {
+          forbiddenResponse({ navigate, err });
+        } else {
+          messageApi.open({
+            type: "error",
+            key: "error_submit_usulan",
+            content: err?.error,
+          });
+        }
         setState((prev) => ({ ...prev, isLoadingAdd: false }));
       });
   };
 
   const customFetchHandler = (formData) => {
-    if (formData?.length) {
-      const [formDataValue] = formData;
+    const dataUsulan = formData?.arrDatas?.[0]?.usulans?.[0];
 
-      setState((prev) => ({
-        ...prev,
-        isVisibleSPK: true,
-        arrUsulanDospem: formDataValue?.dosen?.map((dosen) => dosen?.nip),
-        mhsName: formDataValue?.mh?.name,
-        arrDatasSPK: formDataValue?.dosen?.map((data) => ({
-          ...data,
-          // isDisable: true,
-        })),
-        is_usul: formDataValue?.mh?.is_usul,
-        status_usulan: formDataValue?.status_usulan,
-      }));
+    setState((prev) => ({
+      ...prev,
+      isVisibleSPK: formData?.statusUsulan !== "unavailable",
+      arrUsulanDospem: formData?.arrDatas?.map((dosen) => dosen?.nip),
+      mhsName: formData?.mhs_name,
+      arrDatasSPK: formData?.arrDatas,
+      is_usul: formData?.is_usul,
+      status_usulan: formData?.statusUsulan,
+      tingkatan: formData?.tingkatan,
+    }));
 
-      form.setFieldsValue(formDataValue);
-    } else {
-      messageApi.open({
-        type: "warning",
-        content: "Data tidak tersedia",
-        key: "not available",
-      });
-
-      navigate("/usulan");
-    }
+    form.setFieldsValue({
+      judul: formData?.judul,
+      bidang: formData?.bidang,
+      isJdlFromDosen: Boolean(formData?.jdl_from_dosen),
+      jdl_from_dosen: formData?.jdl_from_dosen,
+      file_pra_proposal: decodeBlob(dataUsulan?.file_pra_proposal, false),
+    });
   };
 
   return (
@@ -207,6 +221,7 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
           rowSelectionHandler,
           getSPKHandler,
           type,
+          submitUsulan,
         }}
       >
         <TitlePage
@@ -215,21 +230,22 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
             backFn: () => navigate("/usulan"),
           })}
         />
+        {dataCookie?.roles === 2 && (
+          <>Status Usulan: {state?.status_usulan || "in created"}</>
+        )}
+
         <FormSPK
           form={form}
           state={state}
           setState={setState}
           {...(type === "edit" && {
             customFetch: customFetchHandler,
-            endpoint: "getUsulanById",
-            ...(Object.keys(params || {})?.length && {
-              payload: {
-                no_bp: params?.no_bp,
-              },
-            }),
+            endpoint: "getUsulanByNoBp",
+            payload: {
+              no_bp: params?.no_bp || dataCookie?.no_bp,
+            },
           })}
         />
-
         <BtnSidos
           disabled={type === "edit" && state?.arrUsulanDospem?.length === 2}
           loading={state?.isLoadingSPK}
@@ -239,53 +255,40 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
         >
           Lihat Rekomendasi
         </BtnSidos>
-
         {state?.isVisibleSPK && (
           <Fragment>
             <TableSPK />
 
-            {type === "edit" && (
+            {type === "edit" && dataCookie?.roles === 1 && (
               <FormSidos form={form}>
-                <RadioSidos
-                  required
-                  label="Status Judul"
-                  name="status_judul"
-                  listOptions={[
-                    {
-                      label: "Terima",
-                      value: "terima",
-                    },
-                    {
-                      label: "Tolak",
-                      value: "tolak",
-                    },
-                  ]}
-                />
+                {state?.arrUsulanDospem?.length === 2 ? (
+                  <Field
+                    type="radio"
+                    {...(state?.arrUsulanDospem?.length === 2 && {
+                      required: true,
+                    })}
+                    label="Status Judul"
+                    name="status_judul"
+                    listOptions={[
+                      {
+                        label: "Terima",
+                        value: "terima",
+                      },
+                      {
+                        label: "Tolak",
+                        value: "tolak",
+                      },
+                    ]}
+                  />
+                ) : (
+                  <Fragment />
+                )}
               </FormSidos>
             )}
-            {dataCookie?.roles !== 1 ||
-            (state?.is_usul && state?.status_usulan === "confirm") ? (
-              <Fragment />
-            ) : (
-              <BtnSidos
-                loading={state?.isLoadingAdd}
-                disabled={
-                  state?.arrUsulanDospem?.length !== (type === "edit" ? 2 : 3)
-                }
-                position="center"
-                type="primary"
-                onClick={() => {
-                  form.validateFields()?.then(() => {
-                    submitUsulan();
-                  });
-                }}
-              >
-                {type === "edit" ? "Tambah Bimbingan" : "Usulkan"}
-              </BtnSidos>
-            )}
+
+            {state?.status_usulan !== "confirmed" && <BtnActionUsulan />}
           </Fragment>
         )}
-
         <UsulanDetailModal />
       </UsulanFormContext.Provider>
     </>

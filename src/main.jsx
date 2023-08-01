@@ -6,13 +6,16 @@ import FallbackComponent from "./FallbackComponent.jsx";
 import Routing from "./Routing.jsx";
 import "./App.less";
 import ConfigProviderSidos from "./ConfigProviderSidos.jsx";
+import Sidebar from "./components/Sidebar.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <ConfigProviderSidos>
       <BrowserRouter>
         <ErrorBoundary fallback={<FallbackComponent />}>
-          <Routing />
+          <Sidebar>
+            <Routing />
+          </Sidebar>
         </ErrorBoundary>
       </BrowserRouter>
     </ConfigProviderSidos>

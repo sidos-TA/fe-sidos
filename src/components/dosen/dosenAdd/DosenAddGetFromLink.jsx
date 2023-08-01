@@ -1,19 +1,43 @@
-import { Divider } from "antd";
+import { Divider, Form } from "antd";
+import { useState } from "react";
 import { Fragment } from "react";
 import { useNavigate } from "react-router-dom";
-import { useTabsContext } from "../../../context/TabsContext";
+import DosenAddGetFromLinkContext from "../../../context/Dosen/DosenAdd/DosenAddGetFromLinkContext";
 import FormSidos from "../../../lib/src/components/FormSidos/form/FormSidos";
-import LoadingSidos from "../../../lib/src/components/LoadingSidos";
+import IllustrasiSidos from "../../IllustrasiSidos";
 import TitleSection from "../../TitleSection";
-import DosenForm from "./DosenForm";
-import ScrapeInput from "./ScrapeInput";
+import DosenFields from "./DosenFields";
+import DosenScrapeInput from "./DosenScrapeInput";
+import APIIllustrate from "../../../assets/api.svg";
 
 const DosenAddGetFromLink = () => {
-  const { FormScrape, state } = useTabsContext();
+  const [FormScrape] = Form.useForm();
   const navigate = useNavigate();
 
+  const [state, setState] = useState({
+    isShowPreviewScrape: false,
+    isLoadingBtnScrape: {},
+  });
+
+  const loadingScrapeStateHandler = ({ scrapeType, loadingValue }) => {
+    setState((prev) => ({
+      ...prev,
+      isLoadingBtnScrape: {
+        ...state?.isLoadingBtnScrape,
+        [scrapeType]: loadingValue,
+      },
+    }));
+  };
+
   return (
-    <Fragment>
+    <DosenAddGetFromLinkContext.Provider
+      value={{
+        state,
+        setState,
+        FormScrape,
+        loadingScrapeStateHandler,
+      }}
+    >
       <TitleSection title="Masukkan dari Link" />
       <FormSidos
         form={FormScrape}
@@ -24,29 +48,36 @@ const DosenAddGetFromLink = () => {
           loading: state?.isLoadingBtnScrape,
           disabled: state?.isLoadingBtnScrape,
         }}
-        onSubmitSuccess={() => {
+        onSuccessAction={() => {
           navigate("/dosen");
         }}
       >
-        <ScrapeInput label="Masukkan NIP" name="nip" endpoint="scrapeSIPEG" />
-        <ScrapeInput
+        <DosenScrapeInput
+          label="Masukkan NIP"
+          name="nip"
+          endpoint="scrapeSIPEG"
+          scrapeType="Sipeg"
+        />
+        <DosenScrapeInput
           label="Masukkan Link Google Scholar"
           name="gs_url"
           endpoint="scrapeGS"
+          scrapeType="GS"
         />
 
-        {state?.isShowPreviewScrape && (
+        {state?.isShowPreviewScrape ? (
           <Fragment>
             <Divider orientation="center">Preview</Divider>
-            {state?.isLoadingBtnScrape ? (
-              <LoadingSidos />
-            ) : (
-              <DosenForm formInstance={FormScrape} />
-            )}
+            <DosenFields />
           </Fragment>
+        ) : (
+          <IllustrasiSidos
+            src={APIIllustrate}
+            subTitle="Masukkan link untuk menampilkan informasi"
+          />
         )}
       </FormSidos>
-    </Fragment>
+    </DosenAddGetFromLinkContext.Provider>
   );
 };
 export default DosenAddGetFromLink;

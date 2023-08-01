@@ -2,6 +2,8 @@ import { Form, Input, Select, Typography } from "antd";
 import { Fragment, useState } from "react";
 import TitlePage from "../components/TitlePage";
 import BtnSidos from "../lib/src/components/BtnSidos";
+import Field from "../lib/src/components/FormSidos/fields/Field";
+import NumberSidos from "../lib/src/components/FormSidos/fields/NumberSidos";
 import SelectSidos from "../lib/src/components/FormSidos/fields/SelectSidos";
 import UploadSidos from "../lib/src/components/FormSidos/fields/UploadSidos";
 import FormSidos from "../lib/src/components/FormSidos/form/FormSidos";
@@ -22,34 +24,19 @@ const TestPage = () => {
   return (
     <Fragment>
       <TitlePage title="Test Page" />
-      <FormSidos form={form} initialValues={{ label: "Happy cat" }}>
-        <SelectSidos
-          required
-          label="Bidang"
-          name="bidang"
-          endpoint="getDataBidang"
-        />
-        <Form.Item name="contoh">
-          <Select size="large">
-            <Select.Option value={"data1"} label={"data1"} />
-          </Select>
-        </Form.Item>
-        <Form.Item name="label">
-          <Input
-            style={{
-              backgroundColor: "transparent",
-              border: "none 0px",
-              boxShadow: "none",
-              paddingLeft: "0px",
-            }}
-            readOnly
-          />
-        </Form.Item>
+      <FormSidos form={form}>
+        <Field type="upload" name="haha" label="Upload">
+          <BtnSidos type="primary">Upload</BtnSidos>
+        </Field>
       </FormSidos>
-
-      <BtnSidos onClick={() => console.log(form?.getFieldsValue())}>
-        Test
+      <BtnSidos
+        onClick={() => {
+          console.log(form?.getFieldsValue());
+        }}
+      >
+        Tes
       </BtnSidos>
+      <NumberSidos />
     </Fragment>
   );
 };

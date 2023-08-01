@@ -1,7 +1,7 @@
 import { Form } from "antd";
 import { Fragment } from "react";
 import TitlePage from "../../components/TitlePage";
-import InputSidos from "../../lib/src/components/FormSidos/fields/InputSidos";
+import Field from "../../lib/src/components/FormSidos/fields/Field";
 import FormSidos from "../../lib/src/components/FormSidos/form/FormSidos";
 
 const Settings = () => {
@@ -10,7 +10,7 @@ const Settings = () => {
     <Fragment>
       <TitlePage title="Settings" />
       <FormSidos form={FormSettings}>
-        <InputSidos name="kuota_bimbingan" label="Kuota Bimbingan" />
+        <Field type="text" name="kuota_bimbingan" label="Kuota Bimbingan" />
       </FormSidos>
     </Fragment>
   );

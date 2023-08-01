@@ -1,8 +1,10 @@
-import { Space } from "antd";
+import { Image, Space } from "antd";
 import { Fragment } from "react";
 import { useTabsContext } from "../../../context/TabsContext";
 import AvatarSidos from "../../../lib/src/components/AvatarSidos";
 import TitleSection from "../../TitleSection";
+import noDataIllustrate from "../../../assets/noData.svg";
+import TitlePage from "../../TitlePage";
 
 const MahasiswaBimbingan = () => {
   const { state } = useTabsContext();
@@ -25,7 +27,12 @@ const MahasiswaBimbingan = () => {
           </Space>
         </div>
       ) : (
-        <Fragment />
+        <div style={{ textAlign: "center" }}>
+          <Space direction="vertical" style={{ textAlign: "center" }}>
+            <Image src={noDataIllustrate} preview={false} width={450} />
+            <TitleSection title="Belum ada Mahasiswa Bimbingan" />
+          </Space>
+        </div>
       )}
     </Fragment>
   );
