@@ -62,6 +62,12 @@ const MahasiswaDetailProfile = () => {
       <TitleSection title="Profil" />
       <FormSidos
         form={form}
+        {...(dataCookie?.roles === 1 && {
+          deleteEndpoint: "deleteDataMhs",
+          payloadDelete: {
+            no_bp: stateData?.datas?.no_bp,
+          },
+        })}
         payload={{
           no_bp: stateData?.datas?.no_bp,
           name: state?.profileIdentity?.name || stateData?.datas?.name,
