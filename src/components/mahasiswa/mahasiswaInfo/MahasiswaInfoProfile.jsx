@@ -74,7 +74,7 @@ const MahasiswaDetailProfile = () => {
           prodi: state?.profileIdentity?.prodi || stateData?.datas?.prodi,
           photo: state?.previewImg || stateData?.datas?.photo,
         }}
-        onSuccessAction={() => {
+        afterMessageActionClose={() => {
           if (dataCookie?.roles === 2) {
             window.location.href = "/";
           } else {

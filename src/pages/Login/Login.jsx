@@ -16,8 +16,6 @@ const Login = () => {
         submitEndpoint="login"
         afterMessageActionClose={(response) => {
           setCookie("token", response?.token);
-        }}
-        onSuccessAction={() => {
           const currRoute = sessionStorage.getItem("currRoute");
           if (currRoute) {
             window.location.href = currRoute;

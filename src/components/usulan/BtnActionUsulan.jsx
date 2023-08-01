@@ -7,43 +7,23 @@ const BtnActionUsulan = () => {
   const { state, form, type, submitUsulan } = useUsulanFormContext();
   const dataCookie = decodeCookie("token");
 
+  const btnTextHandler = () => {
+    const arrUsulanDospemLength = state?.arrUsulanDospem?.length;
+    if (arrUsulanDospemLength === 0) {
+      return "Update To Unavailable";
+    } else if (arrUsulanDospemLength === 1) {
+      return "Update partially confirm";
+    } else {
+      return "Tambah Bimbingan";
+    }
+  };
+
   if (Object?.keys(dataCookie)?.length) {
     if (
       type === "edit" &&
       dataCookie?.roles === 1 &&
       state?.status_usulan !== "confirm"
     ) {
-      if (state?.arrUsulanDospem?.length === 0) {
-        return (
-          <BtnSidos
-            loading={state?.isLoadingAdd}
-            position="center"
-            type="primary"
-            onClick={() => {
-              form.validateFields()?.then(() => {
-                submitUsulan();
-              });
-            }}
-          >
-            Update To Unavailable
-          </BtnSidos>
-        );
-      } else if (state?.arrUsulanDospem?.length === 1) {
-        return (
-          <BtnSidos
-            loading={state?.isLoadingAdd}
-            position="center"
-            type="primary"
-            onClick={() => {
-              form.validateFields()?.then(() => {
-                submitUsulan();
-              });
-            }}
-          >
-            Update partially confirm
-          </BtnSidos>
-        );
-      }
       return (
         <BtnSidos
           loading={state?.isLoadingAdd}
@@ -56,14 +36,16 @@ const BtnActionUsulan = () => {
             });
           }}
         >
-          Tambah Bimbingan
+          {btnTextHandler()}
         </BtnSidos>
       );
     } else if (dataCookie?.roles === 2 && type !== "edit") {
       return (
         <BtnSidos
           loading={state?.isLoadingAdd}
-          disabled={state?.arrUsulanDospem?.length !== 3}
+          disabled={
+            state?.arrUsulanDospem?.length !== state?.settings?.maksimal_usulan
+          }
           position="center"
           type="primary"
           onClick={() => {

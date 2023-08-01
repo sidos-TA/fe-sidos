@@ -22,7 +22,27 @@ const FormSPK = ({ ...props }) => {
       {type === "edit" && (
         <LabelSidos label="Nama Mahasiswa">{state?.mhsName}</LabelSidos>
       )}
-      <Field type="text" required label="Judul" name="judul" />
+      <Field
+        type="text"
+        required
+        label="Judul"
+        name="judul"
+        rules={[
+          {
+            validator: (_, value) => {
+              if (value?.trim()?.length <= state?.settings?.kGram) {
+                return Promise.reject(
+                  new Error(
+                    `Minimal harus mempunyai ${state?.settings?.kGram} karakter`
+                  )
+                );
+              } else {
+                return Promise.resolve();
+              }
+            },
+          },
+        ]}
+      />
       <Field
         type="select"
         required

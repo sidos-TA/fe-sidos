@@ -21,7 +21,7 @@ const DosenAddInputManual = () => {
         initialValues={{
           penelitian: [""],
         }}
-        onSuccessAction={() => {
+        afterMessageActionClose={() => {
           navigate("/dosen");
         }}
       >

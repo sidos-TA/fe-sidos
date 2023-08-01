@@ -110,7 +110,7 @@ const Kategori = () => {
             customFetch={(formData) => customFetchHandler(formData)}
             beforeSubmit={updateKategoriHandler}
             afterMessageActionClose={() => {
-              navigate("/kategori");
+              navigate("/");
             }}
           >
             <Suspense fallback={<LoadingSidos style={{ height: "100vh" }} />}>

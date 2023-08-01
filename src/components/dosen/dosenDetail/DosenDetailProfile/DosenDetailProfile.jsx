@@ -115,7 +115,7 @@ const DosenDetailProfile = () => {
             prodi: state?.profileIdentity?.prodi || stateTabs?.datas?.prodi,
             photo: state?.previewImg || stateTabs?.datas?.photo,
           }}
-          onSuccessAction={() => {
+          afterMessageActionClose={() => {
             const pathnameLocation =
               window?.location?.pathname?.split("/")?.[1];
 

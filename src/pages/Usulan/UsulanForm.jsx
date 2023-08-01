@@ -20,6 +20,8 @@ import decodeCookie from "../../lib/src/helpers/decodeCookie";
 import Field from "../../lib/src/components/FormSidos/fields/Field";
 import decodeBlob from "../../lib/src/helpers/decodeBlob";
 import BtnActionUsulan from "../../components/usulan/BtnActionUsulan";
+import { useCallback } from "react";
+import { useEffect } from "react";
 
 const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
   const [form] = Form.useForm();
@@ -44,6 +46,8 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
     status_usulan: "",
     is_usul: false,
     tingkatan: "",
+    settings: {},
+    // kGram: 0,
   });
   const params = useParams();
 
@@ -59,7 +63,7 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
     setState((prev) => ({
       ...prev,
       arrUsulanDospem: selectedRowKeys,
-      ...(selectedRowKeys?.length === 3 && {
+      ...(selectedRowKeys?.length === state?.settings?.maksimal_usulan && {
         arrDatasSPK: state?.arrDatasSPK?.map((spk) => {
           if (!selectedRowKeys?.includes(spk?.nip)) {
             return {
@@ -121,7 +125,7 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
       });
   };
 
-  const visibleSPKTable = async () => {
+  const visibleSPKTable = () => {
     form?.validateFields()?.then(() => {
       getSPKHandler({
         ...form?.getFieldsValue(),
@@ -186,28 +190,75 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
       });
   };
 
-  const customFetchHandler = (formData) => {
-    const dataUsulan = formData?.arrDatas?.[0]?.usulans?.[0];
+  const customFetchHandler = useCallback(
+    (formData) => {
+      const dataUsulan = formData?.arrDatas?.[0]?.usulans?.[0];
 
-    setState((prev) => ({
-      ...prev,
-      isVisibleSPK: formData?.statusUsulan !== "unavailable",
-      arrUsulanDospem: formData?.arrDatas?.map((dosen) => dosen?.nip),
-      mhsName: formData?.mhs_name,
-      arrDatasSPK: formData?.arrDatas,
-      is_usul: formData?.is_usul,
-      status_usulan: formData?.statusUsulan,
-      tingkatan: formData?.tingkatan,
-    }));
+      setState((prev) => ({
+        ...prev,
+        isVisibleSPK: formData?.statusUsulan !== "unavailable",
+        arrUsulanDospem: formData?.arrDatas?.map((dosen) => dosen?.nip),
+        mhsName: formData?.mhs_name,
+        arrDatasSPK: formData?.arrDatas,
+        is_usul: formData?.is_usul,
+        status_usulan: formData?.statusUsulan,
+        tingkatan: formData?.tingkatan,
+      }));
 
-    form.setFieldsValue({
-      judul: formData?.judul,
-      bidang: formData?.bidang,
-      isJdlFromDosen: Boolean(formData?.jdl_from_dosen),
-      jdl_from_dosen: formData?.jdl_from_dosen,
-      file_pra_proposal: decodeBlob(dataUsulan?.file_pra_proposal, false),
-    });
+      form.setFieldsValue({
+        judul: formData?.judul,
+        bidang: formData?.bidang,
+        isJdlFromDosen: Boolean(formData?.jdl_from_dosen),
+        jdl_from_dosen: formData?.jdl_from_dosen,
+        file_pra_proposal: decodeBlob(dataUsulan?.file_pra_proposal, false),
+      });
+    },
+    [state]
+  );
+
+  const fetchSettings = () => {
+    fetch({
+      endpoint: "getSetting",
+    })
+      ?.then((response) => {
+        const res = responseSuccess(response);
+
+        if (res?.status === 200) {
+          const objSetting = {};
+
+          for (const [key, val] of Object.entries(res?.data)) {
+            objSetting[key] = val;
+          }
+          setState((prev) => ({
+            ...prev,
+            settings: {
+              ...state?.settings,
+              ...objSetting,
+            },
+          }));
+        }
+      })
+      ?.catch((e) => {
+        const err = responseError(e);
+        if (err?.status === 401) {
+          unAuthResponse({ messageApi, err });
+        } else if (err?.status === 403) {
+          forbiddenResponse({ navigate, err });
+        } else {
+          messageApi.open({
+            type: "error",
+            key: "errMsg",
+            content: err?.error,
+          });
+        }
+      });
   };
+
+  useEffect(() => {
+    if (type === "add" && dataCookie?.roles === 2) {
+      fetchSettings();
+    }
+  }, []);
 
   return (
     <>

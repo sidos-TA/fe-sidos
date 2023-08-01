@@ -18,6 +18,14 @@ const TableSPK = ({ ...props }) => {
       isLoading={state?.isLoadingSPK || state?.isLoadingAdd}
       arrDatas={state?.arrDatasSPK}
       {...(Object.keys(dataCookie)?.length && {
+        rowClassName: (record) => {
+          if (
+            dataCookie?.roles === 1 &&
+            record?.n_mhs_usulan === state?.settings?.kuota_bimbingan
+          ) {
+            return "disabled-row";
+          }
+        },
         rowSelection: {
           columnTitle: "Usulkan Dospem",
           columnWidth: "50px",
@@ -27,7 +35,9 @@ const TableSPK = ({ ...props }) => {
           getCheckboxProps: (record) => {
             return {
               disabled:
-                record?.isDisable && state?.arrUsulanDospem?.length === 3,
+                record?.isDisable &&
+                state?.arrUsulanDospem?.length ===
+                  state?.settings?.maksimal_usulan,
             };
           },
         },

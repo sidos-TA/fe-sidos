@@ -45,10 +45,10 @@ const DosenAddGetFromLink = () => {
           submitEndpoint: "addDataDosen",
         })}
         BtnSubmitProps={{
-          loading: state?.isLoadingBtnScrape,
-          disabled: state?.isLoadingBtnScrape,
+          // loading: state?.isLoadingBtnScrape,
+          disabled: !FormScrape?.getFieldValue("penelitian")?.length,
         }}
-        onSuccessAction={() => {
+        afterMessageActionClose={() => {
           navigate("/dosen");
         }}
       >

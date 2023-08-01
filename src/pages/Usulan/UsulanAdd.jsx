@@ -7,7 +7,11 @@ const UsulanForm = lazy(() => import("./UsulanForm"));
 const UsulanAdd = () => {
   return (
     <Suspense fallback={<LoadingSidos />}>
-      <UsulanForm submitEndpoint="addUsulan" titlePage="Tambah Usulan" />
+      <UsulanForm
+        submitEndpoint="addUsulan"
+        titlePage="Tambah Usulan"
+        type="add"
+      />
     </Suspense>
   );
 };
