@@ -7,7 +7,6 @@ import TableSPK from "../../components/usulan/TableSPK";
 import BtnSidos from "../../lib/src/components/BtnSidos";
 
 import UsulanFormContext from "../../context/Usulan/UsulanFormContext";
-import UsulanDetailModal from "../../components/usulan/usulanDetail/UsulanDetailModal";
 import useFetch from "../../lib/src/helpers/useFetch";
 import {
   forbiddenResponse,
@@ -20,6 +19,14 @@ import decodeBlob from "../../lib/src/helpers/decodeBlob";
 import BtnActionUsulan from "../../components/usulan/BtnActionUsulan";
 import { useCallback } from "react";
 import { useEffect } from "react";
+import { lazy } from "react";
+
+const UsulanFormModalSimilaritasJudul = lazy(() =>
+  import("../../components/usulan/UsulanFormModalSimilaritasJudul")
+);
+const UsulanDetailModal = lazy(() =>
+  import("../../components/usulan/usulanDetail/UsulanDetailModal")
+);
 
 const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
   const [form] = Form.useForm();
@@ -45,8 +52,40 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
     is_usul: false,
     tingkatan: "",
     settings: {},
+    modalSimilaritas: {
+      visibleModal: false,
+    },
+    arrSimilarJudul: [],
+    isLoadingGetSimilar: false,
   });
   const params = useParams();
+
+  const getSimilarJudul = () => {
+    setState((prev) => ({ ...prev, isLoadingGetSimilar: true }));
+    fetch({
+      endpoint: "getSimilaritasJudul",
+      payload: {
+        judul_mhs: form?.getFieldValue("judul"),
+      },
+    })
+      ?.then((response) => {
+        const res = responseSuccess(response);
+        if (res?.status === 200) {
+          setState((prev) => ({ ...prev, arrSimilarJudul: res?.data }));
+        }
+        openModalSimilaritasJudul(true);
+      })
+      ?.catch((e) => {
+        const err = responseError(e);
+        messageApi?.open({
+          type: "error",
+          content: err?.error,
+        });
+      })
+      ?.finally(() => {
+        setState((prev) => ({ ...prev, isLoadingGetSimilar: false }));
+      });
+  };
 
   const openModalHandler = (record) => {
     setState((prev) => ({
@@ -251,6 +290,19 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
       });
   };
 
+  const openModalSimilaritasJudul = useCallback(
+    (visible) => {
+      setState((prev) => ({
+        ...prev,
+        modalSimilaritas: {
+          ...state?.modalSimilaritas,
+          visibleModal: visible,
+        },
+      }));
+    },
+    [state?.modalSimilaritas?.visibleModal]
+  );
+
   useEffect(() => {
     if (type === "add" && dataCookie?.roles === 2) {
       fetchSettings();
@@ -270,6 +322,8 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
           getSPKHandler,
           type,
           submitUsulan,
+          openModalSimilaritasJudul,
+          getSimilarJudul,
         }}
       >
         <TitlePage
@@ -314,6 +368,7 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
           </Fragment>
         )}
         <UsulanDetailModal />
+        <UsulanFormModalSimilaritasJudul />
       </UsulanFormContext.Provider>
     </>
   );
