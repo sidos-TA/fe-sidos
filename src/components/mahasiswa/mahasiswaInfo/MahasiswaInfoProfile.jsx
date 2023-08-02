@@ -68,7 +68,13 @@ const MahasiswaDetailProfile = () => {
             no_bp: stateData?.datas?.no_bp,
           },
         })}
-        payload={{
+        payloadFetch={{
+          no_bp: stateData?.datas?.no_bp,
+          name: state?.profileIdentity?.name || stateData?.datas?.name,
+          prodi: state?.profileIdentity?.prodi || stateData?.datas?.prodi,
+          photo: state?.previewImg || stateData?.datas?.photo,
+        }}
+        payloadSubmit={{
           no_bp: stateData?.datas?.no_bp,
           name: state?.profileIdentity?.name || stateData?.datas?.name,
           prodi: state?.profileIdentity?.prodi || stateData?.datas?.prodi,

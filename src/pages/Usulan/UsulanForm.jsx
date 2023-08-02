@@ -15,9 +15,7 @@ import {
   responseSuccess,
   unAuthResponse,
 } from "../../lib/src/helpers/formatRespons";
-import FormSidos from "../../lib/src/components/FormSidos/form/FormSidos";
 import decodeCookie from "../../lib/src/helpers/decodeCookie";
-import Field from "../../lib/src/components/FormSidos/fields/Field";
 import decodeBlob from "../../lib/src/helpers/decodeBlob";
 import BtnActionUsulan from "../../components/usulan/BtnActionUsulan";
 import { useCallback } from "react";
@@ -47,7 +45,6 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
     is_usul: false,
     tingkatan: "",
     settings: {},
-    // kGram: 0,
   });
   const params = useParams();
 
@@ -166,7 +163,7 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
             onClose: () => {
               navigate(
                 type === "edit" && state?.arrUsulanDospem?.length === 2
-                  ? "/bimbingan"
+                  ? "/keputusan"
                   : "/usulan"
               );
             },
@@ -292,7 +289,10 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
           {...(type === "edit" && {
             customFetch: customFetchHandler,
             endpoint: "getUsulanByNoBp",
-            payload: {
+            payloadSubmit: {
+              no_bp: params?.no_bp || dataCookie?.no_bp,
+            },
+            payloadFetch: {
               no_bp: params?.no_bp || dataCookie?.no_bp,
             },
           })}
@@ -309,33 +309,6 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
         {state?.isVisibleSPK && (
           <Fragment>
             <TableSPK />
-
-            {type === "edit" && dataCookie?.roles === 1 && (
-              <FormSidos form={form}>
-                {state?.arrUsulanDospem?.length === 2 ? (
-                  <Field
-                    type="radio"
-                    {...(state?.arrUsulanDospem?.length === 2 && {
-                      required: true,
-                    })}
-                    label="Status Judul"
-                    name="status_judul"
-                    listOptions={[
-                      {
-                        label: "Terima",
-                        value: "terima",
-                      },
-                      {
-                        label: "Tolak",
-                        value: "tolak",
-                      },
-                    ]}
-                  />
-                ) : (
-                  <Fragment />
-                )}
-              </FormSidos>
-            )}
 
             {state?.status_usulan !== "confirmed" && <BtnActionUsulan />}
           </Fragment>

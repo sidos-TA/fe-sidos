@@ -76,6 +76,11 @@ const Sidebar = ({ children }) => {
               label: "Usulan",
             },
             dataCookie?.roles === 1 && {
+              key: "/keputusan",
+              icon: <PieChartOutlined />,
+              label: "Keputusan",
+            },
+            dataCookie?.roles === 1 && {
               key: "/bimbingan",
               icon: <PieChartOutlined />,
               label: "Bimbingan",

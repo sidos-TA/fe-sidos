@@ -3,6 +3,7 @@ import { Fragment } from "react";
 import tingkatanProdiList from "../../constants/tingkatanProdiList";
 import Field from "../../lib/src/components/FormSidos/fields/Field";
 import FormSidos from "../../lib/src/components/FormSidos/form/FormSidos";
+import isStringParseArray from "../../lib/src/helpers/isStringParseArray";
 
 const ForbiddenMethodsForm = ({
   submitEndpoint,
@@ -16,7 +17,22 @@ const ForbiddenMethodsForm = ({
       <FormSidos
         form={form}
         submitEndpoint={submitEndpoint}
-        {...(endpoint && { endpoint, payload: { id } })}
+        payloadSubmit={{ id }}
+        beforeSubmit={() => {
+          return {
+            ...form?.getFieldsValue(),
+            bidang: JSON.stringify(form?.getFieldValue("bidang")),
+          };
+        }}
+        customFetch={(formData) => {
+          form?.setFieldsValue({
+            ...formData,
+            bidang: isStringParseArray(formData?.bidang)
+              ? JSON.parse(formData?.bidang)
+              : formData?.bidang,
+          });
+        }}
+        {...(endpoint && { endpoint, payloadFetch: { id } })}
         {...(deleteEndpoint && { deleteEndpoint, payloadDelete: { id } })}
       >
         <Field name="methodName" label="Nama Metode" type="text" required />

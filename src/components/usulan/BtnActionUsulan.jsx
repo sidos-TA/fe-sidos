@@ -14,7 +14,8 @@ const BtnActionUsulan = () => {
     } else if (arrUsulanDospemLength === 1) {
       return "Update partially confirm";
     } else {
-      return "Tambah Bimbingan";
+      // return "Tambah Bimbingan";
+      return "Tentukan Dosen Pembimbing";
     }
   };
 
