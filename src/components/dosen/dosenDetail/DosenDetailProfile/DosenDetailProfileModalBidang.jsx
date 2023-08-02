@@ -1,7 +1,8 @@
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { Col, Form, Modal, Row } from "antd";
 import { useDosenDetailProfileContext } from "../../../../context/Dosen/DosenDetail/DosenDetailProfileContext";
-import InputSidos from "../../../../lib/src/components/FormSidos/fields/InputSidos";
+import CheckboxSidos from "../../../../lib/src/components/FormSidos/fields/CheckboxSidos";
+import Field from "../../../../lib/src/components/FormSidos/fields/Field";
 import FormSidos from "../../../../lib/src/components/FormSidos/form/FormSidos";
 
 const DosenDetailProfileModalBidang = () => {
@@ -57,10 +58,40 @@ const DosenDetailProfileModalBidang = () => {
               {fields.map(({ key, name }) => (
                 <Row key={key} justify="space-around" align="middle">
                   <Col span={8}>
-                    <InputSidos
+                    <Field
+                      type={
+                        FormBidang?.getFieldValue("bidang")?.[name]
+                          ?.chkToText?.[0] === "New Data"
+                          ? "text"
+                          : "select"
+                      }
                       formItemObj={{ wrapperCol: { span: 24 } }}
                       name={[name, "bidangName"]}
                       label="Nama Bidang"
+                      endpoint="getDataBidang"
+                    />
+                  </Col>
+
+                  <Col>
+                    <CheckboxSidos
+                      listOptions={["New Data"]}
+                      name={[name, "chkToText"]}
+                      onChange={(val) => {
+                        const newValueBidang = FormBidang?.getFieldValue(
+                          "bidang"
+                        )?.map((bidang, idx) => {
+                          if (idx === name) {
+                            return {
+                              ...bidang,
+                              chkToText: val,
+                            };
+                          }
+                          return bidang;
+                        });
+                        FormBidang?.setFieldsValue({
+                          bidang: newValueBidang,
+                        });
+                      }}
                     />
                   </Col>
 

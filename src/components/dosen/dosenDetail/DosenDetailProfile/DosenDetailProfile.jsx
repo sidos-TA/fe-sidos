@@ -130,6 +130,11 @@ const DosenDetailProfile = () => {
             name: state?.profileIdentity?.name || stateTabs?.datas?.name,
             sks: state?.profileIdentity?.sks || stateTabs?.datas?.sks,
             prodi: state?.profileIdentity?.prodi || stateTabs?.datas?.prodi,
+            jabatan:
+              state?.profileIdentity?.jabatan || stateTabs?.datas?.jabatan,
+            pendidikan:
+              state?.profileIdentity?.pendidikan ||
+              stateTabs?.datas?.pendidikan,
             bidang: JSON.stringify(
               state?.profileIdentity?.bidang || stateTabs?.datas?.bidang
             ),
