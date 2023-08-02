@@ -1,12 +1,12 @@
 import { Form, Modal } from "antd";
-import { useCallback } from "react";
 import { useDosenDetailProfileContext } from "../../../../context/Dosen/DosenDetail/DosenDetailProfileContext";
 import Field from "../../../../lib/src/components/FormSidos/fields/Field";
 import FormSidos from "../../../../lib/src/components/FormSidos/form/FormSidos";
 import decodeCookie from "../../../../lib/src/helpers/decodeCookie";
 
-const DosenDetailProfileModal = () => {
-  const { state, toggleModalPassword } = useDosenDetailProfileContext();
+const DosenDetailProfileModalPassword = () => {
+  const { state, toggleModalDosenDetailProfile } =
+    useDosenDetailProfileContext();
   const { nip } = decodeCookie("token");
 
   const [FormPassword] = Form.useForm();
@@ -15,7 +15,12 @@ const DosenDetailProfileModal = () => {
     <Modal
       title="Password"
       open={state.isVisibleModalPassword}
-      onCancel={() => toggleModalPassword(false)}
+      onCancel={() =>
+        toggleModalDosenDetailProfile({
+          visible: false,
+          state: "isVisibleModalPassword",
+        })
+      }
       okText="Update Password"
       footer={false}
     >
@@ -26,7 +31,10 @@ const DosenDetailProfileModal = () => {
         }}
         submitEndpoint="change_password"
         afterMessageActionClose={() => {
-          toggleModalPassword(false);
+          toggleModalDosenDetailProfile({
+            visible: false,
+            state: "isVisibleModalPassword",
+          });
         }}
       >
         <Field
@@ -63,4 +71,4 @@ const DosenDetailProfileModal = () => {
     </Modal>
   );
 };
-export default DosenDetailProfileModal;
+export default DosenDetailProfileModalPassword;

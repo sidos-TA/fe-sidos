@@ -5,10 +5,16 @@ import pendidikanList from "../../../../constants/pendidikanList";
 import { useDosenDetailProfileContext } from "../../../../context/Dosen/DosenDetail/DosenDetailProfileContext";
 import BtnSidos from "../../../../lib/src/components/BtnSidos";
 import LabelSidos from "../../../../lib/src/components/FormSidos/fields/LabelSidos";
+import TagDataBidang from "../../../TagDataBidang";
 
 const DosenDetailProfileField = () => {
-  const { updateField, stateTabs, state, toggleModalPassword } =
-    useDosenDetailProfileContext();
+  const {
+    updateField,
+    stateTabs,
+    state,
+    toggleModalDosenDetailProfile,
+    defaultValDataBidang,
+  } = useDosenDetailProfileContext();
 
   return (
     <Space direction="vertical" size={32}>
@@ -74,11 +80,36 @@ const DosenDetailProfileField = () => {
         {state?.profileIdentity?.pendidikan || stateTabs?.datas?.pendidikan}
       </LabelSidos>
 
+      <Typography>Bidang</Typography>
+
+      {defaultValDataBidang(
+        state?.profileIdentity?.bidang || stateTabs?.datas?.bidang
+      )?.map((bidang, idx) => (
+        <TagDataBidang key={idx} data={bidang} />
+      ))}
+
+      <BtnSidos
+        icon={<KeyOutlined />}
+        type="dashed"
+        onClick={() =>
+          toggleModalDosenDetailProfile({
+            visible: true,
+            state: "isVisibleModalBidang",
+          })
+        }
+      >
+        Bidang
+      </BtnSidos>
       <Typography>Password</Typography>
       <BtnSidos
         icon={<KeyOutlined />}
         type="dashed"
-        onClick={() => toggleModalPassword(true)}
+        onClick={() =>
+          toggleModalDosenDetailProfile({
+            visible: true,
+            state: "isVisibleModalPassword",
+          })
+        }
       >
         Ganti password
       </BtnSidos>

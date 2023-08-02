@@ -5,6 +5,7 @@ import ImageSidos from "../../lib/src/components/ImageSidos";
 import TableSidos from "../../lib/src/components/TableSidos";
 import decodeBlob from "../../lib/src/helpers/decodeBlob";
 import decodeCookie from "../../lib/src/helpers/decodeCookie";
+import TagDataBidang from "../TagDataBidang";
 
 const { Column } = Table;
 
@@ -96,12 +97,12 @@ const TableSPK = ({ ...props }) => {
           };
         }}
         render={(record) => {
-          const arrBidang = JSON.parse(record);
+          const arrBidang = JSON.parse(record || "[]");
 
           return (
             <Fragment>
               {arrBidang?.map((data, idx) => (
-                <Tag key={idx}>{data}</Tag>
+                <TagDataBidang key={idx} data={data} />
               ))}
             </Fragment>
           );

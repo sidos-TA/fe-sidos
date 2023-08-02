@@ -1,4 +1,4 @@
-import { Col, Form, message, Modal, Row, Space } from "antd";
+import { Col, Form, message, Row, Space } from "antd";
 import { lazy, Suspense, useCallback, useState } from "react";
 import { Fragment } from "react";
 import { useNavigate } from "react-router-dom";
@@ -11,10 +11,16 @@ import ImageSidos from "../../../../lib/src/components/ImageSidos";
 import LoadingSidos from "../../../../lib/src/components/LoadingSidos";
 import decodeBlob from "../../../../lib/src/helpers/decodeBlob";
 import getBase64 from "../../../../lib/src/helpers/getBase64";
+import isStringParseArray from "../../../../lib/src/helpers/isStringParseArray";
 import TitleSection from "../../../TitleSection";
 
 const DosenDetailProfileField = lazy(() => import("./DosenDetailProfileField"));
-const DosenDetailProfileModal = lazy(() => import("./DosenDetailProfileModal"));
+const DosenDetailProfileModalBidang = lazy(() =>
+  import("./DosenDetailProfileModalBidang")
+);
+const DosenDetailProfileModalPassword = lazy(() =>
+  import("./DosenDetailProfileModalPassword")
+);
 
 const DosenDetailProfile = () => {
   const { state: stateTabs } = useTabsContext();
@@ -27,6 +33,7 @@ const DosenDetailProfile = () => {
     previewImg: "",
     isImgSizeValid: true,
     isVisibleModalPassword: false,
+    isVisibleModalBidang: false,
   });
 
   const updateField = ({ field, val }) => {
@@ -38,6 +45,7 @@ const DosenDetailProfile = () => {
       },
     }));
   };
+
   const deleteHandler = useCallback(() => {
     setState((prev) => ({
       ...prev,
@@ -71,15 +79,23 @@ const DosenDetailProfile = () => {
     }
   };
 
-  const toggleModalPassword = useCallback(
-    (visible) => {
+  const toggleModalDosenDetailProfile = useCallback(
+    ({ visible, state }) => {
       setState((prev) => ({
         ...prev,
-        isVisibleModalPassword: visible,
+        [state]: visible,
       }));
     },
-    [state.isVisibleModalPassword]
+    [state.isVisibleModalPassword, state?.isVisibleModalBidang]
   );
+
+  const defaultValDataBidang = (dataBidang) => {
+    if (isStringParseArray(dataBidang)) {
+      return JSON.parse(dataBidang || "[]");
+    } else if (Array.isArray(dataBidang)) {
+      return dataBidang;
+    }
+  };
 
   return (
     <Fragment>
@@ -94,7 +110,8 @@ const DosenDetailProfile = () => {
           setState,
           updateField,
           deleteHandler,
-          toggleModalPassword,
+          toggleModalDosenDetailProfile,
+          defaultValDataBidang,
         }}
       >
         <FormSidos
@@ -113,6 +130,9 @@ const DosenDetailProfile = () => {
             name: state?.profileIdentity?.name || stateTabs?.datas?.name,
             sks: state?.profileIdentity?.sks || stateTabs?.datas?.sks,
             prodi: state?.profileIdentity?.prodi || stateTabs?.datas?.prodi,
+            bidang: JSON.stringify(
+              state?.profileIdentity?.bidang || stateTabs?.datas?.bidang
+            ),
             photo: state?.previewImg || stateTabs?.datas?.photo,
           }}
           afterMessageActionClose={() => {
@@ -161,7 +181,8 @@ const DosenDetailProfile = () => {
             </Col>
           </Row>
         </FormSidos>
-        <DosenDetailProfileModal />
+        <DosenDetailProfileModalBidang />
+        <DosenDetailProfileModalPassword />
       </DosenDetailProfileContext.Provider>
     </Fragment>
   );

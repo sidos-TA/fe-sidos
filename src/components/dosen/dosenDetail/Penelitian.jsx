@@ -1,5 +1,4 @@
-import { Table, Typography } from "antd";
-import { useState } from "react";
+import { Table } from "antd";
 import { Fragment } from "react";
 import { useTabsContext } from "../../../context/TabsContext";
 import InputSidos from "../../../lib/src/components/FormSidos/fields/InputSidos";
