@@ -99,6 +99,25 @@ const UsulanLists = () => {
               },
             };
           }}
+          title="Prodi"
+          render={(record) => {
+            return <p>{record?.mh?.prodi}</p>;
+          }}
+        />
+        <Column
+          onCell={(record) => {
+            return {
+              onClick: () => {
+                navigate(
+                  `${
+                    dataCookie?.roles === 2
+                      ? `/usulan/usulan_detail`
+                      : `usulan_edit/${record?.no_bp}`
+                  }`
+                );
+              },
+            };
+          }}
           title="Judul"
           dataIndex="judul"
         />
