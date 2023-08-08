@@ -13,10 +13,11 @@ const JudulForm = ({ submitEndpoint, endpoint, deleteEndpoint, id }) => {
       <FormSidos
         form={FormJudul}
         {...(id && {
-          payload: {
+          payloadFetch: {
             id,
           },
         })}
+        payloadSubmit={{ id }}
         {...(endpoint && {
           endpoint,
         })}
@@ -27,10 +28,14 @@ const JudulForm = ({ submitEndpoint, endpoint, deleteEndpoint, id }) => {
             id,
           },
         })}
-        afterFetchSuccesHandler={(formData) => {
+        afterMessageActionClose={() => {
+          navigate("/judul");
+        }}
+        customFetch={(formData) => {
           if (formData === null) {
             navigate("/judul");
           }
+          FormJudul.setFieldsValue({ ...formData });
         }}
       >
         <Field name="judul" required label="Judul" type="text" />

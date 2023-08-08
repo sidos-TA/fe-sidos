@@ -1,6 +1,7 @@
-import { Table } from "antd";
+import { Alert, Table } from "antd";
 import { Fragment, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import FilterSemester from "../../components/FilterSemester";
 import TitlePage from "../../components/TitlePage";
 import InputSidos from "../../lib/src/components/FormSidos/fields/InputSidos";
 import SelectSidos from "../../lib/src/components/FormSidos/fields/SelectSidos";
@@ -27,6 +28,7 @@ const MahasiswaLists = () => {
   return (
     <Fragment>
       <TitlePage title="Data Mahasiswa" addRoute="mahasiswa_Add/input_manual" />
+      <FilterSemester payloadState={payload} setStatePayload={setPayload} />
       <TableSidos
         payload={payload}
         onRow={(record) => {
@@ -112,27 +114,38 @@ const MahasiswaLists = () => {
         <Column title="Nama" dataIndex="name" width={400} />
         <Column title="No. Bp" dataIndex="no_bp" />
         <Column title="Prodi" dataIndex="prodi" />
-        {/* <Column title="Judul TA" dataIndex="judul_acc" width={500} /> */}
         <Column
           title="Judul TA"
           width={500}
           render={(record) => {
-            return record?.usulans?.[0]?.judul;
+            if (record?.usulans?.[0]?.judul) {
+              return record?.usulans?.[0]?.judul;
+            } else {
+              return (
+                <Alert
+                  style={{ textAlign: "center" }}
+                  type="warning"
+                  message="Belum ada judul yang diajukan"
+                />
+              );
+            }
           }}
         />
         <Column
           width={100}
           title="Status"
-          dataIndex="status_judul"
           render={(record) => {
-            const color = colorTagHandler(record);
+            const judul = record?.usulans?.[0]?.status_judul;
+            const color = colorTagHandler(judul || "belum mengajukan");
             return (
               <TagSidos fontSize={14} padding={"4px 10px"} color={color}>
-                {record}
+                {judul || "belum mengajukan"}
               </TagSidos>
             );
           }}
         />
+        <Column title="Semester" dataIndex="semester" />
+        <Column title="Tahun" dataIndex="tahun" />
       </TableSidos>
     </Fragment>
   );

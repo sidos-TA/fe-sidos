@@ -1,5 +1,5 @@
 import tingkatanProdiList from "../../../constants/tingkatanProdiList";
-import { exampleFileDosen } from "../../../lib/src/constants";
+import { exampleFileProdi } from "../../../lib/src/constants";
 import UploadFileAddData from "../../uploadFileInsert/UploadFileAddData";
 
 const ProdiAddUploadFile = () => {
@@ -7,7 +7,7 @@ const ProdiAddUploadFile = () => {
     {
       name: "Example File Data Prodi.xlsx",
       status: "done",
-      url: `${exampleFileDosen}`,
+      url: `${exampleFileProdi}`,
     },
   ];
   return (

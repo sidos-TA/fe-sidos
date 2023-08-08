@@ -1,6 +1,7 @@
 import { Table } from "antd";
 import { Fragment } from "react";
 import { useTabsContext } from "../../../context/TabsContext";
+import BtnSidos from "../../../lib/src/components/BtnSidos";
 import InputSidos from "../../../lib/src/components/FormSidos/fields/InputSidos";
 import TableSidos from "../../../lib/src/components/TableSidos/TableSidos";
 import sameArrObj from "../../../lib/src/helpers/sameArrObj";

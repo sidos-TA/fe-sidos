@@ -40,13 +40,15 @@ const JudulLists = () => {
         }}
         tableLayout="fixed"
         endpoint="getJudul"
-        onRow={(record) => {
-          return {
-            onClick: () => {
-              navigate(`judul_Edit/${record?.id}`);
-            },
-          };
-        }}
+        {...(dataCookie?.roles === 1 && {
+          onRow: (record) => {
+            return {
+              onClick: () => {
+                navigate(`judul_Edit/${record?.id}`);
+              },
+            };
+          },
+        })}
         customFilter={[
           <InputSidos
             key="judul"

@@ -7,6 +7,7 @@ import setCookie from "../../lib/src/helpers/setCookie";
 
 const Login = () => {
   const [form] = Form.useForm();
+
   return (
     <Fragment>
       <TitlePage title="Login" />

@@ -11,6 +11,7 @@ import DosenRoute from "./routes/DosenRoute";
 import ForbiddenMethodsRoute from "./routes/ForbiddenMethodsRoute";
 import JudulRoute from "./routes/JudulRoute";
 import KategoriRoute from "./routes/KategoriRoute";
+import KeputusanRoute from "./routes/KeputusanRoute";
 import MahasiswaRoute from "./routes/MahasiswaRoute";
 import ProdiRoute from "./routes/ProdiRoute";
 import RouteNotLogin from "./routes/RouteNotLogin";
@@ -34,6 +35,7 @@ const Routing = () => {
     ...JudulRoute,
     ...ProdiRoute,
     ...KategoriRoute,
+    ...KeputusanRoute,
     ...ForbiddenMethodsRoute,
   ];
 

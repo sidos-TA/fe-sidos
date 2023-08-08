@@ -75,6 +75,21 @@ const TableSPK = ({ ...props }) => {
           return record?.n_mhs_usulan;
         }}
       />
+      {dataCookie?.roles === 1 && (
+        <Column
+          onCell={(record) => {
+            return {
+              onClick: () => {
+                openModalHandler(record);
+              },
+            };
+          }}
+          title="Mahasiswa Bimbingan"
+          render={(record) => {
+            return record?.n_mhs_bimbingan;
+          }}
+        />
+      )}
       <Column
         onCell={(record) => {
           return {
@@ -88,7 +103,6 @@ const TableSPK = ({ ...props }) => {
       />
       <Column
         title="Bidang Keahlian"
-        dataIndex="bidang"
         onCell={(record) => {
           return {
             onClick: () => {
@@ -97,7 +111,7 @@ const TableSPK = ({ ...props }) => {
           };
         }}
         render={(record) => {
-          const arrBidang = JSON.parse(record || "[]");
+          const arrBidang = JSON.parse(record?.bidang || []);
 
           return (
             <Fragment>

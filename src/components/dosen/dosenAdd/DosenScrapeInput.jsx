@@ -1,25 +1,25 @@
 import { Col, message, Row } from "antd";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDosenAddGetFromLinkContext } from "../../../context/Dosen/DosenAdd/DosenAddGetFromLinkContext";
-import { useTabsContext } from "../../../context/TabsContext";
 import BtnSidos from "../../../lib/src/components/BtnSidos";
 import Field from "../../../lib/src/components/FormSidos/fields/Field";
-import InputSidos from "../../../lib/src/components/FormSidos/fields/InputSidos";
-import deleteCookie from "../../../lib/src/helpers/deleteCookie";
-import {
-  responseError,
-  responseSuccess,
-  unAuthResponse,
-} from "../../../lib/src/helpers/formatRespons";
+import catchHandler from "../../../lib/src/helpers/catchHandler";
+import { responseSuccess } from "../../../lib/src/helpers/formatRespons";
 import useFetch from "../../../lib/src/helpers/useFetch";
 
-const DosenScrapeInput = ({ label, name, endpoint, scrapeType }) => {
+const DosenScrapeInput = ({
+  label,
+  name,
+  payload,
+  endpoint,
+  scrapeType,
+  ...props
+}) => {
   const { FormScrape, loadingScrapeStateHandler, state, setState } =
     useDosenAddGetFromLinkContext();
 
-  let timeout;
   const navigate = useNavigate();
+  let timeout;
 
   const fetch = useFetch();
   const [messageApi, contextHolder] = message.useMessage();
@@ -28,9 +28,7 @@ const DosenScrapeInput = ({ label, name, endpoint, scrapeType }) => {
     loadingScrapeStateHandler({ scrapeType, loadingValue: true });
     fetch({
       endpoint,
-      payload: {
-        [name]: FormScrape?.getFieldValue(name)?.replaceAll(" ", ""),
-      },
+      payload,
     })
       ?.then((response) => {
         const res = responseSuccess(response);
@@ -43,16 +41,7 @@ const DosenScrapeInput = ({ label, name, endpoint, scrapeType }) => {
         }
       })
       ?.catch((e) => {
-        const err = responseError(e);
-        if (err?.status === 401) {
-          unAuthResponse({ messageApi, err });
-        } else {
-          messageApi.open({
-            type: "error",
-            key: "errMsg",
-            content: err?.error,
-          });
-        }
+        catchHandler({ e, messageApi, navigate });
       })
       ?.finally(() => {
         window.scrollTo(0, 400);
@@ -65,7 +54,7 @@ const DosenScrapeInput = ({ label, name, endpoint, scrapeType }) => {
       {contextHolder}
       <Row justify="center" align="middle" gutter={8} style={{ width: "100%" }}>
         <Col span={12} style={{ width: "100%" }}>
-          <Field type="text" label={label} name={name} />
+          <Field type="text" label={label} name={name} {...props} />
         </Col>
         <Col span={12}>
           <BtnSidos

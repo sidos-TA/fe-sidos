@@ -19,7 +19,7 @@ const TitlePage = ({
     } else if (backFn) {
       backFn();
     } else {
-      navigate(-1);
+      navigate('/');
     }
   };
 

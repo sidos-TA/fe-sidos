@@ -1,47 +1,50 @@
-import { Col, Image, Row, Space } from "antd";
-import { Fragment } from "react";
-import TitleSection from "../../TitleSection";
 import { useTabsContext } from "../../../context/TabsContext";
-import AvatarSidos from "../../../lib/src/components/AvatarSidos";
 import noDospemIllustrate from "../../../assets/noDospem.svg";
-import decodeBlob from "../../../lib/src/helpers/decodeBlob";
+import { lazy } from "react";
+import { Suspense } from "react";
+import LoadingSidos from "../../../lib/src/components/LoadingSidos";
+import { Divider } from "antd";
+import FilterSemester from "../../FilterSemester";
+
+const BimbinganComponent = lazy(() => import("../../BimbinganComponent"));
 
 const MahasiswaDetailDospemList = () => {
-  const { state } = useTabsContext();
+  const { state, payload, setPayload } = useTabsContext();
+
+  const arrDatasUsulan = state?.datas?.dosen;
+
+  const arrDatasBimbingan = arrDatasUsulan?.filter(
+    (bimbingan) => bimbingan?.status_usulan === "confirmed"
+  );
+
+  arrDatasBimbingan?.forEach((bimbing) => {
+    delete bimbing["dosen"];
+  });
 
   return (
-    <Fragment>
-      <TitleSection title="Dosen Pembimbing" />
-      {state?.datas?.dosPem?.length ? (
-        <Row
-          justify="space-evenly"
-          align="middle"
-          style={{ marginTop: 20, width: "100%" }}
-        >
-          {state?.datas?.dosPem?.map((dospem, idx) => {
-            return (
-              <Col key={idx}>
-                <AvatarSidos
-                  src={decodeBlob(dospem?.photo)}
-                  badgeText={`Dospem ${idx + 1}`}
-                  mainInfo={dospem?.name}
-                  subInfo={dospem?.jabatan}
-                />
-              </Col>
-            );
-          })}
-        </Row>
-      ) : (
-        <div style={{ textAlign: "center" }}>
-          <Space direction="vertical" style={{ textAlign: "center" }}>
-            <Image src={noDospemIllustrate} preview={false} width={450} />
-            <TitleSection
-              title={`${state?.datas?.name} belum ada Dosen Pembimbing`}
-            />
-          </Space>
-        </div>
-      )}
-    </Fragment>
+    <Suspense fallback={<LoadingSidos />}>
+      <FilterSemester payloadState={payload} setStatePayload={setPayload} />
+      <BimbinganComponent
+        titleSection="Dosen Pembimbing"
+        src={noDospemIllustrate}
+        textNoData={`${state?.datas?.name} belum ada Dosen Pembimbing`}
+        arrDatasBimbingan={arrDatasBimbingan}
+        badgeText="Dosen Pembimbing"
+        propMainInfo="name"
+        propSubInfo="pendidikan"
+        propBody="jabatan"
+      />
+      <Divider orientation="center">Dosen yang diusulkan</Divider>
+      <BimbinganComponent
+        src={noDospemIllustrate}
+        textNoData={`${state?.datas?.name} belum melakukan pengusulan judul TA`}
+        arrDatasBimbingan={arrDatasUsulan}
+        badgeText="Dosen Pembimbing"
+        propMainInfo="name"
+        propSubInfo="pendidikan"
+        propBody="jabatan"
+      />
+    </Suspense>
   );
 };
 export default MahasiswaDetailDospemList;

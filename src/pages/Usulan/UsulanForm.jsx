@@ -7,7 +7,6 @@ import TableSPK from "../../components/usulan/TableSPK";
 import BtnSidos from "../../lib/src/components/BtnSidos";
 
 import UsulanFormContext from "../../context/Usulan/UsulanFormContext";
-import UsulanDetailModal from "../../components/usulan/usulanDetail/UsulanDetailModal";
 import useFetch from "../../lib/src/helpers/useFetch";
 import {
   forbiddenResponse,
@@ -15,13 +14,20 @@ import {
   responseSuccess,
   unAuthResponse,
 } from "../../lib/src/helpers/formatRespons";
-import FormSidos from "../../lib/src/components/FormSidos/form/FormSidos";
 import decodeCookie from "../../lib/src/helpers/decodeCookie";
-import Field from "../../lib/src/components/FormSidos/fields/Field";
 import decodeBlob from "../../lib/src/helpers/decodeBlob";
 import BtnActionUsulan from "../../components/usulan/BtnActionUsulan";
 import { useCallback } from "react";
 import { useEffect } from "react";
+import { lazy } from "react";
+import catchHandler from "../../lib/src/helpers/catchHandler";
+
+const UsulanFormModalSimilaritasJudul = lazy(() =>
+  import("../../components/usulan/UsulanFormModalSimilaritasJudul")
+);
+const UsulanDetailModal = lazy(() =>
+  import("../../components/usulan/usulanDetail/UsulanDetailModal")
+);
 
 const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
   const [form] = Form.useForm();
@@ -47,9 +53,40 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
     is_usul: false,
     tingkatan: "",
     settings: {},
-    // kGram: 0,
+    modalSimilaritas: {
+      visibleModal: false,
+    },
+    arrSimilarJudul: [],
+    isLoadingGetSimilar: false,
   });
   const params = useParams();
+
+  const getSimilarJudul = () => {
+    setState((prev) => ({ ...prev, isLoadingGetSimilar: true }));
+    fetch({
+      endpoint: "getSimilaritasJudul",
+      payload: {
+        judul_mhs: form?.getFieldValue("judul"),
+      },
+    })
+      ?.then((response) => {
+        const res = responseSuccess(response);
+        if (res?.status === 200) {
+          setState((prev) => ({ ...prev, arrSimilarJudul: res?.data }));
+        }
+        openModalSimilaritasJudul(true);
+      })
+      ?.catch((e) => {
+        const err = responseError(e);
+        messageApi?.open({
+          type: "error",
+          content: err?.error,
+        });
+      })
+      ?.finally(() => {
+        setState((prev) => ({ ...prev, isLoadingGetSimilar: false }));
+      });
+  };
 
   const openModalHandler = (record) => {
     setState((prev) => ({
@@ -150,7 +187,6 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
         bidang: form?.getFieldValue("bidang"),
         jdl_from_dosen: form?.getFieldValue("jdl_from_dosen"),
         ...(type === "edit" && {
-          status_judul: form?.getFieldValue("status_judul"),
           tingkatan: state?.tingkatan,
         }),
         file_pra_proposal: form?.getFieldValue("file_pra_proposal"),
@@ -166,7 +202,7 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
             onClose: () => {
               navigate(
                 type === "edit" && state?.arrUsulanDospem?.length === 2
-                  ? "/bimbingan"
+                  ? "/keputusan"
                   : "/usulan"
               );
             },
@@ -174,18 +210,7 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
         }
       })
       ?.catch((e) => {
-        const err = responseError(e);
-        if (err?.status === 401) {
-          unAuthResponse({ messageApi, err });
-        } else if (err?.status === 403) {
-          forbiddenResponse({ navigate, err });
-        } else {
-          messageApi.open({
-            type: "error",
-            key: "error_submit_usulan",
-            content: err?.error,
-          });
-        }
+        catchHandler({ e, messageApi, navigate });
         setState((prev) => ({ ...prev, isLoadingAdd: false }));
       });
   };
@@ -254,6 +279,19 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
       });
   };
 
+  const openModalSimilaritasJudul = useCallback(
+    (visible) => {
+      setState((prev) => ({
+        ...prev,
+        modalSimilaritas: {
+          ...state?.modalSimilaritas,
+          visibleModal: visible,
+        },
+      }));
+    },
+    [state?.modalSimilaritas?.visibleModal]
+  );
+
   useEffect(() => {
     if (type === "add" && dataCookie?.roles === 2) {
       fetchSettings();
@@ -273,6 +311,8 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
           getSPKHandler,
           type,
           submitUsulan,
+          openModalSimilaritasJudul,
+          getSimilarJudul,
         }}
       >
         <TitlePage
@@ -292,7 +332,10 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
           {...(type === "edit" && {
             customFetch: customFetchHandler,
             endpoint: "getUsulanByNoBp",
-            payload: {
+            payloadSubmit: {
+              no_bp: params?.no_bp || dataCookie?.no_bp,
+            },
+            payloadFetch: {
               no_bp: params?.no_bp || dataCookie?.no_bp,
             },
           })}
@@ -310,37 +353,11 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
           <Fragment>
             <TableSPK />
 
-            {type === "edit" && dataCookie?.roles === 1 && (
-              <FormSidos form={form}>
-                {state?.arrUsulanDospem?.length === 2 ? (
-                  <Field
-                    type="radio"
-                    {...(state?.arrUsulanDospem?.length === 2 && {
-                      required: true,
-                    })}
-                    label="Status Judul"
-                    name="status_judul"
-                    listOptions={[
-                      {
-                        label: "Terima",
-                        value: "terima",
-                      },
-                      {
-                        label: "Tolak",
-                        value: "tolak",
-                      },
-                    ]}
-                  />
-                ) : (
-                  <Fragment />
-                )}
-              </FormSidos>
-            )}
-
             {state?.status_usulan !== "confirmed" && <BtnActionUsulan />}
           </Fragment>
         )}
         <UsulanDetailModal />
+        <UsulanFormModalSimilaritasJudul />
       </UsulanFormContext.Provider>
     </>
   );

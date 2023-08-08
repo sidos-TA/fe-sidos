@@ -11,6 +11,7 @@ import decodeBlob from "../../../lib/src/helpers/decodeBlob";
 import Field from "../../../lib/src/components/FormSidos/fields/Field";
 import decodeCookie from "../../../lib/src/helpers/decodeCookie";
 import { useNavigate } from "react-router-dom";
+import semesterList from "../../../constants/semesterList";
 
 const MahasiswaDetailProfile = () => {
   const [form] = Form.useForm();
@@ -68,11 +69,15 @@ const MahasiswaDetailProfile = () => {
             no_bp: stateData?.datas?.no_bp,
           },
         })}
-        payload={{
+        payloadFetch={stateData}
+        payloadSubmit={{
           no_bp: stateData?.datas?.no_bp,
           name: state?.profileIdentity?.name || stateData?.datas?.name,
           prodi: state?.profileIdentity?.prodi || stateData?.datas?.prodi,
           photo: state?.previewImg || stateData?.datas?.photo,
+          semester:
+            state?.profileIdentity?.semester || stateData?.datas?.semester,
+          tahun: state?.profileIdentity?.tahun || stateData?.datas?.tahun,
         }}
         afterMessageActionClose={() => {
           if (dataCookie?.roles === 2) {
@@ -139,6 +144,52 @@ const MahasiswaDetailProfile = () => {
                 selectValue="prodiName"
               >
                 {state?.profileIdentity?.prodi || stateData?.datas?.prodi}
+              </LabelSidos>
+
+              <LabelSidos
+                defaultValue={
+                  state?.profileIdentity?.semester || stateData?.datas?.semester
+                }
+                onChange={(val) => {
+                  setState((prev) => ({
+                    ...prev,
+                    profileIdentity: {
+                      ...state?.profileIdentity,
+                      semester: val,
+                    },
+                  }));
+                }}
+                type="select"
+                isEditable
+                name="semester"
+                label="Semester"
+                listOptions={semesterList}
+              >
+                {state?.profileIdentity?.semester || stateData?.datas?.semester}
+              </LabelSidos>
+
+              <LabelSidos
+                defaultValue={
+                  state?.profileIdentity?.tahun || stateData?.datas?.tahun
+                }
+                onChange={(val) => {
+                  setState((prev) => ({
+                    ...prev,
+                    profileIdentity: {
+                      ...state?.profileIdentity,
+                      tahun: val,
+                    },
+                  }));
+                }}
+                type="select"
+                endpoint="getTahun"
+              selectValue="tahun"
+              selectLabel="tahun"
+                name="tahun"
+                isEditable
+                label="Tahun"
+              >
+                {state?.profileIdentity?.tahun || stateData?.datas?.tahun}
               </LabelSidos>
             </Space>
           </Col>

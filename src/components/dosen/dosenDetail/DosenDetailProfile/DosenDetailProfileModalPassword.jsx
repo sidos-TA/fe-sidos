@@ -26,7 +26,10 @@ const DosenDetailProfileModalPassword = () => {
     >
       <FormSidos
         form={FormPassword}
-        payload={{
+        payloadFetch={{
+          nip,
+        }}
+        payloadSubmit={{
           nip,
         }}
         submitEndpoint="change_password"

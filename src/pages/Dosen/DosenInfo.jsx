@@ -1,6 +1,7 @@
-import { lazy } from "react";
+import { lazy, useState } from "react";
 import { Fragment } from "react";
 import { useLocation, useParams } from "react-router-dom";
+import FilterSemester from "../../components/FilterSemester";
 import TabsSegmented from "../../components/TabsSegmented";
 import TitlePage from "../../components/TitlePage";
 import decodeCookie from "../../lib/src/helpers/decodeCookie";
@@ -10,6 +11,8 @@ const DosenInfo = () => {
   const { pathname } = useLocation();
 
   const dataCookie = decodeCookie("token");
+
+  const [payload, setPayload] = useState({});
 
   const listTabs = [
     {
@@ -47,9 +50,12 @@ const DosenInfo = () => {
         listTabs={listTabs}
         endpoint="getDosenByNIP"
         payload={{
+          ...payload,
           nip: pathname?.includes("dosen_prfl") ? dataCookie?.nip : nip,
         }}
         tabsContext={{
+          payload,
+          setPayload,
           nip: pathname?.includes("dosen_prfl") ? dataCookie?.nip : nip,
         }}
       />

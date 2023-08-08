@@ -3,12 +3,9 @@ import { memo, Suspense, useEffect, useState } from "react";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import TabsContext from "../context/TabsContext";
 import LoadingSidos from "../lib/src/components/LoadingSidos";
-import {
-  forbiddenResponse,
-  responseError,
-  responseSuccess,
-  unAuthResponse,
-} from "../lib/src/helpers/formatRespons";
+import basePathName from "../lib/src/constants/basePathName";
+import catchHandler from "../lib/src/helpers/catchHandler";
+import { responseSuccess } from "../lib/src/helpers/formatRespons";
 import useFetch from "../lib/src/helpers/useFetch";
 import NotFound from "../pages/404Page";
 
@@ -43,32 +40,28 @@ const TabsSegmented = ({
         ?.then((res) => {
           const response = responseSuccess(res);
           if (response?.status === 200) {
-            setState((prev) => ({
-              ...prev,
-              datas: response?.data,
-            }));
+            if (
+              Object.keys(response?.data)?.length ||
+              response?.data !== null
+            ) {
+              setState((prev) => ({
+                ...prev,
+                datas: response?.data,
+              }));
+            } else {
+              navigate(basePathName);
+            }
           }
         })
         ?.catch((e) => {
-          const err = responseError(e);
-          if (err?.status === 401) {
-            unAuthResponse({ messageApi, err });
-          } else if (err?.status === 403) {
-            forbiddenResponse({ navigate, err });
-          } else {
-            messageApi.open({
-              type: "error",
-              key: "errMsg",
-              content: err?.error,
-            });
-          }
+          catchHandler({ e, messageApi, navigate });
         });
     }
   };
 
   useEffect(() => {
     fetchDatas();
-  }, [endpoint]);
+  }, [endpoint, JSON.stringify(payload)]);
   return (
     <>
       {contextHolder}
