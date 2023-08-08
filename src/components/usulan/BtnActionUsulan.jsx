@@ -7,28 +7,16 @@ const BtnActionUsulan = () => {
   const { state, form, type, submitUsulan } = useUsulanFormContext();
   const dataCookie = decodeCookie("token");
 
-  const btnTextHandler = () => {
-    const arrUsulanDospemLength = state?.arrUsulanDospem?.length;
-    if (arrUsulanDospemLength === 0) {
-      return "Update To Unavailable";
-    } else if (arrUsulanDospemLength === 1) {
-      return "Update partially confirm";
-    } else {
-      // return "Tambah Bimbingan";
-      return "Tentukan Dosen Pembimbing";
-    }
-  };
-
   if (Object?.keys(dataCookie)?.length) {
     if (
       type === "edit" &&
       dataCookie?.roles === 1 &&
-      state?.status_usulan !== "confirm"
+      state?.status_usulan !== "confirmed"
     ) {
       return (
         <BtnSidos
           loading={state?.isLoadingAdd}
-          disabled={state?.arrUsulanDospem?.length > 2}
+          disabled={state?.arrUsulanDospem?.length !== 2}
           position="center"
           type="primary"
           onClick={() => {
@@ -37,7 +25,7 @@ const BtnActionUsulan = () => {
             });
           }}
         >
-          {btnTextHandler()}
+          Tentukan Dosen Pembimbing
         </BtnSidos>
       );
     } else if (dataCookie?.roles === 2 && type !== "edit") {

@@ -8,13 +8,9 @@ import UploadSidos from "../../lib/src/components/FormSidos/fields/UploadSidos";
 import BtnSidos from "../../lib/src/components/BtnSidos";
 import LoadingSidos from "../../lib/src/components/LoadingSidos";
 import useFetch from "../../lib/src/helpers/useFetch";
-import {
-  forbiddenResponse,
-  responseError,
-  responseSuccess,
-  unAuthResponse,
-} from "../../lib/src/helpers/formatRespons";
+import { responseSuccess } from "../../lib/src/helpers/formatRespons";
 import { useNavigate } from "react-router-dom";
+import catchHandler from "../../lib/src/helpers/catchHandler";
 
 const UploadFileAddData = ({
   exampleFile,
@@ -100,18 +96,7 @@ const UploadFileAddData = ({
         }
       })
       ?.catch((e) => {
-        const err = responseError(e);
-        if (err?.status === 401) {
-          unAuthResponse({ messageApi, err });
-        } else if (err?.status === 403) {
-          forbiddenResponse({ err, navigate });
-        } else {
-          messageApi.open({
-            type: "error",
-            key: "errMsg",
-            content: err?.error,
-          });
-        }
+        catchHandler({ e, messageApi, navigate });
         setState((prev) => ({ ...prev, loading: true }));
       });
   };

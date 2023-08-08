@@ -2,6 +2,7 @@ import { Table } from "antd";
 import { useState } from "react";
 import { Fragment } from "react";
 import { useNavigate } from "react-router-dom";
+import FilterSemester from "../../components/FilterSemester";
 import TitlePage from "../../components/TitlePage";
 import jabatanList from "../../constants/jabatanList";
 import pendidikanList from "../../constants/pendidikanList";
@@ -28,6 +29,7 @@ const DosenList = () => {
   return (
     <Fragment>
       <TitlePage title="Data Dosen" addRoute="dosen_Add/input_manual" />
+      <FilterSemester payloadState={payload} setStatePayload={setPayload} />
       <TableSidos
         endpoint="getAllDosen"
         payload={payload}
@@ -74,13 +76,13 @@ const DosenList = () => {
         <Column
           title="Mahasiswa Mengusulkan"
           render={(record) => {
-            return record?.usulans?.length;
+            return record?.n_mhs_usulan;
           }}
         />
         <Column
           title="Mahasiswa Bimbingan"
           render={(record) => {
-            return record?.bimbingans?.length;
+            return record?.n_mhs_bimbingan;
           }}
         />
         <Column title="SKS" dataIndex="sks" />

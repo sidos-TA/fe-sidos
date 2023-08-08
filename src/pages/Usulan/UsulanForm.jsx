@@ -20,6 +20,7 @@ import BtnActionUsulan from "../../components/usulan/BtnActionUsulan";
 import { useCallback } from "react";
 import { useEffect } from "react";
 import { lazy } from "react";
+import catchHandler from "../../lib/src/helpers/catchHandler";
 
 const UsulanFormModalSimilaritasJudul = lazy(() =>
   import("../../components/usulan/UsulanFormModalSimilaritasJudul")
@@ -186,7 +187,6 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
         bidang: form?.getFieldValue("bidang"),
         jdl_from_dosen: form?.getFieldValue("jdl_from_dosen"),
         ...(type === "edit" && {
-          status_judul: form?.getFieldValue("status_judul"),
           tingkatan: state?.tingkatan,
         }),
         file_pra_proposal: form?.getFieldValue("file_pra_proposal"),
@@ -210,18 +210,7 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
         }
       })
       ?.catch((e) => {
-        const err = responseError(e);
-        if (err?.status === 401) {
-          unAuthResponse({ messageApi, err });
-        } else if (err?.status === 403) {
-          forbiddenResponse({ navigate, err });
-        } else {
-          messageApi.open({
-            type: "error",
-            key: "error_submit_usulan",
-            content: err?.error,
-          });
-        }
+        catchHandler({ e, messageApi, navigate });
         setState((prev) => ({ ...prev, isLoadingAdd: false }));
       });
   };

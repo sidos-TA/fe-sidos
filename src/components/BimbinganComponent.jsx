@@ -9,25 +9,29 @@ const BimbinganComponent = ({
   textNoData,
   arrDatasBimbingan,
   src,
+  propMainInfo,
+  badgeText,
+  propSubInfo,
+  propBody,
 }) => {
   return (
     <Fragment>
       {titleSection && <TitleSection title={titleSection} />}
-
       {arrDatasBimbingan?.length ? (
         <Row
           justify="space-evenly"
           align="middle"
           style={{ marginTop: 20, width: "100%" }}
         >
-          {arrDatasBimbingan?.map((dospem, idx) => {
+          {arrDatasBimbingan?.map((bimbing, idx) => {
             return (
               <Col key={idx}>
                 <AvatarSidos
-                  src={decodeBlob(dospem?.photo)}
-                  badgeText={`Dospem ${idx + 1}`}
-                  mainInfo={dospem?.name}
-                  subInfo={dospem?.jabatan}
+                  src={decodeBlob(bimbing?.photo)}
+                  badgeText={`${badgeText} ${idx + 1}`}
+                  mainInfo={bimbing?.[propMainInfo]}
+                  subInfo={bimbing?.[propSubInfo]}
+                  body={bimbing?.[propBody]}
                 />
               </Col>
             );

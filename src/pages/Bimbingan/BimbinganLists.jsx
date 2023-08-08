@@ -1,16 +1,23 @@
 import { Table } from "antd";
 import { useState } from "react";
 import { Fragment } from "react";
+import { useNavigate } from "react-router-dom";
+import FilterSemester from "../../components/FilterSemester";
 import TitlePage from "../../components/TitlePage";
 import statusJudul from "../../constants/statusJudul";
 import RadioSidos from "../../lib/src/components/FormSidos/fields/RadioSidos";
 import SelectSidos from "../../lib/src/components/FormSidos/fields/SelectSidos";
 import TableSidos from "../../lib/src/components/TableSidos/TableSidos";
+import TagSidos from "../../lib/src/components/TagSidos";
+import colorTagHandler from "../../lib/src/helpers/colorTagHandler";
+import decodeCookie from "../../lib/src/helpers/decodeCookie";
 
 const { Column } = Table;
 const BimbinganLists = () => {
-  const [payload, setPayload] = useState();
+  const [payload, setPayload] = useState({});
   let timeout;
+  const dataCookie = decodeCookie("token");
+  const navigate = useNavigate();
 
   const searchFilter = ({ key, value }) => {
     clearTimeout(timeout);
@@ -21,9 +28,19 @@ const BimbinganLists = () => {
       });
     }, 300);
   };
+
+  const goToDetailHandler = (no_bp) => {
+    if (dataCookie?.roles === 1) {
+      navigate(`bimbingan_Detail/${no_bp}`);
+    } else {
+      navigate("/");
+    }
+  };
+
   return (
     <Fragment>
       <TitlePage title="Data Bimbingan" />
+      <FilterSemester payloadState={payload} setStatePayload={setPayload} />
       <TableSidos
         endpoint="getBimbingan"
         payload={payload}
@@ -55,30 +72,98 @@ const BimbinganLists = () => {
         ]}
         expandable={{
           columnTitle: "Dosen Pembimbing",
-          columntWidth: 20,
-          expandedRowRender: (record) => {
+          columntWidth: 10,
+          expandedRowRender: (recordRow) => {
             return (
               <TableSidos
-                arrDatas={record?.dosen}
+                arrDatas={recordRow?.usulans}
                 pagination={false}
                 tableLayout="fixed"
+                onRow={() => {
+                  return {
+                    onClick: () => {
+                      goToDetailHandler(recordRow?.no_bp);
+                    },
+                  };
+                }}
               >
-                <Column title="Nama Dosen" dataIndex="name" />
+                <Column
+                  title="Nama Dosen"
+                  render={(record) => record?.dosen?.name}
+                />
+                <Column title="Nip" render={(record) => record?.dosen?.nip} />
               </TableSidos>
             );
           },
-          rowExpandable: (record) => record.dosen?.length,
+          rowExpandable: (record) => record.usulans?.length,
         }}
       >
-        <Column title="Nama Mahasiswa" dataIndex="name" />
-        <Column title="Judul" dataIndex="judul" />
-        <Column title="Bidang" dataIndex="bidang" />
-        <Column title="Prodi" render={(record) => record?.mh?.prodi} />
+        <Column
+          title="Nama Mahasiswa"
+          dataIndex="name"
+          onCell={(record) => {
+            return {
+              onClick: () => {
+                goToDetailHandler(record?.no_bp);
+              },
+            };
+          }}
+        />
+        <Column
+          title="Judul"
+          render={(record) => record?.usulans?.[0]?.bidang}
+          onCell={(record) => {
+            return {
+              onClick: () => {
+                goToDetailHandler(record?.no_bp);
+              },
+            };
+          }}
+        />
+        <Column
+          title="Bidang"
+          render={(record) => record?.usulans?.[0]?.bidang}
+          onCell={(record) => {
+            return {
+              onClick: () => {
+                goToDetailHandler(record?.no_bp);
+              },
+            };
+          }}
+        />
+        <Column
+          title="Prodi"
+          render={(record) => record?.prodi}
+          onCell={(record) => {
+            return {
+              onClick: () => {
+                goToDetailHandler(record?.no_bp);
+              },
+            };
+          }}
+        />
         <Column
           title="Status Judul"
-          render={(record) => {
-            return record?.mh?.status_judul;
+          onCell={(record) => {
+            return {
+              onClick: () => {
+                goToDetailHandler(record?.no_bp);
+              },
+            };
           }}
+          render={(record) => {
+            const judul = record?.usulans?.[0]?.status_judul;
+            const color = colorTagHandler(judul || "belum mengajukan");
+            return (
+              <TagSidos fontSize={14} padding={"4px 10px"} color={color}>
+                {judul || "belum mengajukan"}
+              </TagSidos>
+            );
+          }}
+        />
+        <Column
+          title="Keterangan"
+          render={(record) => record?.usulans?.[0]?.keterangan}
         />
       </TableSidos>
     </Fragment>

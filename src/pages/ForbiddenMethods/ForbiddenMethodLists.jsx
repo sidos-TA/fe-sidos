@@ -1,6 +1,7 @@
 import { Table } from "antd";
 import { Fragment, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import FilterSemester from "../../components/FilterSemester";
 import TitlePage from "../../components/TitlePage";
 import tingkatanProdiList from "../../constants/tingkatanProdiList";
 import InputSidos from "../../lib/src/components/FormSidos/fields/InputSidos";
@@ -33,17 +34,20 @@ const ForbiddenMethodLists = () => {
         })}
         title="Metode yang tidak diterima"
       />
+      <FilterSemester payloadState={payload} setStatePayload={setPayload} />
       <TableSidos
         payload={payload}
         tableLayout="fixed"
         endpoint="getforbidmethods"
-        onRow={(record) => {
-          return {
-            onClick: () => {
-              navigate(`forbidden_methods_Edit/${record?.id}`);
-            },
-          };
-        }}
+        {...(dataCookie?.roles === 1 && {
+          onRow: (record) => {
+            return {
+              onClick: () => {
+                navigate(`forbidden_methods_Edit/${record?.id}`);
+              },
+            };
+          },
+        })}
         customFilter={[
           <InputSidos
             key="methodName"
@@ -92,6 +96,15 @@ const ForbiddenMethodLists = () => {
           }}
         />
         <Column title="Tingkatan" dataIndex="tingkatan" />
+        <Column title="Semester" dataIndex="semester" />
+        <Column
+          title="Tahun"
+          dataIndex="tahun"
+          render={(record) => {
+            const yearNow = new Date(record)?.getFullYear();
+            return yearNow;
+          }}
+        />
       </TableSidos>
     </Fragment>
   );

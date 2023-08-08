@@ -11,6 +11,10 @@ const BimbinganRoute = [
     path: "/bimbingan/bimbingan_Add",
     Component: lazy(() => import("../pages/Bimbingan/BimbinganAdd")),
   },
+  dataCookie?.roles === 1 && {
+    path: "/bimbingan/bimbingan_Detail/:no_bp",
+    Component: lazy(() => import("../pages/Bimbingan/BimbinganInfo")),
+  },
 ];
 
 export default BimbinganRoute;

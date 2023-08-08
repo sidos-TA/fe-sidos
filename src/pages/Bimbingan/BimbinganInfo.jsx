@@ -1,6 +1,6 @@
 import { Divider, Form, Space } from "antd";
 import { Fragment, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import BimbinganComponent from "../../components/BimbinganComponent";
 import TitlePage from "../../components/TitlePage";
 import Field from "../../lib/src/components/FormSidos/fields/Field";
@@ -11,10 +11,9 @@ import LabelSidos from "../../lib/src/components/FormSidos/fields/LabelSidos";
 import TagSidos from "../../lib/src/components/TagSidos";
 import colorTagHandler from "../../lib/src/helpers/colorTagHandler";
 
-const KeputusanEdit = () => {
+const BimbinganInfo = () => {
   const [FormKeputusan] = Form.useForm();
   const { no_bp } = useParams();
-  const navigate = useNavigate();
 
   const [state, setState] = useState({
     arrDatasDospem: [],
@@ -37,36 +36,24 @@ const KeputusanEdit = () => {
 
   return (
     <Fragment>
-      <TitlePage title="Detail Keputusan" backRoute="/keputusan" />
-      {dataCookie?.roles === 2 && (
-        <LabelSidos
-          position="center"
-          style={{ textAlign: "center" }}
-          label="Status Judul : "
-        >
-          <TagSidos color={colorTagHandler(state?.statusJudul)}>
-            {state?.statusJudul}
-          </TagSidos>
-        </LabelSidos>
-      )}
+      <TitlePage title="Detail Bimbingan" backRoute="/bimbingan" />
+
+      <LabelSidos
+        position="center"
+        style={{ textAlign: "center" }}
+        label="Status Judul : "
+      >
+        <TagSidos color={colorTagHandler(state?.statusJudul)}>
+          {state?.statusJudul}
+        </TagSidos>
+      </LabelSidos>
+
       <FormSidos
         form={FormKeputusan}
-        payloadSubmit={{
-          no_bp: noBpVal(),
-          nip: state?.arrDatasDospem?.map((data) => data?.nip),
-          tingkatan: state?.tingkatan,
-          ...FormKeputusan?.getFieldsValue(),
-        }}
         payloadFetch={{
           no_bp: noBpVal(),
-          ...(dataCookie?.roles === 1 && {
-            status_judul: "usulan",
-          }),
         }}
         endpoint="getKeputusanByNoBp"
-        {...(dataCookie?.roles === 1 && {
-          submitEndpoint: "addBimbingan",
-        })}
         customFetch={(formData) => {
           FormKeputusan?.setFieldsValue({
             jdl_from_dosen: formData?.jdl_from_dosen,
@@ -79,17 +66,9 @@ const KeputusanEdit = () => {
             ...prev,
             arrDatasDospem,
             keterangan: formData?.keterangan,
-            ...(dataCookie?.roles === 2 &&
-              formData?.status_judul && {
-                statusJudul: formData?.status_judul,
-              }),
+            statusJudul: formData?.status_judul,
           }));
         }}
-        {...(dataCookie?.roles === 1 && {
-          afterMessageActionClose: () => {
-            navigate("/bimbingan");
-          },
-        })}
       >
         <Space direction="vertical">
           <LabelSidos name="judul" label="Judul">
@@ -103,7 +82,6 @@ const KeputusanEdit = () => {
               "Tidak dari dosen manapun"}
           </LabelSidos>
         </Space>
-
         <Divider orientation="center">Dosen Pembimbing</Divider>
         <BimbinganComponent
           arrDatasBimbingan={state?.arrDatasDospem}
@@ -115,49 +93,9 @@ const KeputusanEdit = () => {
           textNoData="Belum ada dosen pembimbing"
         />
 
-        {dataCookie?.roles === 1 && (
-          <Fragment>
-            <Field
-              type="radio"
-              required
-              label="Status Judul"
-              name="status_judul"
-              onChange={(val) => {
-                setState((prev) => ({ ...prev, statusJudul: val }));
-              }}
-              listOptions={[
-                {
-                  label: "Terima",
-                  value: "terima",
-                },
-                {
-                  label: "Tolak",
-                  value: "tolak",
-                },
-                {
-                  label: "Revisi",
-                  value: "revisi",
-                },
-              ]}
-            />
-
-            {state?.statusJudul && (
-              <Field
-                {...((state?.statusJudul === "tolak" ||
-                  state?.statusJudul === "revisi") && { required: true })}
-                type="text"
-                name="keterangan"
-                label={`Keterangan - ${state?.statusJudul}`}
-              />
-            )}
-          </Fragment>
-        )}
-
-        {dataCookie?.roles === 2 && (
-          <LabelSidos label="Keterangan : ">{state?.keterangan}</LabelSidos>
-        )}
+        <LabelSidos label="Keterangan : ">{state?.keterangan}</LabelSidos>
       </FormSidos>
     </Fragment>
   );
 };
-export default KeputusanEdit;
+export default BimbinganInfo;

@@ -3,7 +3,7 @@ import UsulanForm from "./UsulanForm";
 const UsulanEdit = () => {
   return (
     <UsulanForm
-      submitEndpoint="addBimbingan"
+      submitEndpoint="addKeputusan"
       titlePage="Detail Usulan"
       type="edit"
     />

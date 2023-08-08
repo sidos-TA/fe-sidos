@@ -29,6 +29,19 @@ const DosenAddGetFromLink = () => {
     }));
   };
 
+  const endPointLinkHandler = () => {
+    const linkVal = FormScrape?.getFieldValue("link");
+    if (linkVal) {
+      const url = new URL(linkVal);
+      if (url?.hostname.includes("sinta.kemdikbud")) {
+        return "scrapeSINTA";
+      } else {
+        return "scrapeGS";
+      }
+    }
+    return "";
+  };
+
   return (
     <DosenAddGetFromLinkContext.Provider
       value={{
@@ -44,6 +57,10 @@ const DosenAddGetFromLink = () => {
         {...(state?.isShowPreviewScrape && {
           submitEndpoint: "addDataDosen",
         })}
+        beforeSubmit={() => ({
+          ...FormScrape?.getFieldsValue(),
+          linkDataPenelitian: FormScrape?.getFieldValue("link"),
+        })}
         BtnSubmitProps={{
           // loading: state?.isLoadingBtnScrape,
           disabled: !FormScrape?.getFieldValue("penelitian")?.length,
@@ -55,14 +72,30 @@ const DosenAddGetFromLink = () => {
         <DosenScrapeInput
           label="Masukkan NIP"
           name="nip"
+          payload={{
+            nip: FormScrape?.getFieldValue("nip"),
+          }}
           endpoint="scrapeSIPEG"
           scrapeType="Sipeg"
         />
         <DosenScrapeInput
           label="Masukkan Link Google Scholar"
-          name="gs_url"
-          endpoint="scrapeGS"
+          // name={
+          //   endPointLinkHandler()?.includes("scrapeSINTA")
+          //     ? "sinta_url"
+          //     : "gs_url"
+          // }
+          name="link"
+          payload={{
+            link: FormScrape?.getFieldValue("link"),
+          }}
+          endpoint={endPointLinkHandler()}
           scrapeType="GS"
+          onChange={(val) => {
+            FormScrape?.setFieldsValue({
+              link: val,
+            });
+          }}
         />
 
         {state?.isShowPreviewScrape ? (

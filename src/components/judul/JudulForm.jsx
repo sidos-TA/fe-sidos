@@ -28,6 +28,9 @@ const JudulForm = ({ submitEndpoint, endpoint, deleteEndpoint, id }) => {
             id,
           },
         })}
+        afterMessageActionClose={() => {
+          navigate("/judul");
+        }}
         customFetch={(formData) => {
           if (formData === null) {
             navigate("/judul");
