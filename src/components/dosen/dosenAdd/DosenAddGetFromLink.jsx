@@ -39,7 +39,6 @@ const DosenAddGetFromLink = () => {
         return "scrapeGS";
       }
     }
-    return "";
   };
 
   return (
@@ -62,7 +61,6 @@ const DosenAddGetFromLink = () => {
           linkDataPenelitian: FormScrape?.getFieldValue("link"),
         })}
         BtnSubmitProps={{
-          // loading: state?.isLoadingBtnScrape,
           disabled: !FormScrape?.getFieldValue("penelitian")?.length,
         }}
         afterMessageActionClose={() => {
@@ -72,23 +70,14 @@ const DosenAddGetFromLink = () => {
         <DosenScrapeInput
           label="Masukkan NIP"
           name="nip"
-          payload={{
-            nip: FormScrape?.getFieldValue("nip"),
-          }}
+          payloadType="nip"
           endpoint="scrapeSIPEG"
           scrapeType="Sipeg"
         />
         <DosenScrapeInput
           label="Masukkan Link Google Scholar"
-          // name={
-          //   endPointLinkHandler()?.includes("scrapeSINTA")
-          //     ? "sinta_url"
-          //     : "gs_url"
-          // }
           name="link"
-          payload={{
-            link: FormScrape?.getFieldValue("link"),
-          }}
+          payloadType="link"
           endpoint={endPointLinkHandler()}
           scrapeType="GS"
           onChange={(val) => {
@@ -113,4 +102,5 @@ const DosenAddGetFromLink = () => {
     </DosenAddGetFromLinkContext.Provider>
   );
 };
+
 export default DosenAddGetFromLink;

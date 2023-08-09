@@ -10,7 +10,7 @@ import useFetch from "../../../lib/src/helpers/useFetch";
 const DosenScrapeInput = ({
   label,
   name,
-  payload,
+  payloadType,
   endpoint,
   scrapeType,
   ...props
@@ -19,16 +19,41 @@ const DosenScrapeInput = ({
     useDosenAddGetFromLinkContext();
 
   const navigate = useNavigate();
-  let timeout;
 
   const fetch = useFetch();
   const [messageApi, contextHolder] = message.useMessage();
 
+  const endPointLinkHandler = () => {
+    const linkVal = FormScrape?.getFieldValue("link");
+    const nipLinkVal = FormScrape?.getFieldValue("nip");
+
+    if (payloadType === "link" && linkVal) {
+      const url = new URL(linkVal);
+      if (url?.hostname.includes("sinta.kemdikbud")) {
+        return "scrapeSINTA";
+      } else {
+        return "scrapeGS";
+      }
+    } else if (payloadType === "nip" && nipLinkVal) {
+      return "scrapeSIPEG";
+    } else {
+      messageApi?.open({
+        type: "error",
+        content: "Field masih kosong, mohon diisi",
+      });
+      return "";
+    }
+  };
+
   const scrapeHandler = () => {
     loadingScrapeStateHandler({ scrapeType, loadingValue: true });
+
+    console.log("endpoint : ", endpoint, FormScrape?.getFieldsValue());
     fetch({
-      endpoint,
-      payload,
+      endpoint: endPointLinkHandler(),
+      payload: {
+        [payloadType]: FormScrape?.getFieldValue(payloadType),
+      },
     })
       ?.then((response) => {
         const res = responseSuccess(response);
@@ -63,10 +88,7 @@ const DosenScrapeInput = ({
             position="center"
             type="dashed"
             onClick={() => {
-              clearTimeout(timeout);
-              timeout = setTimeout(() => {
-                scrapeHandler();
-              }, 300);
+              scrapeHandler();
             }}
           >
             Get Data
