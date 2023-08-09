@@ -4,7 +4,6 @@ import { Fragment, useEffect, useState } from "react";
 import { useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import semesterList from "../constants/semesterList";
-import Field from "../lib/src/components/FormSidos/fields/Field";
 import SelectSidos from "../lib/src/components/FormSidos/fields/SelectSidos";
 import catchHandler from "../lib/src/helpers/catchHandler";
 import { responseSuccess } from "../lib/src/helpers/formatRespons";
