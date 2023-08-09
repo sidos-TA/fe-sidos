@@ -48,7 +48,6 @@ const DosenScrapeInput = ({
   const scrapeHandler = () => {
     loadingScrapeStateHandler({ scrapeType, loadingValue: true });
 
-    console.log("endpoint : ", endpoint, FormScrape?.getFieldsValue());
     fetch({
       endpoint: endPointLinkHandler(),
       payload: {
