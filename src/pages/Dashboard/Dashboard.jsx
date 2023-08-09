@@ -21,7 +21,6 @@ const Dashboard = () => {
   const dataCookie = decodeCookie("token");
 
   const [payload, setPayload] = useState({});
-  console.log("dep : ", import.meta.env);
 
   return (
     <Space direction="vertical" size={50} style={{ width: "100%" }}>
