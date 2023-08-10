@@ -1,8 +1,11 @@
-import { Col, message, Row } from "antd";
+import { InfoOutlined } from "@ant-design/icons";
+import { Col, message, Modal, Row, Typography } from "antd";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDosenAddGetFromLinkContext } from "../../../context/Dosen/DosenAdd/DosenAddGetFromLinkContext";
 import BtnSidos from "../../../lib/src/components/BtnSidos";
 import Field from "../../../lib/src/components/FormSidos/fields/Field";
+import SmallTextSidos from "../../../lib/src/components/SmallTextSidos";
 import catchHandler from "../../../lib/src/helpers/catchHandler";
 import { responseSuccess } from "../../../lib/src/helpers/formatRespons";
 import useFetch from "../../../lib/src/helpers/useFetch";
@@ -11,17 +14,20 @@ const DosenScrapeInput = ({
   label,
   name,
   payloadType,
-  endpoint,
   scrapeType,
   ...props
 }) => {
   const { FormScrape, loadingScrapeStateHandler, state, setState } =
     useDosenAddGetFromLinkContext();
 
+  const [visibleModal, setVisibleModal] = useState(false);
+
   const navigate = useNavigate();
 
   const fetch = useFetch();
   const [messageApi, contextHolder] = message.useMessage();
+
+  const toggleVisibleModal = (isVisible) => setVisibleModal(isVisible);
 
   const endPointLinkHandler = () => {
     const linkVal = FormScrape?.getFieldValue("link");
@@ -29,10 +35,17 @@ const DosenScrapeInput = ({
 
     if (payloadType === "link" && linkVal) {
       const url = new URL(linkVal);
-      if (url?.hostname.includes("sinta.kemdikbud")) {
-        return "scrapeSINTA";
+      if (url) {
+        if (url?.hostname.includes("sinta.kemdikbud")) {
+          return "scrapeSINTA";
+        } else {
+          return "scrapeGS";
+        }
       } else {
-        return "scrapeGS";
+        messageApi?.open({
+          type: "error",
+          content: "Mohon direfresh, terdapat kesalahan",
+        });
       }
     } else if (payloadType === "nip" && nipLinkVal) {
       return "scrapeSIPEG";
@@ -77,9 +90,19 @@ const DosenScrapeInput = ({
     <>
       {contextHolder}
       <Row justify="center" align="middle" gutter={8} style={{ width: "100%" }}>
-        <Col span={12} style={{ width: "100%" }}>
+        <Col span={payloadType === "link" ? 10 : 12} style={{ width: "100%" }}>
           <Field type="text" label={label} name={name} {...props} />
         </Col>
+
+        {payloadType === "link" && (
+          <Col span={2}>
+            <BtnSidos
+              icon={<InfoOutlined />}
+              shape="circle"
+              onClick={() => toggleVisibleModal(true)}
+            />
+          </Col>
+        )}
         <Col span={12}>
           <BtnSidos
             loading={state?.isLoadingBtnScrape?.[scrapeType]}
@@ -94,6 +117,37 @@ const DosenScrapeInput = ({
           </BtnSidos>
         </Col>
       </Row>
+
+      <Modal
+        title="Petunjuk link scrape"
+        open={visibleModal}
+        onCancel={() => toggleVisibleModal(false)}
+      >
+        <Row>
+          <Col span={24}>
+            <Typography.Title level={4}>
+              1. Link Google Scholar
+            </Typography.Title>
+            <SmallTextSidos>Contoh : </SmallTextSidos>
+            <Typography.Link
+              href="https://scholar.google.co.id/citations?user=sBMUB_oAAAAJ&hl=en"
+              target="_blank"
+            >
+              https://scholar.google.co.id/citations?user=sBMUB_oAAAAJ&hl=en
+            </Typography.Link>
+          </Col>
+          <Col span={24}>
+            <Typography.Title level={4}>2. Link SINTA</Typography.Title>
+            <SmallTextSidos>Contoh : </SmallTextSidos>
+            <Typography.Link
+              href="https://sinta.kemdikbud.go.id/authors/profile/5975873"
+              target="_blank"
+            >
+              https://sinta.kemdikbud.go.id/authors/profile/5975873
+            </Typography.Link>
+          </Col>
+        </Row>
+      </Modal>
     </>
   );
 };

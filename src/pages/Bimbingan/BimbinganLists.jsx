@@ -29,9 +29,9 @@ const BimbinganLists = () => {
     }, 300);
   };
 
-  const goToDetailHandler = (no_bp) => {
+  const goToDetailHandler = (id_usulan) => {
     if (dataCookie?.roles === 1) {
-      navigate(`bimbingan_Detail/${no_bp}`);
+      navigate(`bimbingan_Detail/${id_usulan}`);
     } else {
       navigate("/");
     }
@@ -82,7 +82,7 @@ const BimbinganLists = () => {
                 onRow={() => {
                   return {
                     onClick: () => {
-                      goToDetailHandler(recordRow?.no_bp);
+                      goToDetailHandler(recordRow?.id_usulan);
                     },
                   };
                 }}
@@ -100,22 +100,23 @@ const BimbinganLists = () => {
       >
         <Column
           title="Nama Mahasiswa"
-          dataIndex="name"
+          // dataIndex="name"
+          render={(record) => record?.name}
           onCell={(record) => {
             return {
               onClick: () => {
-                goToDetailHandler(record?.no_bp);
+                goToDetailHandler(record?.usulans?.[0]?.id_usulan);
               },
             };
           }}
         />
         <Column
           title="Judul"
-          render={(record) => record?.usulans?.[0]?.bidang}
+          render={(record) => record?.usulans?.[0]?.judul}
           onCell={(record) => {
             return {
               onClick: () => {
-                goToDetailHandler(record?.no_bp);
+                goToDetailHandler(record?.usulans?.[0]?.id_usulan);
               },
             };
           }}
@@ -126,7 +127,7 @@ const BimbinganLists = () => {
           onCell={(record) => {
             return {
               onClick: () => {
-                goToDetailHandler(record?.no_bp);
+                goToDetailHandler(record?.usulans?.[0]?.id_usulan);
               },
             };
           }}
@@ -137,7 +138,7 @@ const BimbinganLists = () => {
           onCell={(record) => {
             return {
               onClick: () => {
-                goToDetailHandler(record?.no_bp);
+                goToDetailHandler(record?.usulans?.[0]?.id_usulan);
               },
             };
           }}
@@ -147,7 +148,7 @@ const BimbinganLists = () => {
           onCell={(record) => {
             return {
               onClick: () => {
-                goToDetailHandler(record?.no_bp);
+                goToDetailHandler(record?.usulans?.[0]?.id_usulan);
               },
             };
           }}

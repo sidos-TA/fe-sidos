@@ -12,14 +12,14 @@ const UsulanRoute = [
     path: "/usulan/usulan_Add",
     Component: lazy(() => import("../pages/Usulan/UsulanAdd")),
   },
-  dataCookie()?.roles === 1 && {
-    path: "/usulan/usulan_edit/:no_bp",
+  Object.keys(dataCookie())?.length && {
+    path: "/usulan/usulan_edit/:id_usulan",
     Component: lazy(() => import("../pages/Usulan/UsulanEdit")),
   },
-  {
-    path: "/usulan/usulan_detail",
-    Component: lazy(() => import("../pages/Usulan/UsulanEdit")),
-  },
+  // {
+  //   path: "/usulan/usulan_detail",
+  //   Component: lazy(() => import("../pages/Usulan/UsulanEdit")),
+  // },
 ];
 
 export default UsulanRoute;

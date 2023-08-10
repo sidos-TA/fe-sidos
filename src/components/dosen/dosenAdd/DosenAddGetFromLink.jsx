@@ -75,7 +75,7 @@ const DosenAddGetFromLink = () => {
           scrapeType="Sipeg"
         />
         <DosenScrapeInput
-          label="Masukkan Link Google Scholar"
+          label="Masukkan Link Google Scholar / SINTA"
           name="link"
           payloadType="link"
           endpoint={endPointLinkHandler()}

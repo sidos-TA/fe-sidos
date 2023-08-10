@@ -36,9 +36,7 @@ const KeputusanLists = () => {
           return {
             onClick: () => {
               if (dataCookie?.roles === 1) {
-                navigate(`keputusan_Edit/${record?.no_bp}`);
-              } else if (dataCookie?.roles === 2) {
-                navigate(`/keputusan/keputusan_Detail`);
+                navigate(`keputusan_Edit/${record?.usulans?.[0]?.id_usulan}`);
               } else {
                 navigate("/");
               }

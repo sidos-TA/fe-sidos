@@ -33,6 +33,7 @@ const MahasiswaDetailDospemList = () => {
         propMainInfo="name"
         propSubInfo="pendidikan"
         propBody="jabatan"
+        isUseTabs
       />
       <Divider orientation="center">Dosen yang diusulkan</Divider>
       <BimbinganComponent
@@ -43,6 +44,7 @@ const MahasiswaDetailDospemList = () => {
         propMainInfo="name"
         propSubInfo="pendidikan"
         propBody="jabatan"
+        isUseTabs
       />
     </Suspense>
   );

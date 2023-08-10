@@ -12,7 +12,7 @@ const BimbinganRoute = [
     Component: lazy(() => import("../pages/Bimbingan/BimbinganAdd")),
   },
   dataCookie?.roles === 1 && {
-    path: "/bimbingan/bimbingan_Detail/:no_bp",
+    path: "/bimbingan/bimbingan_Detail/:id_usulan",
     Component: lazy(() => import("../pages/Bimbingan/BimbinganInfo")),
   },
 ];

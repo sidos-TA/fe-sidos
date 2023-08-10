@@ -34,7 +34,8 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
   const navigate = useNavigate();
   const fetch = useFetch();
   const { pathname } = useLocation();
-  const { no_bp } = useParams();
+  const params = useParams();
+
   const dataCookie = decodeCookie("token");
 
   const [messageApi, contextHolder] = message.useMessage();
@@ -58,8 +59,8 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
     },
     arrSimilarJudul: [],
     isLoadingGetSimilar: false,
+    no_bp: "",
   });
-  const params = useParams();
 
   const getSimilarJudul = () => {
     setState((prev) => ({ ...prev, isLoadingGetSimilar: true }));
@@ -182,12 +183,13 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
           status_usulan: state?.status_usulan,
         }),
         nip: state?.arrUsulanDospem,
-        no_bp: no_bp && type === "edit" ? no_bp : dataCookie?.no_bp,
+        no_bp: type === "edit" ? state?.no_bp : dataCookie?.no_bp,
         judul: form?.getFieldValue("judul"),
         bidang: form?.getFieldValue("bidang"),
         jdl_from_dosen: form?.getFieldValue("jdl_from_dosen"),
         ...(type === "edit" && {
           tingkatan: state?.tingkatan,
+          id_usulan: params?.id_usulan,
         }),
         file_pra_proposal: form?.getFieldValue("file_pra_proposal"),
       },
@@ -228,6 +230,7 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
         is_usul: formData?.is_usul,
         status_usulan: formData?.statusUsulan,
         tingkatan: formData?.tingkatan,
+        no_bp: formData?.no_bp,
       }));
 
       form.setFieldsValue({
@@ -298,6 +301,17 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
     }
   }, []);
 
+  useEffect(() => {
+    if (
+      type === "edit" &&
+      state?.no_bp &&
+      dataCookie?.roles === 2 &&
+      dataCookie?.no_bp !== state?.no_bp
+    ) {
+      navigate("/unauth");
+    }
+  }, [state?.no_bp]);
+
   return (
     <>
       {contextHolder}
@@ -331,12 +345,10 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
           setState={setState}
           {...(type === "edit" && {
             customFetch: customFetchHandler,
-            endpoint: "getUsulanByNoBp",
-            payloadSubmit: {
-              no_bp: params?.no_bp || dataCookie?.no_bp,
-            },
+            endpoint: "getDetailUsulan",
+
             payloadFetch: {
-              no_bp: params?.no_bp || dataCookie?.no_bp,
+              id_usulan: params?.id_usulan,
             },
           })}
         />

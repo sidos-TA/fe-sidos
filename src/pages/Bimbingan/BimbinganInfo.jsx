@@ -3,17 +3,15 @@ import { Fragment, useState } from "react";
 import { useParams } from "react-router-dom";
 import BimbinganComponent from "../../components/BimbinganComponent";
 import TitlePage from "../../components/TitlePage";
-import Field from "../../lib/src/components/FormSidos/fields/Field";
 import FormSidos from "../../lib/src/components/FormSidos/form/FormSidos";
 import noDospemIllustrate from "../../assets/noDospem.svg";
-import decodeCookie from "../../lib/src/helpers/decodeCookie";
 import LabelSidos from "../../lib/src/components/FormSidos/fields/LabelSidos";
 import TagSidos from "../../lib/src/components/TagSidos";
 import colorTagHandler from "../../lib/src/helpers/colorTagHandler";
 
 const BimbinganInfo = () => {
   const [FormKeputusan] = Form.useForm();
-  const { no_bp } = useParams();
+  const params = useParams();
 
   const [state, setState] = useState({
     arrDatasDospem: [],
@@ -21,18 +19,6 @@ const BimbinganInfo = () => {
     statusJudul: "",
     keterangan: "",
   });
-
-  const dataCookie = decodeCookie("token");
-
-  const noBpVal = () => {
-    if (dataCookie?.roles === 2) {
-      return dataCookie?.no_bp;
-    } else if (no_bp) {
-      return no_bp;
-    } else {
-      return "";
-    }
-  };
 
   return (
     <Fragment>
@@ -51,9 +37,9 @@ const BimbinganInfo = () => {
       <FormSidos
         form={FormKeputusan}
         payloadFetch={{
-          no_bp: noBpVal(),
+          id_usulan: params?.id_usulan,
         }}
-        endpoint="getKeputusanByNoBp"
+        endpoint="getDetailKeputusan"
         customFetch={(formData) => {
           FormKeputusan?.setFieldsValue({
             jdl_from_dosen: formData?.jdl_from_dosen,
