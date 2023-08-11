@@ -2,7 +2,6 @@ import { Table } from "antd";
 import { useState } from "react";
 import { Fragment } from "react";
 import { useNavigate } from "react-router-dom";
-import FilterSemester from "../../components/FilterSemester";
 import TitlePage from "../../components/TitlePage";
 import jabatanList from "../../constants/jabatanList";
 import pendidikanList from "../../constants/pendidikanList";
@@ -29,8 +28,12 @@ const DosenList = () => {
   return (
     <Fragment>
       <TitlePage title="Data Dosen" addRoute="dosen_Add/input_manual" />
-      <FilterSemester payloadState={payload} setStatePayload={setPayload} />
       <TableSidos
+        useFilterSemester
+        excelOptions={{
+          endpoint: "download_dosen",
+          fileName: "Data Dosen",
+        }}
         endpoint="getAllDosen"
         payload={payload}
         onRow={(record) => {

@@ -88,6 +88,9 @@ const UsulanLists = () => {
         <TableSidos
           arrDatas={arrDataUsulans}
           tableLayout="fixed"
+          excelOptions={{
+            arrColumnUsed: [],
+          }}
           customFilter={[
             <SelectSidos
               key="bidang"
