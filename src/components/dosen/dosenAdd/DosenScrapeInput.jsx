@@ -1,5 +1,5 @@
 import { InfoOutlined } from "@ant-design/icons";
-import { Col, message, Modal, Row, Typography } from "antd";
+import { Button, Col, message, Modal, Row, Typography } from "antd";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDosenAddGetFromLinkContext } from "../../../context/Dosen/DosenAdd/DosenAddGetFromLinkContext";
@@ -96,7 +96,7 @@ const DosenScrapeInput = ({
 
         {payloadType === "link" && (
           <Col span={2}>
-            <BtnSidos
+            <Button
               icon={<InfoOutlined />}
               shape="circle"
               onClick={() => toggleVisibleModal(true)}
