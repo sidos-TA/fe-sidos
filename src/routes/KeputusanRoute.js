@@ -9,14 +9,14 @@ const KeputusanRoute = [
     Component: lazy(() => import("../pages/Keputusan")),
   },
 
-  dataCookie?.roles === 1 && {
-    path: "/keputusan/keputusan_Edit/:no_bp",
+  Object.keys(dataCookie)?.length && {
+    path: "/keputusan/keputusan_Edit/:id_usulan",
     Component: lazy(() => import("../pages/Keputusan/KeputusanEdit")),
   },
-  dataCookie?.roles === 2 && {
-    path: "/keputusan/keputusan_Detail",
-    Component: lazy(() => import("../pages/Keputusan/KeputusanEdit")),
-  },
+  // dataCookie?.roles === 2 && {
+  //   path: "/keputusan/keputusan_Detail",
+  //   Component: lazy(() => import("../pages/Keputusan/KeputusanEdit")),
+  // },
 ];
 
 export default KeputusanRoute;

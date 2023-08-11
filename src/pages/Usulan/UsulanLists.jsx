@@ -9,10 +9,7 @@ import LoadingSidos from "../../lib/src/components/LoadingSidos";
 import TableSidos from "../../lib/src/components/TableSidos";
 import catchHandler from "../../lib/src/helpers/catchHandler";
 import decodeCookie from "../../lib/src/helpers/decodeCookie";
-import {
-  responseError,
-  responseSuccess,
-} from "../../lib/src/helpers/formatRespons";
+import { responseSuccess } from "../../lib/src/helpers/formatRespons";
 import useFetch from "../../lib/src/helpers/useFetch";
 
 const { Column } = Table;
@@ -64,6 +61,10 @@ const UsulanLists = () => {
     }, 300);
   };
 
+  const goDetailHandler = (record) => {
+    navigate(`usulan_edit/${record?.id_usulan}`);
+  };
+
   useEffect(() => {
     fetchDatas();
   }, [JSON.stringify(payload)]);
@@ -87,6 +88,9 @@ const UsulanLists = () => {
         <TableSidos
           arrDatas={arrDataUsulans}
           tableLayout="fixed"
+          excelOptions={{
+            arrColumnUsed: [],
+          }}
           customFilter={[
             <SelectSidos
               key="bidang"
@@ -106,13 +110,7 @@ const UsulanLists = () => {
             onCell={(record) => {
               return {
                 onClick: () => {
-                  navigate(
-                    `${
-                      dataCookie?.roles === 2
-                        ? `/usulan/usulan_detail`
-                        : `usulan_edit/${record?.no_bp}`
-                    }`
-                  );
+                  goDetailHandler(record);
                 },
               };
             }}
@@ -125,13 +123,7 @@ const UsulanLists = () => {
             onCell={(record) => {
               return {
                 onClick: () => {
-                  navigate(
-                    `${
-                      dataCookie?.roles === 2
-                        ? `/usulan/usulan_detail`
-                        : `usulan_edit/${record?.no_bp}`
-                    }`
-                  );
+                  goDetailHandler(record);
                 },
               };
             }}
@@ -144,13 +136,7 @@ const UsulanLists = () => {
             onCell={(record) => {
               return {
                 onClick: () => {
-                  navigate(
-                    `${
-                      dataCookie?.roles === 2
-                        ? `/usulan/usulan_detail`
-                        : `usulan_edit/${record?.no_bp}`
-                    }`
-                  );
+                  goDetailHandler(record);
                 },
               };
             }}
@@ -163,13 +149,7 @@ const UsulanLists = () => {
             onCell={(record) => {
               return {
                 onClick: () => {
-                  navigate(
-                    `${
-                      dataCookie?.roles === 2
-                        ? `/usulan/usulan_detail`
-                        : `usulan_edit/${record?.no_bp}`
-                    }`
-                  );
+                  goDetailHandler(record);
                 },
               };
             }}
@@ -180,13 +160,7 @@ const UsulanLists = () => {
             onCell={(record) => {
               return {
                 onClick: () => {
-                  navigate(
-                    `${
-                      dataCookie?.roles === 2
-                        ? `/usulan/usulan_detail`
-                        : `usulan_edit/${record?.no_bp}`
-                    }`
-                  );
+                  goDetailHandler(record);
                 },
               };
             }}

@@ -29,9 +29,9 @@ const BimbinganLists = () => {
     }, 300);
   };
 
-  const goToDetailHandler = (no_bp) => {
+  const goToDetailHandler = (id_usulan) => {
     if (dataCookie?.roles === 1) {
-      navigate(`bimbingan_Detail/${no_bp}`);
+      navigate(`bimbingan_Detail/${id_usulan}`);
     } else {
       navigate("/");
     }
@@ -44,6 +44,10 @@ const BimbinganLists = () => {
       <TableSidos
         endpoint="getBimbingan"
         payload={payload}
+        excelOptions={{
+          endpoint: "download_bimbingan",
+          fileName: "Data Bimbingan",
+        }}
         customFilter={[
           <SelectSidos
             key="bidang"
@@ -70,89 +74,23 @@ const BimbinganLists = () => {
             listOptions={statusJudul}
           />,
         ]}
-        expandable={{
-          columnTitle: "Dosen Pembimbing",
-          columntWidth: 10,
-          expandedRowRender: (recordRow) => {
-            return (
-              <TableSidos
-                arrDatas={recordRow?.usulans}
-                pagination={false}
-                tableLayout="fixed"
-                onRow={() => {
-                  return {
-                    onClick: () => {
-                      goToDetailHandler(recordRow?.no_bp);
-                    },
-                  };
-                }}
-              >
-                <Column
-                  title="Nama Dosen"
-                  render={(record) => record?.dosen?.name}
-                />
-                <Column title="Nip" render={(record) => record?.dosen?.nip} />
-              </TableSidos>
-            );
-          },
-          rowExpandable: (record) => record.usulans?.length,
+        onRow={(record) => {
+          return {
+            onClick: () => {
+              goToDetailHandler(record?.usulans?.[0]?.id_usulan);
+            },
+          };
         }}
       >
-        <Column
-          title="Nama Mahasiswa"
-          dataIndex="name"
-          onCell={(record) => {
-            return {
-              onClick: () => {
-                goToDetailHandler(record?.no_bp);
-              },
-            };
-          }}
-        />
-        <Column
-          title="Judul"
-          render={(record) => record?.usulans?.[0]?.bidang}
-          onCell={(record) => {
-            return {
-              onClick: () => {
-                goToDetailHandler(record?.no_bp);
-              },
-            };
-          }}
-        />
-        <Column
-          title="Bidang"
-          render={(record) => record?.usulans?.[0]?.bidang}
-          onCell={(record) => {
-            return {
-              onClick: () => {
-                goToDetailHandler(record?.no_bp);
-              },
-            };
-          }}
-        />
-        <Column
-          title="Prodi"
-          render={(record) => record?.prodi}
-          onCell={(record) => {
-            return {
-              onClick: () => {
-                goToDetailHandler(record?.no_bp);
-              },
-            };
-          }}
-        />
+        <Column title="Nama Mahasiswa" render={(record) => record?.name} />
+        <Column title="Judul" dataIndex="judul" />
+        <Column title="Bidang" dataIndex="bidang" />
+        <Column title="Prodi" dataIndex="bidang" />
         <Column
           title="Status Judul"
-          onCell={(record) => {
-            return {
-              onClick: () => {
-                goToDetailHandler(record?.no_bp);
-              },
-            };
-          }}
-          render={(record) => {
-            const judul = record?.usulans?.[0]?.status_judul;
+          dataIndex="status_judul"
+          render={(status_judul) => {
+            const judul = status_judul;
             const color = colorTagHandler(judul || "belum mengajukan");
             return (
               <TagSidos fontSize={14} padding={"4px 10px"} color={color}>
@@ -161,10 +99,9 @@ const BimbinganLists = () => {
             );
           }}
         />
-        <Column
-          title="Keterangan"
-          render={(record) => record?.usulans?.[0]?.keterangan}
-        />
+        <Column title="Keterangan" dataIndex="keterangan" />
+        <Column title="Dosen Pembimbing 1" dataIndex="dosen_pembimbing1" />
+        <Column title="Dosen Pembimbing 2" dataIndex="dosen_pembimbing2" />
       </TableSidos>
     </Fragment>
   );

@@ -1,7 +1,6 @@
 import { Alert, Table } from "antd";
 import { Fragment, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import FilterSemester from "../../components/FilterSemester";
 import TitlePage from "../../components/TitlePage";
 import InputSidos from "../../lib/src/components/FormSidos/fields/InputSidos";
 import SelectSidos from "../../lib/src/components/FormSidos/fields/SelectSidos";
@@ -28,9 +27,13 @@ const MahasiswaLists = () => {
   return (
     <Fragment>
       <TitlePage title="Data Mahasiswa" addRoute="mahasiswa_Add/input_manual" />
-      <FilterSemester payloadState={payload} setStatePayload={setPayload} />
       <TableSidos
+        useFilterSemester
         payload={payload}
+        excelOptions={{
+          endpoint: "download_mhs",
+          fileName: "Data Mahasiswa",
+        }}
         onRow={(record) => {
           return {
             onClick: () => {

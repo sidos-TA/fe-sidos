@@ -10,30 +10,32 @@ import decodeCookie from "../../lib/src/helpers/decodeCookie";
 import LabelSidos from "../../lib/src/components/FormSidos/fields/LabelSidos";
 import TagSidos from "../../lib/src/components/TagSidos";
 import colorTagHandler from "../../lib/src/helpers/colorTagHandler";
+import { useEffect } from "react";
 
 const KeputusanEdit = () => {
   const [FormKeputusan] = Form.useForm();
-  const { no_bp } = useParams();
   const navigate = useNavigate();
+  const params = useParams();
 
   const [state, setState] = useState({
     arrDatasDospem: [],
     tingkatan: "",
     statusJudul: "",
     keterangan: "",
+    no_bp: "",
   });
 
   const dataCookie = decodeCookie("token");
 
-  const noBpVal = () => {
-    if (dataCookie?.roles === 2) {
-      return dataCookie?.no_bp;
-    } else if (no_bp) {
-      return no_bp;
-    } else {
-      return "";
+  useEffect(() => {
+    if (
+      state?.no_bp &&
+      dataCookie?.roles === 2 &&
+      dataCookie?.no_bp !== state?.no_bp
+    ) {
+      navigate("/unauth");
     }
-  };
+  }, [state?.no_bp]);
 
   return (
     <Fragment>
@@ -52,18 +54,19 @@ const KeputusanEdit = () => {
       <FormSidos
         form={FormKeputusan}
         payloadSubmit={{
-          no_bp: noBpVal(),
+          id_usulan: params?.id_usulan,
+          no_bp: state?.no_bp,
           nip: state?.arrDatasDospem?.map((data) => data?.nip),
           tingkatan: state?.tingkatan,
           ...FormKeputusan?.getFieldsValue(),
         }}
         payloadFetch={{
-          no_bp: noBpVal(),
+          id_usulan: params?.id_usulan,
           ...(dataCookie?.roles === 1 && {
             status_judul: "usulan",
           }),
         }}
-        endpoint="getKeputusanByNoBp"
+        endpoint="getDetailKeputusan"
         {...(dataCookie?.roles === 1 && {
           submitEndpoint: "addBimbingan",
         })}
@@ -78,6 +81,7 @@ const KeputusanEdit = () => {
           setState((prev) => ({
             ...prev,
             arrDatasDospem,
+            no_bp: formData?.no_bp,
             keterangan: formData?.keterangan,
             ...(dataCookie?.roles === 2 &&
               formData?.status_judul && {
@@ -154,7 +158,9 @@ const KeputusanEdit = () => {
         )}
 
         {dataCookie?.roles === 2 && (
-          <LabelSidos label="Keterangan : ">{state?.keterangan}</LabelSidos>
+          <LabelSidos label="Keterangan : ">
+            {state?.keterangan || "Tidak ada keterangan"}
+          </LabelSidos>
         )}
       </FormSidos>
     </Fragment>

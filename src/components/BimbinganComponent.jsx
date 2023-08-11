@@ -1,4 +1,4 @@
-import { Col, Image, Row, Space } from "antd";
+import { Col, Image, Row, Space, Tabs } from "antd";
 import { Fragment } from "react";
 import AvatarSidos from "../lib/src/components/AvatarSidos";
 import decodeBlob from "../lib/src/helpers/decodeBlob";
@@ -13,17 +13,24 @@ const BimbinganComponent = ({
   badgeText,
   propSubInfo,
   propBody,
+  isUseTabs = false,
 }) => {
-  return (
-    <Fragment>
-      {titleSection && <TitleSection title={titleSection} />}
-      {arrDatasBimbingan?.length ? (
+  const tabsTitle = [...new Set(arrDatasBimbingan?.map((data) => data?.judul))];
+
+  const itemsAntd = tabsTitle?.map((title, idx) => {
+    const dataBasedOnTabs = arrDatasBimbingan?.filter(
+      (data) => data?.judul === title
+    );
+    return {
+      key: `${title}_${idx}`,
+      label: title,
+      children: (
         <Row
           justify="space-evenly"
           align="middle"
           style={{ marginTop: 20, width: "100%" }}
         >
-          {arrDatasBimbingan?.map((bimbing, idx) => {
+          {dataBasedOnTabs?.map((bimbing, idx) => {
             return (
               <Col key={idx}>
                 <AvatarSidos
@@ -37,6 +44,43 @@ const BimbinganComponent = ({
             );
           })}
         </Row>
+      ),
+    };
+  });
+
+  return (
+    <Fragment>
+      {titleSection && <TitleSection title={titleSection} />}
+      {arrDatasBimbingan?.length ? (
+        <Fragment>
+          {isUseTabs ? (
+            <Tabs
+              defaultActiveKey={itemsAntd?.[0]?.key}
+              items={itemsAntd}
+              tabPosition="left"
+            />
+          ) : (
+            <Row
+              justify="space-evenly"
+              align="middle"
+              style={{ marginTop: 20, width: "100%" }}
+            >
+              {arrDatasBimbingan?.map((bimbing, idx) => {
+                return (
+                  <Col key={idx}>
+                    <AvatarSidos
+                      src={decodeBlob(bimbing?.photo)}
+                      badgeText={`${badgeText} ${idx + 1}`}
+                      mainInfo={bimbing?.[propMainInfo]}
+                      subInfo={bimbing?.[propSubInfo]}
+                      body={bimbing?.[propBody]}
+                    />
+                  </Col>
+                );
+              })}
+            </Row>
+          )}
+        </Fragment>
       ) : (
         <div style={{ textAlign: "center" }}>
           <Space direction="vertical" style={{ textAlign: "center" }}>

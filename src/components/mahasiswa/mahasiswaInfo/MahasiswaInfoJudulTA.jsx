@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import FilterSemester from "../../FilterSemester";
 import IllustrasiSidos from "../../IllustrasiSidos";
 import decodeCookie from "../../../lib/src/helpers/decodeCookie";
+import sameArrObj from "../../../lib/src/helpers/sameArrObj";
 
 const MahasiswaDetailJudulTA = () => {
   const { state, payload, setPayload } = useTabsContext();
@@ -16,42 +17,31 @@ const MahasiswaDetailJudulTA = () => {
 
   const dataCookie = decodeCookie("token");
 
-  const getDataUsul = () => {
-    if (
-      state?.datas?.dosen?.some((data) => data?.status_usulan === "confirmed")
-    ) {
-      const findConfirmedStatus = state?.datas?.dosen?.find(
-        (data) => data?.status_usulan === "confirmed"
-      );
-      return {
-        judul: findConfirmedStatus?.judul,
-        statusJudul: findConfirmedStatus?.status_judul,
-      };
-    } else if (
-      state?.datas?.dosen?.every(
-        (data) => data?.status_usulan === "no confirmed"
-      )
-    ) {
-      return {
-        judul: state?.datas?.dosen?.[0]?.judul,
-        statusJudul: state?.datas?.dosen?.[0]?.status_judul,
-      };
-    }
-  };
+  const arrDataJudul = state?.datas?.dosen?.map((data) => ({
+    judul: data?.judul,
+    status_judul: data?.status_judul,
+  }));
+  const uniqueArrJudul = sameArrObj({ arr: arrDataJudul, props: "judul" });
 
   return (
     <Fragment>
       <FilterSemester payloadState={payload} setStatePayload={setPayload} />
+
       <TitleSection title="Judul TA" />
-      {getDataUsul()?.statusJudul ? (
-        <div style={{ textAlign: "center" }}>
-          <Space direction="vertical" style={{ textAlign: "center" }}>
-            <Typography.Text strong>{getDataUsul()?.judul}</Typography.Text>
-            <TagSidos color={colorTagHandler(getDataUsul()?.statusJudul)}>
-              {getDataUsul()?.statusJudul}
-            </TagSidos>
-          </Space>
-        </div>
+
+      {uniqueArrJudul?.length ? (
+        <Fragment>
+          {uniqueArrJudul?.map((data, idx) => (
+            <div style={{ textAlign: "center" }} key={`${data}_${idx}`}>
+              <Space direction="vertical" style={{ textAlign: "center" }}>
+                <Typography.Text strong>{data?.judul}</Typography.Text>
+                <TagSidos color={colorTagHandler(data?.status_judul)}>
+                  {data?.status_judul}
+                </TagSidos>
+              </Space>
+            </div>
+          ))}
+        </Fragment>
       ) : (
         <div style={{ textAlign: "center" }}>
           <IllustrasiSidos
