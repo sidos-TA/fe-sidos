@@ -123,7 +123,7 @@ const DosenScrapeInput = ({
         open={visibleModal}
         onCancel={() => toggleVisibleModal(false)}
       >
-        <Row>
+        <Row gutter={8}>
           <Col span={24}>
             <Typography.Title level={4}>
               1. Link Google Scholar
