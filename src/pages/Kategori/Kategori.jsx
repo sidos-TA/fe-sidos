@@ -40,8 +40,8 @@ const Kategori = () => {
 
   const navigate = useNavigate();
 
-  // const [stateQ2, setStateQ2] = useState(dataAHP);
-  const [stateQ2, setStateQ2] = useState([]);
+  const [stateQ2, setStateQ2] = useState(dataAHP);
+  // const [stateQ2, setStateQ2] = useState([]);
   const [valueEigenVector, setValueEigenVector] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -75,7 +75,7 @@ const Kategori = () => {
         });
       }
       setLoading(false);
-      setStateQ2(arrDatasSkala);
+      // setStateQ2(arrDatasSkala);
     },
     [stateQ2]
   );

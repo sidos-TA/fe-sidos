@@ -1,14 +1,14 @@
 import { InfoOutlined } from "@ant-design/icons";
-import { Button, Col, message, Modal, Row, Typography } from "antd";
+import { Button, Col, message, Row } from "antd";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDosenAddGetFromLinkContext } from "../../../context/Dosen/DosenAdd/DosenAddGetFromLinkContext";
 import BtnSidos from "../../../lib/src/components/BtnSidos";
 import Field from "../../../lib/src/components/FormSidos/fields/Field";
-import SmallTextSidos from "../../../lib/src/components/SmallTextSidos";
 import catchHandler from "../../../lib/src/helpers/catchHandler";
 import { responseSuccess } from "../../../lib/src/helpers/formatRespons";
 import useFetch from "../../../lib/src/helpers/useFetch";
+import DosenAddModalHintScrape from "./DosenAddModalHintScrape";
 
 const DosenScrapeInput = ({
   label,
@@ -118,36 +118,10 @@ const DosenScrapeInput = ({
         </Col>
       </Row>
 
-      <Modal
-        title="Petunjuk link scrape"
-        open={visibleModal}
-        onCancel={() => toggleVisibleModal(false)}
-      >
-        <Row gutter={8}>
-          <Col span={24}>
-            <Typography.Title level={4}>
-              1. Link Google Scholar
-            </Typography.Title>
-            <SmallTextSidos>Contoh : </SmallTextSidos>
-            <Typography.Link
-              href="https://scholar.google.co.id/citations?user=sBMUB_oAAAAJ&hl=en"
-              target="_blank"
-            >
-              https://scholar.google.co.id/citations?user=sBMUB_oAAAAJ&hl=en
-            </Typography.Link>
-          </Col>
-          <Col span={24}>
-            <Typography.Title level={4}>2. Link SINTA</Typography.Title>
-            <SmallTextSidos>Contoh : </SmallTextSidos>
-            <Typography.Link
-              href="https://sinta.kemdikbud.go.id/authors/profile/5975873"
-              target="_blank"
-            >
-              https://sinta.kemdikbud.go.id/authors/profile/5975873
-            </Typography.Link>
-          </Col>
-        </Row>
-      </Modal>
+      <DosenAddModalHintScrape
+        visibleModal={visibleModal}
+        toggleVisibleModal={toggleVisibleModal}
+      />
     </>
   );
 };

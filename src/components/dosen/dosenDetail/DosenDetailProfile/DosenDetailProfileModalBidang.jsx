@@ -6,13 +6,8 @@ import Field from "../../../../lib/src/components/FormSidos/fields/Field";
 import FormSidos from "../../../../lib/src/components/FormSidos/form/FormSidos";
 
 const DosenDetailProfileModalBidang = () => {
-  const {
-    toggleModalDosenDetailProfile,
-    state,
-    setState,
-    stateTabs,
-    defaultValDataBidang,
-  } = useDosenDetailProfileContext();
+  const { toggleModalDosenDetailProfile, state, setState, stateTabs } =
+    useDosenDetailProfileContext();
 
   const [FormBidang] = Form.useForm();
 
@@ -31,9 +26,9 @@ const DosenDetailProfileModalBidang = () => {
           ...prev,
           profileIdentity: {
             ...state.profileIdentity,
-            bidang: FormBidang?.getFieldValue("bidang")?.map(
-              (data) => data?.bidangName
-            ),
+            bidang: FormBidang?.getFieldValue("bidangs")?.map((data) => ({
+              bidang: data?.bidang,
+            })),
           },
         }));
         toggleModalDosenDetailProfile({
@@ -46,13 +41,11 @@ const DosenDetailProfileModalBidang = () => {
       <FormSidos
         form={FormBidang}
         initialValues={{
-          // bidang: [""],
-          bidang: defaultValDataBidang(
-            state?.profileIdentity?.bidang || stateTabs?.datas?.bidang
-          )?.map((bidang) => ({ bidangName: bidang })) || [""],
+          bidangs: state?.profileIdentity?.bidang ||
+            stateTabs?.datas?.bidangs || [""],
         }}
       >
-        <Form.List name="bidang">
+        <Form.List name="bidangs">
           {(fields, { add, remove }) => (
             <>
               {fields.map(({ key, name }) => (
@@ -66,9 +59,11 @@ const DosenDetailProfileModalBidang = () => {
                           : "select"
                       }
                       formItemObj={{ wrapperCol: { span: 24 } }}
-                      name={[name, "bidangName"]}
+                      name={[name, "bidang"]}
                       label="Nama Bidang"
                       endpoint="getDataBidang"
+                      selectLabel="bidang"
+                      selectValue="bidang"
                     />
                   </Col>
 
@@ -78,7 +73,7 @@ const DosenDetailProfileModalBidang = () => {
                       name={[name, "chkToText"]}
                       onChange={(val) => {
                         const newValueBidang = FormBidang?.getFieldValue(
-                          "bidang"
+                          "bidangs"
                         )?.map((bidang, idx) => {
                           if (idx === name) {
                             return {

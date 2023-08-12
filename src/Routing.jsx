@@ -1,6 +1,7 @@
 import { Fragment } from "react";
 import { lazy } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
+import isDev from "./lib/src/constants/isDev";
 import decodeCookie from "./lib/src/helpers/decodeCookie";
 import getCookie from "./lib/src/helpers/getCookie";
 import UnAuthPage from "./pages/403Page";
@@ -88,7 +89,9 @@ const Routing = () => {
           </Fragment>
         )}
         <Route element={<UnAuthPage />} path="/unauth" />
-        <Route key="test_page" path="/test_page" element={<TestPage />} />
+        {isDev && (
+          <Route key="test_page" path="/test_page" element={<TestPage />} />
+        )}
         <Route key="not_found" path="*" element={<NotFound />} />
       </Routes>
     </Fragment>

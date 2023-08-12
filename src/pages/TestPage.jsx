@@ -1,33 +1,39 @@
-import { Form, Typography } from "antd";
-import { Fragment, useState } from "react";
-import TitlePage from "../components/TitlePage";
-import BtnSidos from "../lib/src/components/BtnSidos";
-import Field from "../lib/src/components/FormSidos/fields/Field";
-import FormSidos from "../lib/src/components/FormSidos/form/FormSidos";
+import React from "react";
+import { Upload, Button } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
+import useFetch from "../lib/src/helpers/useFetch";
 
-const TestPage = () => {
-  const [form] = Form.useForm();
-  const [base64URLFile, setBase64URLFile] = useState("");
+const App = () => {
+  const fetch = useFetch();
+
+  const handleUpload = ({ file }) => {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    console.log("formData:", formData?.get("image"));
+
+    fetch({
+      endpoint: "uploadImageMhsPhoto",
+      payload: formData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
+      .then((res) => {
+        console.log("res ; ", res);
+      })
+      .catch((e) => {
+        console.log("e : ", e);
+      });
+  };
 
   return (
-    <Fragment>
-      <TitlePage title="Test Page" />
-      <FormSidos form={form}>
-        <Field type="upload" name="haha" required label="Upload">
-          <BtnSidos type="primary">Upload</BtnSidos>
-        </Field>
-      </FormSidos>
-      <BtnSidos
-        onClick={() => {
-          form.validateFields()?.then(() => {
-            setBase64URLFile(form.getFieldValue("haha"));
-          });
-        }}
-      >
-        Get base 64 url
-      </BtnSidos>
-      <Typography.Text copyable>{base64URLFile}</Typography.Text>
-    </Fragment>
+    <div>
+      <Upload customRequest={handleUpload} showUploadList={false}>
+        <Button icon={<UploadOutlined />}>Upload File</Button>
+      </Upload>
+    </div>
   );
 };
-export default TestPage;
+
+export default App;

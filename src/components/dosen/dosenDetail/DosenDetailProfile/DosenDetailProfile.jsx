@@ -135,9 +135,7 @@ const DosenDetailProfile = () => {
             pendidikan:
               state?.profileIdentity?.pendidikan ||
               stateTabs?.datas?.pendidikan,
-            bidang: JSON.stringify(
-              state?.profileIdentity?.bidang || stateTabs?.datas?.bidang
-            ),
+            bidang: state?.profileIdentity?.bidang || stateTabs?.datas?.bidang,
             photo: state?.previewImg || stateTabs?.datas?.photo,
           }}
           payloadSubmit={{
@@ -150,9 +148,7 @@ const DosenDetailProfile = () => {
             pendidikan:
               state?.profileIdentity?.pendidikan ||
               stateTabs?.datas?.pendidikan,
-            bidang: JSON.stringify(
-              state?.profileIdentity?.bidang || stateTabs?.datas?.bidang
-            ),
+            bidang: state?.profileIdentity?.bidang || stateTabs?.datas?.bidang,
             photo: state?.previewImg || stateTabs?.datas?.photo,
           }}
           afterMessageActionClose={() => {

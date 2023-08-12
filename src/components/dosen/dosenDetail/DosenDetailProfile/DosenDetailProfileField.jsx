@@ -8,13 +8,8 @@ import LabelSidos from "../../../../lib/src/components/FormSidos/fields/LabelSid
 import TagDataBidang from "../../../TagDataBidang";
 
 const DosenDetailProfileField = () => {
-  const {
-    updateField,
-    stateTabs,
-    state,
-    toggleModalDosenDetailProfile,
-    defaultValDataBidang,
-  } = useDosenDetailProfileContext();
+  const { updateField, stateTabs, state, toggleModalDosenDetailProfile } =
+    useDosenDetailProfileContext();
 
   return (
     <Space direction="vertical" size={32}>
@@ -82,11 +77,11 @@ const DosenDetailProfileField = () => {
 
       <Typography>Bidang</Typography>
 
-      {defaultValDataBidang(
-        state?.profileIdentity?.bidang || stateTabs?.datas?.bidang
-      )?.map((bidang, idx) => (
-        <TagDataBidang key={idx} data={bidang} />
-      ))}
+      {(state?.profileIdentity?.bidang || stateTabs?.datas?.bidangs)?.map(
+        (data, idx) => (
+          <TagDataBidang key={idx} data={data?.bidang} />
+        )
+      )}
 
       <BtnSidos
         icon={<KeyOutlined />}

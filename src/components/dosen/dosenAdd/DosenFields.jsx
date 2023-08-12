@@ -22,18 +22,34 @@ const DosenFields = () => {
                 <Col span={8}>
                   <InputSidos
                     formItemObj={{ wrapperCol: { span: 24 } }}
-                    name={[name, "title"]}
-                    label="Title"
+                    name={[name, "judulPenelitian"]}
+                    label="Judul Penelitian"
                   />
                 </Col>
                 <Col span={8}>
-                  <InputSidos name={[name, "link_title"]} label="Link" />
+                  <InputSidos name={[name, "link"]} label="Link" />
                 </Col>
-                <Col span={"auto"}>
-                  {name !== 0 && (
-                    <MinusCircleOutlined onClick={() => remove(name)} />
-                  )}
-                  {name === 0 && <PlusOutlined onClick={() => add()} />}
+                <Col span={2}>
+                  <InputSidos name={[name, "tahun"]} label="Tahun" />
+                </Col>
+
+                <Col span={2}>
+                  <Row gutter={8}>
+                    <Col span={12}>
+                      <PlusOutlined
+                        style={{ fontSize: 24 }}
+                        onClick={() => add()}
+                      />
+                    </Col>
+                    {name !== 0 && (
+                      <Col span={12}>
+                        <MinusCircleOutlined
+                          style={{ fontSize: 24 }}
+                          onClick={() => remove(name)}
+                        />
+                      </Col>
+                    )}
+                  </Row>
                 </Col>
               </Row>
             ))}

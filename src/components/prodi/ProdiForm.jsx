@@ -11,7 +11,7 @@ const ProdiForm = ({ submitEndpoint, endpoint, deleteEndpoint, id }) => {
       <FormSidos
         form={FormProdi}
         submitEndpoint={submitEndpoint}
-        {...(endpoint && { endpoint, payload: { id } })}
+        {...(endpoint && { endpoint, payloadFetch: { id } })}
         {...(deleteEndpoint && { deleteEndpoint, payloadDelete: { id } })}
       >
         <Field type="text" name="prodiName" label="Prodi" />
