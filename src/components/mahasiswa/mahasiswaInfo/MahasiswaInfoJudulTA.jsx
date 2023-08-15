@@ -1,4 +1,4 @@
-import { Space, Typography } from "antd";
+import { Card, Space, Tooltip, Typography } from "antd";
 import { Fragment } from "react";
 import TitleSection from "../../TitleSection";
 import { useTabsContext } from "../../../context/TabsContext";
@@ -20,6 +20,8 @@ const MahasiswaDetailJudulTA = () => {
   const arrDataJudul = state?.datas?.dosen?.map((data) => ({
     judul: data?.judul,
     status_judul: data?.status_judul,
+    file_pra_proposal: data?.file_pra_proposal,
+    bidang: data?.bidang,
   }));
   const uniqueArrJudul = sameArrObj({ arr: arrDataJudul, props: "judul" });
 
@@ -30,18 +32,49 @@ const MahasiswaDetailJudulTA = () => {
       <TitleSection title="Judul TA" />
 
       {uniqueArrJudul?.length ? (
-        <Fragment>
+        <Space
+          size="large"
+          wrap
+          style={{
+            textAlign: "center",
+            width: "100%",
+            justifyContent: "center",
+          }}
+        >
           {uniqueArrJudul?.map((data, idx) => (
-            <div style={{ textAlign: "center" }} key={`${data}_${idx}`}>
-              <Space direction="vertical" style={{ textAlign: "center" }}>
-                <Typography.Text strong>{data?.judul}</Typography.Text>
-                <TagSidos color={colorTagHandler(data?.status_judul)}>
-                  {data?.status_judul}
-                </TagSidos>
-              </Space>
-            </div>
+            <Card
+              title={`Judul ${idx + 1}`}
+              key={`${data}_${idx}`}
+              actions={[
+                <Tooltip key="link" title={`${data?.judul}.pdf`}>
+                  <Typography.Link
+                    style={{ width: 300 }}
+                    ellipsis
+                    href={data?.file_pra_proposal}
+                    target="_blank"
+                  >{`${data?.judul}.pdf`}</Typography.Link>
+                </Tooltip>,
+              ]}
+            >
+              <div style={{ textAlign: "center" }}>
+                <Space direction="vertical" style={{ textAlign: "center" }}>
+                  <Typography.Text
+                    strong
+                    ellipsis={{
+                      tooltip: data?.judul,
+                    }}
+                    style={{ width: 300 }}
+                  >
+                    {data?.judul}
+                  </Typography.Text>
+                  <TagSidos color={colorTagHandler(data?.status_judul)}>
+                    {data?.status_judul}
+                  </TagSidos>
+                </Space>
+              </div>
+            </Card>
           ))}
-        </Fragment>
+        </Space>
       ) : (
         <div style={{ textAlign: "center" }}>
           <IllustrasiSidos

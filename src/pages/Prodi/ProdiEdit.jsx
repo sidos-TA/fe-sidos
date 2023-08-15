@@ -5,6 +5,7 @@ import TitlePage from "../../components/TitlePage";
 
 const ProdiEdit = () => {
   const { id } = useParams();
+
   return (
     <Fragment>
       <TitlePage title="Edit Data Prodi" backRoute="/prodi" />

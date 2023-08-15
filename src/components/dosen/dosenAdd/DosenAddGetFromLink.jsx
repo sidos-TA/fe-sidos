@@ -9,6 +9,7 @@ import TitleSection from "../../TitleSection";
 import DosenFields from "./DosenFields";
 import DosenScrapeInput from "./DosenScrapeInput";
 import APIIllustrate from "../../../assets/api.svg";
+import isValidLinkPenelitian from "../../../lib/src/helpers/isValidLinkPenelitian";
 
 const DosenAddGetFromLink = () => {
   const [FormScrape] = Form.useForm();
@@ -31,7 +32,7 @@ const DosenAddGetFromLink = () => {
 
   const endPointLinkHandler = () => {
     const linkVal = FormScrape?.getFieldValue("link");
-    if (linkVal) {
+    if (linkVal && isValidLinkPenelitian({ source_link: linkVal })) {
       const url = new URL(linkVal);
       if (url?.hostname.includes("sinta.kemdikbud")) {
         return "scrapeSINTA";

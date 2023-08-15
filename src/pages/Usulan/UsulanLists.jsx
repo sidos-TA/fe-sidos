@@ -4,6 +4,8 @@ import { Fragment } from "react";
 import { useNavigate } from "react-router-dom";
 import FilterSemester from "../../components/FilterSemester";
 import TitlePage from "../../components/TitlePage";
+import InputSidos from "../../lib/src/components/FormSidos/fields/InputSidos";
+import RadioSidos from "../../lib/src/components/FormSidos/fields/RadioSidos";
 import SelectSidos from "../../lib/src/components/FormSidos/fields/SelectSidos";
 import LoadingSidos from "../../lib/src/components/LoadingSidos";
 import TableSidos from "../../lib/src/components/TableSidos";
@@ -30,7 +32,6 @@ const UsulanLists = () => {
       endpoint: "getUsulan",
       payload: {
         ...payload,
-        status_usulan: "no confirmed",
         ...(dataCookie?.roles === 2 && {
           no_bp: dataCookie?.no_bp,
         }),
@@ -74,99 +75,114 @@ const UsulanLists = () => {
       {contextHolder}
       <TitlePage
         title="Data Usulan"
-        {...(!isMhsUsul &&
-          dataCookie?.roles === 2 && {
-            addRoute: "usulan_Add",
-          })}
+        {...(dataCookie?.roles === 2 && {
+          addRoute: "usulan_Add",
+        })}
+        // {...(!isMhsUsul &&
+        //   dataCookie?.roles === 2 && {
+        //     addRoute: "usulan_Add",
+        //   })}
       />
       {dataCookie?.roles === 1 && (
         <FilterSemester payloadState={payload} setStatePayload={setPayload} />
       )}
-      {isLoadingFetch ? (
-        <LoadingSidos />
-      ) : (
-        <TableSidos
-          arrDatas={arrDataUsulans}
-          tableLayout="fixed"
-          excelOptions={{
-            arrColumnUsed: [],
+      <TableSidos
+        endpoint="getUsulan"
+        payload={payload}
+        // arrDatas={arrDataUsulans}
+        tableLayout="fixed"
+        // isLoading={isLoadingFetch}
+        customFilter={[
+          <SelectSidos
+            key="bidang"
+            label="bidang"
+            allowClear
+            selectLabel="bidang"
+            selectValue="bidang"
+            endpoint="getDataBidang"
+            onChange={(value) => {
+              searchFilter({
+                key: "bidang",
+                value,
+              });
+            }}
+          />,
+          <SelectSidos
+            key="prodi"
+            allowClear
+            label="Prodi"
+            endpoint="getAllProdi"
+            selectLabel="prodiName"
+            selectValue="prodiName"
+            onChange={(value) => {
+              searchFilter({
+                key: "prodi",
+                value,
+              });
+            }}
+          />,
+        ]}
+      >
+        <Column
+          onCell={(record) => {
+            return {
+              onClick: () => {
+                goDetailHandler(record);
+              },
+            };
           }}
-          customFilter={[
-            <SelectSidos
-              key="bidang"
-              label="bidang"
-              allowClear
-              endpoint={"getDataBidang"}
-              onChange={(value) => {
-                searchFilter({
-                  key: "bidang",
-                  value,
-                });
-              }}
-            />,
-          ]}
-        >
-          <Column
-            onCell={(record) => {
-              return {
-                onClick: () => {
-                  goDetailHandler(record);
-                },
-              };
-            }}
-            title="Nama Mahasiswa"
-            render={(record) => {
-              return <p>{record?.mh?.name}</p>;
-            }}
-          />
-          <Column
-            onCell={(record) => {
-              return {
-                onClick: () => {
-                  goDetailHandler(record);
-                },
-              };
-            }}
-            title="Prodi"
-            render={(record) => {
-              return <p>{record?.mh?.prodi}</p>;
-            }}
-          />
-          <Column
-            onCell={(record) => {
-              return {
-                onClick: () => {
-                  goDetailHandler(record);
-                },
-              };
-            }}
-            title="Judul"
-            dataIndex="judul"
-          />
-          <Column
-            title="Bidang"
-            dataIndex="bidang"
-            onCell={(record) => {
-              return {
-                onClick: () => {
-                  goDetailHandler(record);
-                },
-              };
-            }}
-          />
-          <Column
-            title="Status Usulan"
-            dataIndex="status_usulan"
-            onCell={(record) => {
-              return {
-                onClick: () => {
-                  goDetailHandler(record);
-                },
-              };
-            }}
-          />
-        </TableSidos>
-      )}
+          title="Nama Mahasiswa"
+          render={(record) => {
+            return <p>{record?.mh?.name}</p>;
+          }}
+        />
+        <Column
+          onCell={(record) => {
+            return {
+              onClick: () => {
+                goDetailHandler(record);
+              },
+            };
+          }}
+          title="Prodi"
+          render={(record) => {
+            return <p>{record?.mh?.prodi}</p>;
+          }}
+        />
+        <Column
+          onCell={(record) => {
+            return {
+              onClick: () => {
+                goDetailHandler(record);
+              },
+            };
+          }}
+          title="Judul"
+          dataIndex="judul"
+        />
+        <Column
+          title="Bidang"
+          dataIndex="bidang"
+          onCell={(record) => {
+            return {
+              onClick: () => {
+                goDetailHandler(record);
+              },
+            };
+          }}
+        />
+        <Column
+          title="Status Usulan"
+          dataIndex="status_usulan"
+          onCell={(record) => {
+            return {
+              onClick: () => {
+                goDetailHandler(record);
+              },
+            };
+          }}
+        />
+      </TableSidos>
     </Fragment>
   );
 };

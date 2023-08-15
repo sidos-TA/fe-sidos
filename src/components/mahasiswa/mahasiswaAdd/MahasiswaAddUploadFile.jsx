@@ -1,4 +1,4 @@
-import { exampleFileDosen } from "../../../lib/src/constants";
+import { exampleFileMhs } from "../../../lib/src/constants";
 import UploadFileAddData from "../../uploadFileInsert/UploadFileAddData";
 
 const DosenAddUploadFile = () => {
@@ -6,7 +6,7 @@ const DosenAddUploadFile = () => {
     {
       name: "Example File Data Mahasiswa.xlsx",
       status: "done",
-      url: `${exampleFileDosen}`,
+      url: `${exampleFileMhs}`,
     },
   ];
   return (

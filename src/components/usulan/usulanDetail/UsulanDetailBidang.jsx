@@ -4,12 +4,13 @@ import TagSidos from "../../../lib/src/components/TagSidos";
 
 const UsulanDetailBidang = () => {
   const { state } = useUsulanFormContext();
-  const dosenDetail = state?.objDosenDetail;
+
+  console.log(state);
 
   return (
     <Fragment>
-      {JSON.parse(dosenDetail?.bidang || "[]")?.map((bidang, idx) => (
-        <TagSidos key={idx}>{bidang}</TagSidos>
+      {state?.objDosenDetail?.bidangs?.map((dsnBidang, idx) => (
+        <TagSidos key={idx}>{dsnBidang?.bidang}</TagSidos>
       ))}
     </Fragment>
   );

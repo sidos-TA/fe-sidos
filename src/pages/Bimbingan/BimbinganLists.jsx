@@ -54,10 +54,26 @@ const BimbinganLists = () => {
             label="bidang"
             allowClear
             endpoint="getDataBidang"
+            selectLabel="bidang"
+            selectValue="bidang"
             formItemObj={{ labelCol: { span: 24 } }}
             onChange={(value) => {
               searchFilter({
                 key: "bidang",
+                value,
+              });
+            }}
+          />,
+          <SelectSidos
+            key="prodi"
+            allowClear
+            label="Prodi"
+            endpoint="getAllProdi"
+            selectLabel="prodiName"
+            selectValue="prodiName"
+            onChange={(value) => {
+              searchFilter({
+                key: "prodi",
                 value,
               });
             }}
@@ -85,7 +101,7 @@ const BimbinganLists = () => {
         <Column title="Nama Mahasiswa" render={(record) => record?.name} />
         <Column title="Judul" dataIndex="judul" />
         <Column title="Bidang" dataIndex="bidang" />
-        <Column title="Prodi" dataIndex="bidang" />
+        <Column title="Prodi" dataIndex="prodi" />
         <Column
           title="Status Judul"
           dataIndex="status_judul"

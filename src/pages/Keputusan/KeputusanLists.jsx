@@ -4,6 +4,7 @@ import { Fragment } from "react";
 import { useNavigate } from "react-router-dom";
 import FilterSemester from "../../components/FilterSemester";
 import TitlePage from "../../components/TitlePage";
+import SelectSidos from "../../lib/src/components/FormSidos/fields/SelectSidos";
 import TableSidos from "../../lib/src/components/TableSidos/TableSidos";
 import decodeCookie from "../../lib/src/helpers/decodeCookie";
 
@@ -12,6 +13,17 @@ const KeputusanLists = () => {
   const [payload, setPayload] = useState({});
   const dataCookie = decodeCookie("token");
   const navigate = useNavigate();
+  let timeout;
+
+  const searchFilter = ({ key, value }) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      setPayload({
+        ...payload,
+        [key]: value,
+      });
+    }, 300);
+  };
 
   return (
     <Fragment>
@@ -22,6 +34,22 @@ const KeputusanLists = () => {
       <TableSidos
         tableLayout="fixed"
         endpoint="getKeputusan"
+        customFilter={[
+          <SelectSidos
+            key="prodi"
+            allowClear
+            label="Prodi"
+            endpoint="getAllProdi"
+            selectLabel="prodiName"
+            selectValue="prodiName"
+            onChange={(value) => {
+              searchFilter({
+                key: "prodi",
+                value,
+              });
+            }}
+          />,
+        ]}
         payload={{
           status_usulan: "confirmed",
           ...(dataCookie?.roles === 1 && {
@@ -35,25 +63,25 @@ const KeputusanLists = () => {
         onRow={(record) => {
           return {
             onClick: () => {
-              if (dataCookie?.roles === 1) {
-                navigate(`keputusan_Edit/${record?.usulans?.[0]?.id_usulan}`);
-              } else {
-                navigate("/");
-              }
+              navigate(`keputusan_Edit/${record?.id_usulan}`);
             },
           };
         }}
       >
-        <Column title="Nama Mahasiswa" dataIndex="name" />
-        <Column title="Prodi" dataIndex="prodi" />
         <Column
-          title="Judul"
-          render={(record) => record?.usulans?.[0]?.judul}
+          title="Nama Mahasiswa"
+          render={(record) => {
+            return record?.mh?.name;
+          }}
         />
         <Column
-          title="Status Judul"
-          render={(record) => record?.usulans?.[0]?.status_judul}
+          title="Prodi"
+          render={(record) => {
+            return record?.mh?.prodi;
+          }}
         />
+        <Column title="Judul" dataIndex="judul" />
+        <Column title="Status Judul" dataIndex="status_judul" />
       </TableSidos>
     </Fragment>
   );

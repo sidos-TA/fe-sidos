@@ -14,6 +14,7 @@ const SettingKaprodiModal = ({ openState, openHandler }) => {
       onCancel={() => openHandler(false)}
       open={openState}
       footer={false}
+      width={1000}
     >
       <FormSidos
         form={FormKaprodi}

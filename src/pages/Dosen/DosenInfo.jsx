@@ -1,7 +1,6 @@
 import { lazy, useState } from "react";
 import { Fragment } from "react";
 import { useLocation, useParams } from "react-router-dom";
-import FilterSemester from "../../components/FilterSemester";
 import TabsSegmented from "../../components/TabsSegmented";
 import TitlePage from "../../components/TitlePage";
 import decodeCookie from "../../lib/src/helpers/decodeCookie";

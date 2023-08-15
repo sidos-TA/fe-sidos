@@ -7,47 +7,37 @@ import ImageSidos from "../../../lib/src/components/ImageSidos";
 import LabelSidos from "../../../lib/src/components/FormSidos/fields/LabelSidos";
 import FormSidos from "../../../lib/src/components/FormSidos/form/FormSidos";
 import getBase64 from "../../../lib/src/helpers/getBase64";
-import decodeBlob from "../../../lib/src/helpers/decodeBlob";
 import Field from "../../../lib/src/components/FormSidos/fields/Field";
 import decodeCookie from "../../../lib/src/helpers/decodeCookie";
 import { useNavigate } from "react-router-dom";
 import semesterList from "../../../constants/semesterList";
+import { responseSuccess } from "../../../lib/src/helpers/formatRespons";
+import useFetch from "../../../lib/src/helpers/useFetch";
+import catchHandler from "../../../lib/src/helpers/catchHandler";
 
 const MahasiswaDetailProfile = () => {
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
   const dataCookie = decodeCookie("token");
   const navigate = useNavigate();
+  const fetch = useFetch();
 
-  const { state: stateData } = useTabsContext();
+  const { state: stateData, setState: setStateData } = useTabsContext();
+
   const [state, setState] = useState({
     previewImg: "",
     profileIdentity: {},
-    isImgSizeValid: true,
+    filePhoto: {},
   });
 
   const handleChange = async ({ file }) => {
     const base64Url = await getBase64(file);
-    const is200KB = file.size / 1024 < 200;
 
-    if (is200KB) {
-      setState((prev) => ({
-        ...prev,
-        previewImg: base64Url,
-        isImgSizeValid: true,
-      }));
-    } else {
-      messageApi?.open({
-        key: "larger_than_200kb",
-        type: "error",
-        content: "Gambar tidak boleh lebih dari 200KB",
-      });
-      setState((prev) => ({
-        ...prev,
-        previewImg: base64Url,
-        isImgSizeValid: false,
-      }));
-    }
+    setState((prev) => ({
+      ...prev,
+      previewImg: base64Url,
+      filePhoto: file,
+    }));
   };
 
   const deleteHandler = () => {
@@ -55,6 +45,36 @@ const MahasiswaDetailProfile = () => {
       ...prev,
       previewImg: "",
     }));
+  };
+
+  const uploadToCloudinary = ({ prodi }) => {
+    const formData = new FormData();
+    formData.append("image", state?.filePhoto);
+    formData.append("prodi", prodi);
+    formData.append("no_bp", stateData?.datas?.no_bp);
+
+    fetch({
+      endpoint: "uploadImageMhsPhoto",
+      payload: formData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
+      ?.then((response) => {
+        const res = responseSuccess(response);
+        if (res.status === 200) {
+          setStateData((prev) => ({
+            ...prev,
+            datas: {
+              ...stateData?.datas,
+              photo: res?.data,
+            },
+          }));
+        }
+      })
+      ?.catch((e) => {
+        catchHandler({ e, messageApi, navigate });
+      });
   };
 
   return (
@@ -79,15 +99,16 @@ const MahasiswaDetailProfile = () => {
             state?.profileIdentity?.semester || stateData?.datas?.semester,
           tahun: state?.profileIdentity?.tahun || stateData?.datas?.tahun,
         }}
-        afterMessageActionClose={() => {
+        afterMessageActionClose={(formData) => {
+          uploadToCloudinary({
+            prodi: formData?.data?.prodi,
+          });
+
           if (dataCookie?.roles === 2) {
             window.location.href = "/";
           } else {
             navigate("/mahasiswa");
           }
-        }}
-        BtnSubmitProps={{
-          disabled: !state?.isImgSizeValid,
         }}
         showSubmitBtn
         submitEndpoint="updateDataMhs"
@@ -183,8 +204,8 @@ const MahasiswaDetailProfile = () => {
                 }}
                 type="select"
                 endpoint="getTahun"
-              selectValue="tahun"
-              selectLabel="tahun"
+                selectValue="tahun"
+                selectLabel="tahun"
                 name="tahun"
                 isEditable
                 label="Tahun"
@@ -199,16 +220,13 @@ const MahasiswaDetailProfile = () => {
               size="small"
               style={{ textAlign: "center" }}
             >
-              <ImageSidos
-                src={state?.previewImg || decodeBlob(stateData?.datas?.photo)}
-              />
+              <ImageSidos src={state?.previewImg || stateData?.datas?.photo} />
               <Space>
                 <Field
                   type="upload"
                   handleChange={handleChange}
                   showUploadList={false}
                   isImage
-                  isManualSize
                 >
                   <BtnSidos>Upload</BtnSidos>
                 </Field>

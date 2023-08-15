@@ -52,7 +52,8 @@ const FilterSemesterComponent = ({ payloadState, setStatePayload }) => {
 
   useEffect(() => {
     getSetting();
-  }, [pathname]);
+    // }, [pathname]);
+  }, []);
 
   return (
     <Fragment>

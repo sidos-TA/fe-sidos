@@ -30,6 +30,7 @@ const MahasiswaLists = () => {
       <TableSidos
         useFilterSemester
         payload={payload}
+        usePaginateBE
         excelOptions={{
           endpoint: "download_mhs",
           fileName: "Data Mahasiswa",
@@ -54,12 +55,19 @@ const MahasiswaLists = () => {
               });
             }}
           />,
+
           <SelectSidos
             allowClear
             endpoint="getAllProdi"
             label="Prodi"
             formItemObj={{ labelCol: { span: 24 } }}
             key="prodi"
+            onClear={() => {
+              searchFilter({
+                key: "prodi",
+                value: "",
+              });
+            }}
             onSelect={(value) => {
               searchFilter({
                 key: "prodi",
@@ -68,48 +76,6 @@ const MahasiswaLists = () => {
             }}
             selectLabel="prodiName"
             selectValue="prodiName"
-          />,
-          <InputSidos
-            label="Judul TA"
-            formItemObj={{ labelCol: { span: 24 } }}
-            key="jdltamahasiswa"
-            placeholder="Judul TA"
-            onChange={(value) => {
-              searchFilter({
-                key: "judul",
-                value,
-              });
-            }}
-          />,
-          <SelectSidos
-            allowClear
-            label="Status Judul"
-            formItemObj={{ labelCol: { span: 24 } }}
-            key="status_judul"
-            onChange={(value) => {
-              searchFilter({
-                key: "status_judul",
-                value,
-              });
-            }}
-            listOptions={[
-              {
-                label: "terima",
-                value: "terima",
-              },
-              {
-                label: "tolak",
-                value: "tolak",
-              },
-              {
-                label: "usulan",
-                value: "usulan",
-              },
-              {
-                label: "belum mengajukan",
-                value: "belum mengajukan",
-              },
-            ]}
           />,
         ]}
         endpoint="getAllMhs"

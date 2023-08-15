@@ -1,33 +1,34 @@
-import { Form, Typography } from "antd";
-import { Fragment, useState } from "react";
-import TitlePage from "../components/TitlePage";
-import BtnSidos from "../lib/src/components/BtnSidos";
+import React, { useState } from "react";
+import { Upload, Button, Form, Typography } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
+import useFetch from "../lib/src/helpers/useFetch";
 import Field from "../lib/src/components/FormSidos/fields/Field";
 import FormSidos from "../lib/src/components/FormSidos/form/FormSidos";
+import UploadSidos from "../lib/src/components/FormSidos/fields/UploadSidos";
+import BtnSidos from "../lib/src/components/BtnSidos";
+import getBase64 from "../lib/src/helpers/getBase64";
 
-const TestPage = () => {
+const App = () => {
+  const fetch = useFetch();
+
   const [form] = Form.useForm();
-  const [base64URLFile, setBase64URLFile] = useState("");
+  const [base64URL, setBase64URL] = useState(false);
 
+  const handleChange = async ({ file }) => {
+    const getBase64URL = await getBase64(file);
+    setBase64URL(getBase64URL);
+  };
   return (
-    <Fragment>
-      <TitlePage title="Test Page" />
-      <FormSidos form={form}>
-        <Field type="upload" name="haha" required label="Upload">
-          <BtnSidos type="primary">Upload</BtnSidos>
-        </Field>
-      </FormSidos>
-      <BtnSidos
-        onClick={() => {
-          form.validateFields()?.then(() => {
-            setBase64URLFile(form.getFieldValue("haha"));
-          });
-        }}
-      >
-        Get base 64 url
-      </BtnSidos>
-      <Typography.Text copyable>{base64URLFile}</Typography.Text>
-    </Fragment>
+    <div>
+      <UploadSidos handleChange={handleChange}>
+        <BtnSidos>Get Base 64</BtnSidos>
+      </UploadSidos>
+
+      {base64URL && (
+        <Typography.Paragraph copyable>{base64URL}</Typography.Paragraph>
+      )}
+    </div>
   );
 };
-export default TestPage;
+
+export default App;

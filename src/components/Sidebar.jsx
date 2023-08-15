@@ -19,7 +19,6 @@ import {
   unAuthResponse,
 } from "../lib/src/helpers/formatRespons";
 import { useState } from "react";
-import decodeBlob from "../lib/src/helpers/decodeBlob";
 import ImageSidos from "../lib/src/components/ImageSidos";
 import LoadingSidos from "../lib/src/components/LoadingSidos";
 import { Suspense } from "react";
@@ -30,7 +29,10 @@ const Sidebar = ({ children }) => {
   const { pathname } = useLocation();
   const dataCookie = decodeCookie("token");
   const fetch = useFetch();
-  const [profile, setProfile] = useState({});
+  const [profile, setProfile] = useState({
+    name: "",
+    photo: "",
+  });
   const [loadingFetchProfile, setLoadingFetchProfile] = useState(false);
   const [messageApi, contextHolderMessage] = message.useMessage();
   const [modal, contextHolder] = Modal.useModal();
@@ -135,15 +137,15 @@ const Sidebar = ({ children }) => {
           : { no_bp: dataCookie?.no_bp }),
       },
     })
-      ?.then(async (response) => {
+      ?.then((response) => {
         const res = responseSuccess(response);
 
         if (res?.status === 200) {
-          setProfile({
-            ...profile,
+          setProfile((prev) => ({
+            ...prev,
             name: res?.data?.name,
-            photo: decodeBlob(res?.data?.photo),
-          });
+            photo: res?.data?.photo,
+          }));
         }
       })
       ?.catch((e) => {

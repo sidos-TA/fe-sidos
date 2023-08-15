@@ -42,7 +42,9 @@ const Dashboard = () => {
           <Typography.Text strong>Status Judul Mahasiswa</Typography.Text>
         </Col>
       </Row>
-      <Row>
+
+      {/* Remark untuk fitur log usulan */}
+      {/* <Row>
         <Col span={24} style={{ textAlign: "center" }}>
           <Typography.Text strong>Tabel Log Usulan Mahasiswa</Typography.Text>
         </Col>
@@ -76,7 +78,7 @@ const Dashboard = () => {
             />
           </TableSidos>
         </Col>
-      </Row>
+      </Row> */}
     </Space>
   );
 };
