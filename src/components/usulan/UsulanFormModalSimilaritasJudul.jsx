@@ -39,7 +39,11 @@ const UsulanFormModalSimilaritasJudul = () => {
           />
           <Column title="Judul sebelumnya" dataIndex="judul" />
           <Column title="Bidang" dataIndex="bidang" />
-          <Column title="Skor Similaritas" dataIndex="skor" />
+          <Column
+            title="Skor Similaritas"
+            dataIndex="skor"
+            render={(skor) => `${skor * 100}%`}
+          />
         </TableSidos>
       </Modal>
     </Suspense>
