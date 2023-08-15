@@ -18,12 +18,15 @@ const TabsSegmented = ({
   ...props
 }) => {
   const navigate = useNavigate();
-  const { pathname } = useLocation();
+  // const { pathname } = useLocation();
+  const { pathname } = window.location;
+
   const fetch = useFetch();
   const [messageApi, contextHolder] = message.useMessage();
 
   const [state, setState] = useState({
     datas: {},
+    loadingFetch: false,
   });
 
   const routes = listTabs?.map((tab) => ({
@@ -32,6 +35,7 @@ const TabsSegmented = ({
   }));
 
   const fetchDatas = () => {
+    setState((prev) => ({ ...prev, loadingFetch: true }));
     if (endpoint) {
       fetch({
         endpoint,
@@ -55,12 +59,17 @@ const TabsSegmented = ({
         })
         ?.catch((e) => {
           catchHandler({ e, messageApi, navigate });
+        })
+        ?.finally(() => {
+          setState((prev) => ({ ...prev, loadingFetch: false }));
         });
     }
   };
 
   useEffect(() => {
-    fetchDatas();
+    if (endpoint) {
+      fetchDatas();
+    }
   }, [endpoint, JSON.stringify(payload)]);
   return (
     <>
@@ -78,9 +87,7 @@ const TabsSegmented = ({
             block
             style={{ margin: 20 }}
             size="large"
-            defaultValue={
-              pathname?.split("/")?.[pathname?.split("/")?.length - 1]
-            }
+            value={pathname?.split("/")?.[pathname?.split("/")?.length - 1]}
             options={listTabs}
             onChange={(val) => {
               if (onChange) {

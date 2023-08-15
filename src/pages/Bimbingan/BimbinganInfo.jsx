@@ -18,6 +18,7 @@ const BimbinganInfo = () => {
     tingkatan: "",
     statusJudul: "",
     keterangan: "",
+    mhs_name: "",
   });
 
   return (
@@ -45,6 +46,7 @@ const BimbinganInfo = () => {
             jdl_from_dosen: formData?.jdl_from_dosen,
             judul: formData?.judul,
             bidang: formData?.bidang,
+            file_pra_proposal: formData?.file_pra_proposal,
           });
 
           const arrDatasDospem = formData?.usulans?.map((usul) => usul?.dosen);
@@ -53,6 +55,7 @@ const BimbinganInfo = () => {
             arrDatasDospem,
             keterangan: formData?.keterangan,
             statusJudul: formData?.status_judul,
+            mhs_name: formData?.name,
           }));
         }}
       >
@@ -66,6 +69,17 @@ const BimbinganInfo = () => {
           <LabelSidos name="jdl_from_dosen" label="Judul dari Dosen">
             {FormKeputusan?.getFieldValue("jdl_from_dosen") ||
               "Tidak dari dosen manapun"}
+          </LabelSidos>
+          <LabelSidos
+            name="file_pra_proposal"
+            isLink
+            labelProps={{
+              href: FormKeputusan?.getFieldValue("file_pra_proposal"),
+              target: "_blank",
+            }}
+            label="File Pra Proposal"
+          >
+            {`${state?.mhs_name} - File Pra Proposal.pdf`}
           </LabelSidos>
         </Space>
         <Divider orientation="center">Dosen Pembimbing</Divider>

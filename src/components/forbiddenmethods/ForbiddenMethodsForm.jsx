@@ -1,11 +1,14 @@
-import { Col, Form, Row } from "antd";
-import { Fragment } from "react";
+import { Col, Form, message, Row } from "antd";
+import { Fragment, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import semesterList from "../../constants/semesterList";
 import tingkatanProdiList from "../../constants/tingkatanProdiList";
 import Field from "../../lib/src/components/FormSidos/fields/Field";
 import FormSidos from "../../lib/src/components/FormSidos/form/FormSidos";
+import catchHandler from "../../lib/src/helpers/catchHandler";
+import { responseSuccess } from "../../lib/src/helpers/formatRespons";
 import isStringParseArray from "../../lib/src/helpers/isStringParseArray";
+import useFetch from "../../lib/src/helpers/useFetch";
 
 const ForbiddenMethodsForm = ({
   submitEndpoint,
@@ -16,29 +19,44 @@ const ForbiddenMethodsForm = ({
   const navigate = useNavigate();
 
   const [form] = Form.useForm();
+  const fetch = useFetch();
+  const [messageApi, contextHolderMsg] = message.useMessage();
+
+  const getSetting = () => {
+    fetch({
+      endpoint: "getSetting",
+    })
+      ?.then((response) => {
+        const res = responseSuccess(response);
+
+        if (res?.status === 200) {
+          form.setFieldsValue({
+            tahun: res?.data?.tahun,
+            semester: res?.data?.semester,
+          });
+        }
+      })
+      ?.catch((e) => {
+        catchHandler({ e, messageApi, navigate });
+      });
+  };
+
+  useEffect(() => {
+    getSetting();
+  }, []);
   return (
     <Fragment>
+      {contextHolderMsg}
       <FormSidos
         form={form}
         submitEndpoint={submitEndpoint}
         payloadSubmit={{ id }}
-        beforeSubmit={() => {
-          return {
-            ...form?.getFieldsValue(),
-            bidang: JSON.stringify(form?.getFieldValue("bidang")),
-          };
-        }}
         afterMessageActionClose={() => {
           navigate("/forbidden_methods");
         }}
         customFetch={(formData) => {
           if (formData) {
-            form?.setFieldsValue({
-              ...formData,
-              bidang: isStringParseArray(formData?.bidang)
-                ? JSON.parse(formData?.bidang)
-                : formData?.bidang,
-            });
+            form?.setFieldsValue(formData);
           } else {
             navigate("/forbidden_methods");
           }
@@ -53,6 +71,8 @@ const ForbiddenMethodsForm = ({
           type="select"
           required
           endpoint="getDataBidang"
+          selectLabel="bidang"
+          selectValue="bidang"
         />
         <Field
           required

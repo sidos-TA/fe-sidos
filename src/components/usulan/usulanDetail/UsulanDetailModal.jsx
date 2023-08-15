@@ -5,7 +5,6 @@ import UsulanDetailPenelitian from "./UsulanDetailPenelitian";
 import UsulanDetailBidang from "./UsulanDetailBidang";
 import UsulanDetailInformasiPribadi from "./UsulanDetailInformasiPribadi";
 import { useUsulanFormContext } from "../../../context/Usulan/UsulanFormContext";
-import decodeBlob from "../../../lib/src/helpers/decodeBlob";
 
 const { Panel } = Collapse;
 const UsulanDetailModal = () => {
@@ -24,7 +23,7 @@ const UsulanDetailModal = () => {
       }}
       footer={null}
     >
-      <Row align="middle" justify="space-around" style={{ width: "100%" }}>
+      <Row align="top" justify="space-around" style={{ width: "100%" }}>
         <Col span={12}>
           <Collapse
             defaultActiveKey={["1"]}
@@ -81,7 +80,7 @@ const UsulanDetailModal = () => {
           </Collapse>
         </Col>
         <Col span={12} style={{ textAlign: "center" }}>
-          <ImageSidos src={decodeBlob(state?.objDosenDetail?.photo)} />
+          <ImageSidos src={state?.objDosenDetail?.photo} />
         </Col>
       </Row>
     </Modal>

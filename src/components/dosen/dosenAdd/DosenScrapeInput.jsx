@@ -33,6 +33,8 @@ const DosenScrapeInput = ({
     const linkVal = FormScrape?.getFieldValue("link");
     const nipLinkVal = FormScrape?.getFieldValue("nip");
 
+    console.log(payloadType, payloadType === "link" && linkVal);
+
     if (payloadType === "link" && linkVal) {
       const url = new URL(linkVal);
       if (url) {

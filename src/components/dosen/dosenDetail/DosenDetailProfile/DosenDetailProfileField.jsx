@@ -23,6 +23,7 @@ const DosenDetailProfileField = () => {
       </LabelSidos>
       <LabelSidos
         isEditable
+        required
         type="text"
         defaultValue={state?.profileIdentity?.name || stateTabs?.datas?.name}
         label="Name"
@@ -77,7 +78,7 @@ const DosenDetailProfileField = () => {
 
       <Typography>Bidang</Typography>
 
-      {(state?.profileIdentity?.bidang || stateTabs?.datas?.bidangs)?.map(
+      {(state?.profileIdentity?.bidangs || stateTabs?.datas?.bidangs)?.map(
         (data, idx) => (
           <TagDataBidang key={idx} data={data?.bidang} />
         )

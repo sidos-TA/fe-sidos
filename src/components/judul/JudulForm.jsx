@@ -45,6 +45,8 @@ const JudulForm = ({ submitEndpoint, endpoint, deleteEndpoint, id }) => {
           label="Bidang"
           type="select"
           endpoint="getDataBidang"
+          selectLabel="bidang"
+          selectValue="bidang"
         />
         <Field
           required

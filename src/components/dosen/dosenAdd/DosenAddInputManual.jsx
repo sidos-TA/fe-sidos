@@ -34,6 +34,8 @@ const DosenAddInputManual = () => {
           label="Bidang"
           mode="tags"
           endpoint="getDataBidang"
+          selectLabel="bidang"
+          selectValue="bidang"
         />
         <Field type="number" required name="sks" label="SKS" />
         <Field

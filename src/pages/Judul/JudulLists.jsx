@@ -63,6 +63,8 @@ const JudulLists = () => {
             label="Bidang"
             allowClear
             endpoint="getDataBidang"
+            selectLabel="bidang"
+            selectValue="bidang"
             onChange={(value) => {
               searchFilter({ key: "bidang", value });
             }}

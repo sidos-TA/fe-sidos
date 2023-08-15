@@ -5,10 +5,7 @@ import semesterList from "../../../constants/semesterList";
 import Field from "../../../lib/src/components/FormSidos/fields/Field";
 import FormSidos from "../../../lib/src/components/FormSidos/form/FormSidos";
 import catchHandler from "../../../lib/src/helpers/catchHandler";
-import {
-  responseError,
-  responseSuccess,
-} from "../../../lib/src/helpers/formatRespons";
+import { responseSuccess } from "../../../lib/src/helpers/formatRespons";
 import useFetch from "../../../lib/src/helpers/useFetch";
 import TitleSection from "../../TitleSection";
 

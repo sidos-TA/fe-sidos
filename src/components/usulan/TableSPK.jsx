@@ -3,19 +3,21 @@ import { Fragment } from "react";
 import { useUsulanFormContext } from "../../context/Usulan/UsulanFormContext";
 import ImageSidos from "../../lib/src/components/ImageSidos";
 import TableSidos from "../../lib/src/components/TableSidos";
-import decodeBlob from "../../lib/src/helpers/decodeBlob";
 import decodeCookie from "../../lib/src/helpers/decodeCookie";
 import TagDataBidang from "../TagDataBidang";
 
 const { Column } = Table;
 
 const TableSPK = ({ ...props }) => {
-  const { openModalHandler, state, rowSelectionHandler } =
+  const { openModalHandler, state, rowSelectionHandler, type } =
     useUsulanFormContext();
   const dataCookie = decodeCookie("token");
 
   return (
     <TableSidos
+      {...(type === "edit" && {
+        pagination: false,
+      })}
       isLoading={state?.isLoadingSPK || state?.isLoadingAdd}
       arrDatas={state?.arrDatasSPK}
       {...(Object.keys(dataCookie)?.length && {
@@ -48,7 +50,7 @@ const TableSPK = ({ ...props }) => {
       <Column
         title="Foto Dosen"
         render={(record) => {
-          return <ImageSidos width={200} src={decodeBlob(record?.photo)} />;
+          return <ImageSidos width={200} src={record?.photo} />;
         }}
       />
       <Column
@@ -75,21 +77,19 @@ const TableSPK = ({ ...props }) => {
           return record?.n_mhs_usulan;
         }}
       />
-      {dataCookie?.roles === 1 && (
-        <Column
-          onCell={(record) => {
-            return {
-              onClick: () => {
-                openModalHandler(record);
-              },
-            };
-          }}
-          title="Mahasiswa Bimbingan"
-          render={(record) => {
-            return record?.n_mhs_bimbingan;
-          }}
-        />
-      )}
+      <Column
+        onCell={(record) => {
+          return {
+            onClick: () => {
+              openModalHandler(record);
+            },
+          };
+        }}
+        title="Mahasiswa Bimbingan"
+        render={(record) => {
+          return record?.n_mhs_bimbingan;
+        }}
+      />
       <Column
         onCell={(record) => {
           return {
@@ -111,12 +111,12 @@ const TableSPK = ({ ...props }) => {
           };
         }}
         render={(record) => {
-          const arrBidang = JSON.parse(record?.bidang || []);
+          const arrBidang = record?.bidangs;
 
           return (
             <Fragment>
               {arrBidang?.map((data, idx) => (
-                <TagDataBidang key={idx} data={data} />
+                <TagDataBidang key={idx} data={data?.bidang} />
               ))}
             </Fragment>
           );

@@ -64,6 +64,8 @@ const ForbiddenMethodLists = () => {
             label="Bidang"
             allowClear
             endpoint="getDataBidang"
+            selectLabel="bidang"
+            selectValue="bidang"
             onChange={(value) => {
               searchFilter({
                 key: "bidang",
@@ -78,7 +80,7 @@ const ForbiddenMethodLists = () => {
             listOptions={tingkatanProdiList}
             onChange={(value) => {
               searchFilter({
-                key: "methodName",
+                key: "tingkatan",
                 value,
               });
             }}
@@ -89,22 +91,12 @@ const ForbiddenMethodLists = () => {
         <Column
           title="Bidang"
           render={(record) => {
-            if (isStringParseArray(record?.bidang)) {
-              return JSON.parse(record?.bidang || "[]")?.join(",");
-            }
             return record?.bidang;
           }}
         />
         <Column title="Tingkatan" dataIndex="tingkatan" />
         <Column title="Semester" dataIndex="semester" />
-        <Column
-          title="Tahun"
-          dataIndex="tahun"
-          render={(record) => {
-            const yearNow = new Date(record)?.getFullYear();
-            return yearNow;
-          }}
-        />
+        <Column title="Tahun" dataIndex="tahun" />
       </TableSidos>
     </Fragment>
   );

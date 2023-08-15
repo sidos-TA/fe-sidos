@@ -25,6 +25,7 @@ const DosenDetailProfileModalPassword = () => {
       footer={false}
     >
       <FormSidos
+        isBack404Submit={false}
         form={FormPassword}
         payloadFetch={{
           nip,
@@ -41,12 +42,14 @@ const DosenDetailProfileModalPassword = () => {
         }}
       >
         <Field
+          required
           name="old_password"
           type="text"
           isPassword
           label="Password Lama"
         />
         <Field
+          required
           name="new_password"
           type="text"
           isPassword
@@ -56,6 +59,7 @@ const DosenDetailProfileModalPassword = () => {
           name="confirm_password"
           type="text"
           isPassword
+          required
           formItemObj={{
             rules: [
               () => ({

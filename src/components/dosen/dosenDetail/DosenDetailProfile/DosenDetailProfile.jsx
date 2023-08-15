@@ -9,9 +9,9 @@ import Field from "../../../../lib/src/components/FormSidos/fields/Field";
 import FormSidos from "../../../../lib/src/components/FormSidos/form/FormSidos";
 import ImageSidos from "../../../../lib/src/components/ImageSidos";
 import LoadingSidos from "../../../../lib/src/components/LoadingSidos";
-import decodeBlob from "../../../../lib/src/helpers/decodeBlob";
+import { responseSuccess } from "../../../../lib/src/helpers/formatRespons";
 import getBase64 from "../../../../lib/src/helpers/getBase64";
-import isStringParseArray from "../../../../lib/src/helpers/isStringParseArray";
+import useFetch from "../../../../lib/src/helpers/useFetch";
 import TitleSection from "../../../TitleSection";
 
 const DosenDetailProfileField = lazy(() => import("./DosenDetailProfileField"));
@@ -23,18 +23,32 @@ const DosenDetailProfileModalPassword = lazy(() =>
 );
 
 const DosenDetailProfile = () => {
-  const { state: stateTabs } = useTabsContext();
+  const { state: stateTabs, setState: setStateTabs } = useTabsContext();
   const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
   const navigate = useNavigate();
 
+  const fetch = useFetch();
+
   const [state, setState] = useState({
     profileIdentity: {},
     previewImg: "",
-    isImgSizeValid: true,
     isVisibleModalPassword: false,
     isVisibleModalBidang: false,
+    filePhoto: {},
   });
+
+  const payloadFetchSubmit = {
+    nip: stateTabs?.datas?.nip,
+    name: state?.profileIdentity?.name || stateTabs?.datas?.name,
+    sks: state?.profileIdentity?.sks || stateTabs?.datas?.sks,
+    prodi: state?.profileIdentity?.prodi || stateTabs?.datas?.prodi,
+    jabatan: state?.profileIdentity?.jabatan || stateTabs?.datas?.jabatan,
+    pendidikan:
+      state?.profileIdentity?.pendidikan || stateTabs?.datas?.pendidikan,
+    bidang: state?.profileIdentity?.bidangs || stateTabs?.datas?.bidangs,
+    photo: state?.previewImg || stateTabs?.datas?.photo,
+  };
 
   const updateField = ({ field, val }) => {
     setState((prev) => ({
@@ -50,33 +64,17 @@ const DosenDetailProfile = () => {
     setState((prev) => ({
       ...prev,
       previewImg: "",
-      isImgSizeValid: true,
     }));
   }, [state.previewImg]);
 
   const handleChange = async ({ file }) => {
     const base64Url = await getBase64(file);
-    const is200KB = file.size / 1024 < 200;
 
-    if (is200KB) {
-      setState((prev) => ({
-        ...prev,
-        previewImg: base64Url,
-        isImgSizeValid: true,
-      }));
-    } else {
-      messageApi?.open({
-        key: "larger_than_200kb",
-        type: "error",
-        content: "Gambar tidak boleh lebih dari 200KB",
-        duration: 1.2,
-      });
-      setState((prev) => ({
-        ...prev,
-        previewImg: base64Url,
-        isImgSizeValid: false,
-      }));
-    }
+    setState((prev) => ({
+      ...prev,
+      filePhoto: file,
+      previewImg: base64Url,
+    }));
   };
 
   const toggleModalDosenDetailProfile = useCallback(
@@ -89,12 +87,30 @@ const DosenDetailProfile = () => {
     [state.isVisibleModalPassword, state?.isVisibleModalBidang]
   );
 
-  const defaultValDataBidang = (dataBidang) => {
-    if (isStringParseArray(dataBidang)) {
-      return JSON.parse(dataBidang || "[]");
-    } else if (Array.isArray(dataBidang)) {
-      return dataBidang;
-    }
+  const uploadToCloudinary = ({ jabatan }) => {
+    const formData = new FormData();
+    formData.append("image", state?.filePhoto);
+    formData.append("jabatan", jabatan);
+    formData.append("nip", stateTabs?.datas?.nip);
+
+    fetch({
+      endpoint: "uploadImageDsnPhoto",
+      payload: formData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })?.then((response) => {
+      const res = responseSuccess(response);
+      if (res.status === 200) {
+        setStateTabs((prev) => ({
+          ...prev,
+          datas: {
+            ...stateTabs?.datas,
+            photo: res?.data,
+          },
+        }));
+      }
+    });
   };
 
   return (
@@ -111,49 +127,22 @@ const DosenDetailProfile = () => {
           updateField,
           deleteHandler,
           toggleModalDosenDetailProfile,
-          defaultValDataBidang,
         }}
       >
         <FormSidos
           form={form}
           submitEndpoint="updateDataDosen"
           submitText="Perbarui"
-          BtnSubmitProps={{
-            disabled: !state?.isImgSizeValid,
-          }}
           deleteEndpoint="deleteDataDosen"
           payloadDelete={{
             nip: stateTabs?.datas?.nip,
           }}
-          payloadFetch={{
-            nip: stateTabs?.datas?.nip,
-            name: state?.profileIdentity?.name || stateTabs?.datas?.name,
-            sks: state?.profileIdentity?.sks || stateTabs?.datas?.sks,
-            prodi: state?.profileIdentity?.prodi || stateTabs?.datas?.prodi,
-            jabatan:
-              state?.profileIdentity?.jabatan || stateTabs?.datas?.jabatan,
-            pendidikan:
-              state?.profileIdentity?.pendidikan ||
-              stateTabs?.datas?.pendidikan,
-            bidang: state?.profileIdentity?.bidang || stateTabs?.datas?.bidang,
-            photo: state?.previewImg || stateTabs?.datas?.photo,
-          }}
-          payloadSubmit={{
-            nip: stateTabs?.datas?.nip,
-            name: state?.profileIdentity?.name || stateTabs?.datas?.name,
-            sks: state?.profileIdentity?.sks || stateTabs?.datas?.sks,
-            prodi: state?.profileIdentity?.prodi || stateTabs?.datas?.prodi,
-            jabatan:
-              state?.profileIdentity?.jabatan || stateTabs?.datas?.jabatan,
-            pendidikan:
-              state?.profileIdentity?.pendidikan ||
-              stateTabs?.datas?.pendidikan,
-            bidang: state?.profileIdentity?.bidang || stateTabs?.datas?.bidang,
-            photo: state?.previewImg || stateTabs?.datas?.photo,
-          }}
-          afterMessageActionClose={() => {
+          payloadFetch={payloadFetchSubmit}
+          payloadSubmit={payloadFetchSubmit}
+          afterMessageActionClose={(formData) => {
             const pathnameLocation =
               window?.location?.pathname?.split("/")?.[1];
+            uploadToCloudinary({ jabatan: formData?.data?.jabatan });
 
             if (pathnameLocation === "dosen_prfl") {
               window.location.href = "/";
@@ -175,7 +164,7 @@ const DosenDetailProfile = () => {
                 style={{ textAlign: "center" }}
               >
                 <ImageSidos
-                  src={state?.previewImg || decodeBlob(stateTabs?.datas?.photo)}
+                  src={state?.previewImg || stateTabs?.datas?.photo}
                 />
                 <Space>
                   <Field
@@ -183,7 +172,6 @@ const DosenDetailProfile = () => {
                     handleChange={handleChange}
                     showUploadList={false}
                     isImage
-                    isManualSize
                   >
                     <BtnSidos>Upload</BtnSidos>
                   </Field>
@@ -197,6 +185,7 @@ const DosenDetailProfile = () => {
             </Col>
           </Row>
         </FormSidos>
+
         <DosenDetailProfileModalBidang />
         <DosenDetailProfileModalPassword />
       </DosenDetailProfileContext.Provider>

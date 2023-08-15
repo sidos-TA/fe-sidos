@@ -26,7 +26,7 @@ const DosenDetailProfileModalBidang = () => {
           ...prev,
           profileIdentity: {
             ...state.profileIdentity,
-            bidang: FormBidang?.getFieldValue("bidangs")?.map((data) => ({
+            bidangs: FormBidang?.getFieldValue("bidangs")?.map((data) => ({
               bidang: data?.bidang,
             })),
           },
@@ -41,8 +41,11 @@ const DosenDetailProfileModalBidang = () => {
       <FormSidos
         form={FormBidang}
         initialValues={{
-          bidangs: state?.profileIdentity?.bidang ||
-            stateTabs?.datas?.bidangs || [""],
+          bidangs:
+            state?.profileIdentity?.bidangs ||
+            (stateTabs?.datas?.bidangs?.length
+              ? stateTabs?.datas?.bidangs
+              : [""]),
         }}
       >
         <Form.List name="bidangs">

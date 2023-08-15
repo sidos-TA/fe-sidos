@@ -5,7 +5,7 @@ import {
   ReloadOutlined,
 } from "@ant-design/icons";
 import { Button, Form, message, Modal, Table, Tooltip } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Fragment } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTabsContext } from "../../../context/TabsContext";
@@ -31,6 +31,7 @@ const Penelitian = () => {
   const fetch = useFetch();
   const [messageApi, contextHolder] = message.useMessage();
   const [modalApi, contextHolderModal] = Modal.useModal();
+  let timeout;
 
   const [visibleModal, setVisibleModal] = useState(false);
   const [visibleModalAdd, setVisibleModalAdd] = useState(false);
@@ -38,6 +39,7 @@ const Penelitian = () => {
     data: {},
     visible: false,
   });
+  const [rilDataPenelitians, setRilDataPenelitians] = useState([]);
 
   const [refetchLoading, setRefetchLoading] = useState(false);
 
@@ -136,6 +138,8 @@ const Penelitian = () => {
       });
   };
 
+  // console.log(state?.datas);
+
   return (
     <Fragment>
       {contextHolder}
@@ -148,22 +152,30 @@ const Penelitian = () => {
         <TableSidos
           rowKey={(record) => record?.id}
           extraButton={[
-            <Tooltip key="refetch_1" title="Refetch Scrape Web">
-              <Button
-                shape="circle"
+            <Tooltip
+              key="refetch_1"
+              title="Ambil ulang data dari web berdasarkan source penelitian"
+            >
+              <BtnSidos
                 icon={<ReloadOutlined style={{ fontSize: 24 }} />}
                 onClick={() =>
                   reScrapeHandler(state?.datas?.linkDataPenelitian)
                 }
-              />
+              >
+                Ambil ulang data
+              </BtnSidos>
             </Tooltip>,
-            <Tooltip key="edit_1" title="Edit Sumber Penelitian">
-              <Button
-                shape="circle"
+            <Tooltip
+              key="edit_1"
+              title={`Source penelitian saat ini : ${state?.datas?.linkDataPenelitian}`}
+            >
+              <BtnSidos
                 icon={<EditOutlined />}
                 type="primary"
                 onClick={() => setVisibleModal(true)}
-              />
+              >
+                Edit Sumber Penelitian
+              </BtnSidos>
             </Tooltip>,
             <BtnSidos
               key="add_manual"
@@ -180,7 +192,6 @@ const Penelitian = () => {
             key: "id",
           })}
           tableLayout="fixed"
-          customFilter={[<InputSidos key="judul" label="Judul" />]}
         >
           <Column
             onCell={(record) => {

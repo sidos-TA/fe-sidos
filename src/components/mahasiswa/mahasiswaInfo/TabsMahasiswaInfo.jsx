@@ -2,7 +2,6 @@ import { useState } from "react";
 import { lazy } from "react";
 import { Fragment } from "react";
 import { useLocation, useParams } from "react-router-dom";
-import getYearNow from "../../../lib/src/constants/getYearNow";
 import decodeCookie from "../../../lib/src/helpers/decodeCookie";
 import TabsSidos from "../../TabsSegmented";
 import TitlePage from "../../TitlePage";

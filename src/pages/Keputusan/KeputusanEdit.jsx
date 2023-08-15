@@ -23,6 +23,7 @@ const KeputusanEdit = () => {
     statusJudul: "",
     keterangan: "",
     no_bp: "",
+    prodi: "",
   });
 
   const dataCookie = decodeCookie("token");
@@ -57,7 +58,7 @@ const KeputusanEdit = () => {
           id_usulan: params?.id_usulan,
           no_bp: state?.no_bp,
           nip: state?.arrDatasDospem?.map((data) => data?.nip),
-          tingkatan: state?.tingkatan,
+          tingkatan: state?.prodi?.split("-")?.[0]?.trim(),
           ...FormKeputusan?.getFieldsValue(),
         }}
         payloadFetch={{
@@ -82,6 +83,7 @@ const KeputusanEdit = () => {
             ...prev,
             arrDatasDospem,
             no_bp: formData?.no_bp,
+            prodi: formData?.prodi,
             keterangan: formData?.keterangan,
             ...(dataCookie?.roles === 2 &&
               formData?.status_judul && {
@@ -106,6 +108,16 @@ const KeputusanEdit = () => {
             {FormKeputusan?.getFieldValue("jdl_from_dosen") ||
               "Tidak dari dosen manapun"}
           </LabelSidos>
+          <LabelSidos
+            name="file_pra_proposal"
+            isLink
+            label="File Pra Proposal"
+            labelProps={{
+              href: FormKeputusan.getFieldValue("file_pra_proposal"),
+            }}
+          >{`${state?.no_bp}_${FormKeputusan?.getFieldValue(
+            "judul"
+          )}.pdf`}</LabelSidos>
         </Space>
 
         <Divider orientation="center">Dosen Pembimbing</Divider>

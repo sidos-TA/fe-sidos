@@ -1,5 +1,5 @@
 import tingkatanProdiList from "../../../constants/tingkatanProdiList";
-import { exampleFileDosen } from "../../../lib/src/constants";
+import { exampleFileJudul } from "../../../lib/src/constants";
 import UploadFileAddData from "../../uploadFileInsert/UploadFileAddData";
 
 const JudulAddUploadFile = () => {
@@ -7,7 +7,7 @@ const JudulAddUploadFile = () => {
     {
       name: "Example File Data Judul.xlsx",
       status: "done",
-      url: `${exampleFileDosen}`,
+      url: `${exampleFileJudul}`,
     },
   ];
   return (

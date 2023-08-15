@@ -1,5 +1,5 @@
 import tingkatanProdiList from "../../../constants/tingkatanProdiList";
-import { exampleFileDosen } from "../../../lib/src/constants";
+import { exampleFileForbidMethods } from "../../../lib/src/constants";
 import UploadFileAddData from "../../uploadFileInsert/UploadFileAddData";
 
 const ForbiddenMethodsAddUploadFile = () => {
@@ -7,7 +7,7 @@ const ForbiddenMethodsAddUploadFile = () => {
     {
       name: "Example File Data Metode yang tidak diterima.xlsx",
       status: "done",
-      url: `${exampleFileDosen}`,
+      url: `${exampleFileForbidMethods}`,
     },
   ];
   return (

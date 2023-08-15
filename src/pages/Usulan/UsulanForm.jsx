@@ -15,12 +15,12 @@ import {
   unAuthResponse,
 } from "../../lib/src/helpers/formatRespons";
 import decodeCookie from "../../lib/src/helpers/decodeCookie";
-import decodeBlob from "../../lib/src/helpers/decodeBlob";
 import BtnActionUsulan from "../../components/usulan/BtnActionUsulan";
 import { useCallback } from "react";
 import { useEffect } from "react";
 import { lazy } from "react";
 import catchHandler from "../../lib/src/helpers/catchHandler";
+import sameArr from "../../lib/src/helpers/sameArr";
 
 const UsulanFormModalSimilaritasJudul = lazy(() =>
   import("../../components/usulan/UsulanFormModalSimilaritasJudul")
@@ -60,6 +60,7 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
     arrSimilarJudul: [],
     isLoadingGetSimilar: false,
     no_bp: "",
+    dsnNameJdlFromDosen: "",
   });
 
   const getSimilarJudul = () => {
@@ -73,7 +74,11 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
       ?.then((response) => {
         const res = responseSuccess(response);
         if (res?.status === 200) {
-          setState((prev) => ({ ...prev, arrSimilarJudul: res?.data }));
+          // filter menampilkan judul yg tak sama dg judul yg diusulkan
+          const arrSimilarJudul = res?.data?.filter((jdl) => {
+            return jdl?.judul !== form?.getFieldValue("judul");
+          });
+          setState((prev) => ({ ...prev, arrSimilarJudul }));
         }
         openModalSimilaritasJudul(true);
       })
@@ -172,6 +177,15 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
         }),
       });
     });
+
+    if (form?.getFieldValue("isJdlFromDosen") === "ya") {
+      setState((prev) => ({
+        ...prev,
+        arrUsulanDospem: sameArr({
+          arr: [...state.arrUsulanDospem, form.getFieldValue("jdl_from_dosen")],
+        }),
+      }));
+    }
   };
 
   const submitUsulan = () => {
@@ -219,8 +233,6 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
 
   const customFetchHandler = useCallback(
     (formData) => {
-      const dataUsulan = formData?.arrDatas?.[0]?.usulans?.[0];
-
       setState((prev) => ({
         ...prev,
         isVisibleSPK: formData?.statusUsulan !== "unavailable",
@@ -231,14 +243,15 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
         status_usulan: formData?.statusUsulan,
         tingkatan: formData?.tingkatan,
         no_bp: formData?.no_bp,
+        dsnNameJdlFromDosen: formData?.jdl_from_dosen?.name,
       }));
 
       form.setFieldsValue({
         judul: formData?.judul,
         bidang: formData?.bidang,
         isJdlFromDosen: Boolean(formData?.jdl_from_dosen),
-        jdl_from_dosen: formData?.jdl_from_dosen,
-        file_pra_proposal: decodeBlob(dataUsulan?.file_pra_proposal, false),
+        jdl_from_dosen: formData?.jdl_from_dosen?.nip,
+        file_pra_proposal: formData?.file_pra_proposal,
       });
     },
     [state]
@@ -335,9 +348,6 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
             backFn: () => navigate("/usulan"),
           })}
         />
-        {dataCookie?.roles === 2 && (
-          <>Status Usulan: {state?.status_usulan || "in created"}</>
-        )}
 
         <FormSPK
           form={form}
@@ -346,7 +356,6 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
           {...(type === "edit" && {
             customFetch: customFetchHandler,
             endpoint: "getDetailUsulan",
-
             payloadFetch: {
               id_usulan: params?.id_usulan,
             },

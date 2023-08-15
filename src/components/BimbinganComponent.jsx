@@ -1,7 +1,6 @@
-import { Col, Image, Row, Space, Tabs } from "antd";
+import { Col, Image, Row, Space, Tabs, Typography } from "antd";
 import { Fragment } from "react";
 import AvatarSidos from "../lib/src/components/AvatarSidos";
-import decodeBlob from "../lib/src/helpers/decodeBlob";
 import TitleSection from "./TitleSection";
 
 const BimbinganComponent = ({
@@ -23,7 +22,16 @@ const BimbinganComponent = ({
     );
     return {
       key: `${title}_${idx}`,
-      label: title,
+      label: (
+        <Typography.Text
+          style={{ width: 100 }}
+          ellipsis={{
+            tooltip: title,
+          }}
+        >
+          {title}
+        </Typography.Text>
+      ),
       children: (
         <Row
           justify="space-evenly"
@@ -34,7 +42,7 @@ const BimbinganComponent = ({
             return (
               <Col key={idx}>
                 <AvatarSidos
-                  src={decodeBlob(bimbing?.photo)}
+                  src={bimbing?.photo}
                   badgeText={`${badgeText} ${idx + 1}`}
                   mainInfo={bimbing?.[propMainInfo]}
                   subInfo={bimbing?.[propSubInfo]}
@@ -69,7 +77,7 @@ const BimbinganComponent = ({
                 return (
                   <Col key={idx}>
                     <AvatarSidos
-                      src={decodeBlob(bimbing?.photo)}
+                      src={bimbing?.photo}
                       badgeText={`${badgeText} ${idx + 1}`}
                       mainInfo={bimbing?.[propMainInfo]}
                       subInfo={bimbing?.[propSubInfo]}

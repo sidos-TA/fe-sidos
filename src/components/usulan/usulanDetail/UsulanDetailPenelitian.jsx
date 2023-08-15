@@ -7,25 +7,27 @@ const { Column } = Table;
 const UsulanDetailPenelitian = () => {
   const { state } = useUsulanFormContext();
   const dosenDetail = state?.objDosenDetail;
+
   return (
     <Fragment>
-      {JSON.parse(dosenDetail?.penelitian || "[]")?.length ? (
+      {dosenDetail?.penelitians?.length ? (
         <Row>
           <Col span={24}>
             <TableSidos
-              arrDatas={JSON.parse(dosenDetail?.penelitian || "[]")}
+              arrDatas={dosenDetail?.penelitians}
               pagination={false}
               onRow={(record) => {
                 return {
                   onClick: () => {
-                    if (record?.link_title) {
-                      window.open(record?.link_title, "_blank");
+                    if (record?.link) {
+                      window.open(record?.link, "_blank");
                     }
                   },
                 };
               }}
             >
-              <Column title="Judul Penelitian" dataIndex="title" />
+              <Column title="Judul Penelitian" dataIndex="judulPenelitian" />
+              <Column title="Tahun" dataIndex="tahun" />
             </TableSidos>
           </Col>
         </Row>
