@@ -88,7 +88,12 @@ const UsulanLists = () => {
       )}
       <TableSidos
         endpoint="getUsulan"
-        payload={payload}
+        payload={{
+          ...payload,
+          ...(dataCookie?.roles === 2 && {
+            no_bp: dataCookie?.no_bp,
+          }),
+        }}
         // arrDatas={arrDataUsulans}
         tableLayout="fixed"
         // isLoading={isLoadingFetch}
