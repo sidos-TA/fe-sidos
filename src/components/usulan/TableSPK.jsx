@@ -24,7 +24,8 @@ const TableSPK = ({ ...props }) => {
         rowClassName: (record) => {
           if (
             dataCookie?.roles === 1 &&
-            record?.n_mhs_usulan === state?.settings?.kuota_bimbingan
+            // record?.n_mhs_usulan === state?.settings?.kuota_bimbingan
+            record?.n_mhs_bimbingan === state?.settings?.kuota_bimbingan
           ) {
             return "disabled-row";
           }
