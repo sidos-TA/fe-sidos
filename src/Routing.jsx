@@ -52,7 +52,13 @@ const Routing = () => {
               path="/"
               element={
                 <Navigate
-                  to={dataCookie()?.roles === 1 ? "/dashboard" : "/usulan"}
+                  to={
+                    dataCookie()?.roles === 1
+                      ? "/dashboard"
+                      : dataCookie()?.roles === 2
+                      ? "/usulan"
+                      : "/dosen"
+                  }
                 />
               }
             />
