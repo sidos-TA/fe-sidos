@@ -69,7 +69,9 @@ const Routing = () => {
                   to={
                     dataCookie()?.roles === 1
                       ? "/dosen_prfl/profiledosen"
-                      : "/profile/profilemhs"
+                      : dataCookie?.roles === 2
+                      ? "/profile/profilemhs"
+                      : "/dosen" // mau minta tolong ke rizal
                   }
                 />
               }

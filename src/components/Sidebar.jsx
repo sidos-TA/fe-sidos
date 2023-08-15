@@ -72,12 +72,12 @@ const Sidebar = ({ children }) => {
               icon: <DashboardOutlined />,
               label: "Dashboard",
             },
-            {
+            dataCookie?.roles !== 3 && {
               key: "/usulan",
               icon: <PieChartOutlined />,
               label: "Usulan",
             },
-            {
+            dataCookie?.roles !== 3 && {
               key: "/keputusan",
               icon: <PieChartOutlined />,
               label: "Keputusan",
@@ -92,12 +92,12 @@ const Sidebar = ({ children }) => {
               icon: <PieChartOutlined />,
               label: "Kategori",
             },
-            {
+            dataCookie?.roles !== 3 && {
               key: "/judul",
               icon: <PieChartOutlined />,
               label: "Judul",
             },
-            {
+            dataCookie?.roles !== 3 && {
               key: "/forbidden_methods",
               icon: <PieChartOutlined />,
               label: "Metode yang tidak diterima",
@@ -107,7 +107,7 @@ const Sidebar = ({ children }) => {
               icon: <PieChartOutlined />,
               label: "Mahasiswa",
             },
-            dataCookie?.roles === 1 && {
+            (dataCookie?.roles === 1 || dataCookie?.roles === 3) && {
               key: "/dosen",
               icon: <PieChartOutlined />,
               label: "Dosen",
@@ -177,7 +177,11 @@ const Sidebar = ({ children }) => {
   }, [pathname]);
 
   useEffect(() => {
-    if (Object.keys(dataCookie)?.length && pathname !== "login") {
+    if (
+      Object.keys(dataCookie)?.length &&
+      pathname !== "login" &&
+      dataCookie?.roles !== 3
+    ) {
       fetchDatas();
     }
   }, []);
@@ -223,20 +227,24 @@ const Sidebar = ({ children }) => {
                   }
                 }}
               >
-                <Row gutter={[16, 16]}>
-                  <Col span={24}>
-                    {loadingFetchProfile ? (
-                      <LoadingSidos style={{ height: "20vh" }} />
-                    ) : (
-                      <ImageSidos
-                        preview={false}
-                        width={160}
-                        src={profile?.photo}
-                      />
-                    )}
-                  </Col>
-                  <Col span={24}>{profile?.name ? profile?.name : "Guest"}</Col>
-                </Row>
+                {dataCookie?.roles !== 3 && (
+                  <Row gutter={[16, 16]}>
+                    <Col span={24}>
+                      {loadingFetchProfile ? (
+                        <LoadingSidos style={{ height: "20vh" }} />
+                      ) : (
+                        <ImageSidos
+                          preview={false}
+                          width={160}
+                          src={profile?.photo}
+                        />
+                      )}
+                    </Col>
+                    <Col span={24}>
+                      {profile?.name ? profile?.name : "Guest"}
+                    </Col>
+                  </Row>
+                )}
               </Col>
               <Col span={24}>
                 <Menu
