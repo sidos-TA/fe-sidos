@@ -1,4 +1,4 @@
-import { Table, Tag } from "antd";
+import { Table } from "antd";
 import { Fragment } from "react";
 import { useUsulanFormContext } from "../../context/Usulan/UsulanFormContext";
 import ImageSidos from "../../lib/src/components/ImageSidos";
