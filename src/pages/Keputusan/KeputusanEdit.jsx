@@ -59,7 +59,7 @@ const KeputusanEdit = () => {
           no_bp: state?.no_bp,
           nip: state?.arrDatasDospem?.map((data) => data?.nip),
           tingkatan: state?.prodi?.split("-")?.[0]?.trim(),
-          ...FormKeputusan?.getFieldsValue(),
+          ...FormKeputusan?.getFieldsValue(true),
         }}
         payloadFetch={{
           id_usulan: params?.id_usulan,

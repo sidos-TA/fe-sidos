@@ -10,6 +10,7 @@ import FormSidos from "../../lib/src/components/FormSidos/form/FormSidos";
 import catchHandler from "../../lib/src/helpers/catchHandler";
 import decodeCookie from "../../lib/src/helpers/decodeCookie";
 import { responseSuccess } from "../../lib/src/helpers/formatRespons";
+import isIncludeEmot from "../../lib/src/helpers/isIncludeEmot";
 import useFetch from "../../lib/src/helpers/useFetch";
 
 const FormSPK = ({ ...props }) => {
@@ -104,6 +105,12 @@ const FormSPK = ({ ...props }) => {
                         return Promise.reject(
                           new Error(
                             `Minimal harus mempunyai ${state?.settings?.kGram} karakter`
+                          )
+                        );
+                      } else if (isIncludeEmot(value)) {
+                        return Promise.reject(
+                          new Error(
+                            "Judul mengandung emotikon, mohon diperbaiki"
                           )
                         );
                       } else {
