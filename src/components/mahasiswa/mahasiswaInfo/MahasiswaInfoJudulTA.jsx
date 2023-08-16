@@ -10,6 +10,7 @@ import FilterSemester from "../../FilterSemester";
 import IllustrasiSidos from "../../IllustrasiSidos";
 import decodeCookie from "../../../lib/src/helpers/decodeCookie";
 import sameArrObj from "../../../lib/src/helpers/sameArrObj";
+import { FileExcelFilled } from "@ant-design/icons";
 
 const MahasiswaDetailJudulTA = () => {
   const { state, payload, setPayload } = useTabsContext();
@@ -17,13 +18,32 @@ const MahasiswaDetailJudulTA = () => {
 
   const dataCookie = decodeCookie("token");
 
-  const arrDataJudul = state?.datas?.dosen?.map((data) => ({
-    judul: data?.judul,
-    status_judul: data?.status_judul,
-    file_pra_proposal: data?.file_pra_proposal,
-    bidang: data?.bidang,
-  }));
-  const uniqueArrJudul = sameArrObj({ arr: arrDataJudul, props: "judul" });
+  const arrDataJudul = () => {
+    if (
+      state?.datas?.dosen?.every(
+        (dsnJudul) => dsnJudul?.status_usulan === "no confirmed"
+      )
+    ) {
+      return state?.datas?.dosen?.map((data) => ({
+        judul: data?.judul,
+        status_judul: data?.status_judul,
+        file_pra_proposal: data?.file_pra_proposal,
+        bidang: data?.bidang,
+        keterangan: "Belum diproses kaprodi",
+      }));
+    } else {
+      return state?.datas?.dosen
+        ?.filter((dsnJudul) => dsnJudul?.status_usulan === "confirmed")
+        .map((data) => ({
+          judul: data?.judul,
+          status_judul: data?.status_judul,
+          file_pra_proposal: data?.file_pra_proposal,
+          bidang: data?.bidang,
+          keterangan: data?.keterangan || "Tidak ada catatan dari kaprodi",
+        }));
+    }
+  };
+  const uniqueArrJudul = sameArrObj({ arr: arrDataJudul(), props: "judul" });
 
   return (
     <Fragment>
@@ -46,14 +66,16 @@ const MahasiswaDetailJudulTA = () => {
               title={`Judul ${idx + 1}`}
               key={`${data}_${idx}`}
               actions={[
-                <Tooltip key="link" title={`${data?.judul}.pdf`}>
-                  <Typography.Link
-                    style={{ width: 300 }}
-                    ellipsis
-                    href={data?.file_pra_proposal}
-                    target="_blank"
-                  >{`${data?.judul}.pdf`}</Typography.Link>
-                </Tooltip>,
+                <Typography.Text
+                  key="keterangan"
+                  strong
+                  ellipsis={{
+                    tooltip: data?.judul,
+                  }}
+                  style={{ width: 300 }}
+                >
+                  {data?.keterangan}
+                </Typography.Text>,
               ]}
             >
               <div style={{ textAlign: "center" }}>
@@ -70,6 +92,17 @@ const MahasiswaDetailJudulTA = () => {
                   <TagSidos color={colorTagHandler(data?.status_judul)}>
                     {data?.status_judul}
                   </TagSidos>
+                  <Tooltip title={`${data?.judul}.pdf`}>
+                    <FileExcelFilled
+                      style={{ color: "green", marginRight: 10 }}
+                    />
+                    <Typography.Link
+                      style={{ width: 300 }}
+                      ellipsis
+                      href={data?.file_pra_proposal}
+                      target="_blank"
+                    >{`${data?.judul}.pdf`}</Typography.Link>
+                  </Tooltip>
                 </Space>
               </div>
             </Card>

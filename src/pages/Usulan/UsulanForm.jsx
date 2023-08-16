@@ -171,7 +171,7 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
   const visibleSPKTable = () => {
     form?.validateFields()?.then(() => {
       getSPKHandler({
-        ...form?.getFieldsValue(),
+        ...form?.getFieldsValue(true),
         ...(form?.getFieldValue("isJdlFromDosen") === "tidak" && {
           jdl_from_dosen: "",
         }),
@@ -254,7 +254,7 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
         file_pra_proposal: formData?.file_pra_proposal,
       });
     },
-    [state]
+    [state, form.getFieldsValue()]
   );
 
   const fetchSettings = () => {
@@ -280,18 +280,7 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
         }
       })
       ?.catch((e) => {
-        const err = responseError(e);
-        if (err?.status === 401) {
-          unAuthResponse({ messageApi, err });
-        } else if (err?.status === 403) {
-          forbiddenResponse({ navigate, err });
-        } else {
-          messageApi.open({
-            type: "error",
-            key: "errMsg",
-            content: err?.error,
-          });
-        }
+        catchHandler({ e, messageApi, navigate });
       });
   };
 
@@ -335,7 +324,6 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
           form,
           openModalHandler,
           rowSelectionHandler,
-          getSPKHandler,
           type,
           submitUsulan,
           openModalSimilaritasJudul,
@@ -362,7 +350,10 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
           })}
         />
         <BtnSidos
-          disabled={type === "edit" && state?.arrUsulanDospem?.length === 2}
+          // disabled={type === "edit" && state?.arrUsulanDospem?.length === 2 || }
+          disabled={
+            state?.arrUsulanDospem?.length >= state?.settings?.maksimal_usulan
+          }
           loading={state?.isLoadingSPK}
           position="center"
           type="primary"

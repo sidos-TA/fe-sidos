@@ -4,6 +4,7 @@ import { useUsulanFormContext } from "../../context/Usulan/UsulanFormContext";
 import ImageSidos from "../../lib/src/components/ImageSidos";
 import TableSidos from "../../lib/src/components/TableSidos";
 import decodeCookie from "../../lib/src/helpers/decodeCookie";
+import sameArrObj from "../../lib/src/helpers/sameArrObj";
 import TagDataBidang from "../TagDataBidang";
 
 const { Column } = Table;
@@ -112,7 +113,10 @@ const TableSPK = ({ ...props }) => {
           };
         }}
         render={(record) => {
-          const arrBidang = record?.bidangs;
+          const arrBidang = sameArrObj({
+            arr: record?.bidangs,
+            props: "bidang",
+          });
 
           return (
             <Fragment>
