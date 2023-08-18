@@ -29,7 +29,7 @@ const QComponents = ({ item, idxItem }) => {
           name={`kriteria${idxItem}`}
           label={`Nama Kriteria (K${idxItem})`}
           required
-          type="text"
+          type="textarea"
           onChange={(val) => {
             form.setFieldValue(`kriteria${idxItem}`, val);
           }}
