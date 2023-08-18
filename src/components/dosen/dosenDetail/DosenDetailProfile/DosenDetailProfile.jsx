@@ -144,11 +144,12 @@ const DosenDetailProfile = () => {
               window?.location?.pathname?.split("/")?.[1];
             uploadToCloudinary({ jabatan: formData?.data?.jabatan });
 
-            if (pathnameLocation === "dosen_prfl") {
-              window.location.href = "/";
-            } else {
-              navigate("/dosen");
-            }
+            /**Tahan dulu aja, mau cek error */
+            // if (pathnameLocation === "dosen_prfl") {
+            //   window.location.href = "/";
+            // } else {
+            //   navigate("/dosen");
+            // }
           }}
         >
           <Row justify="space-around" align="middle">
