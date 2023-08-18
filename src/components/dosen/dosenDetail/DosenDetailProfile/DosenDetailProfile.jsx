@@ -137,19 +137,24 @@ const DosenDetailProfile = () => {
           payloadDelete={{
             nip: stateTabs?.datas?.nip,
           }}
+          beforeSubmit={() => {
+            uploadToCloudinary({
+              jabatan:
+                state?.profileIdentity?.jabatan || stateTabs?.datas?.jabatan,
+            });
+          }}
           payloadFetch={payloadFetchSubmit}
           payloadSubmit={payloadFetchSubmit}
-          afterMessageActionClose={(formData) => {
+          afterMessageActionClose={() => {
             const pathnameLocation =
               window?.location?.pathname?.split("/")?.[1];
-            uploadToCloudinary({ jabatan: formData?.data?.jabatan });
 
             /**Tahan dulu aja, mau cek error */
-            // if (pathnameLocation === "dosen_prfl") {
-            //   window.location.href = "/";
-            // } else {
-            //   navigate("/dosen");
-            // }
+            if (pathnameLocation === "dosen_prfl") {
+              window.location.href = "/";
+            } else {
+              navigate("/dosen");
+            }
           }}
         >
           <Row justify="space-around" align="middle">
