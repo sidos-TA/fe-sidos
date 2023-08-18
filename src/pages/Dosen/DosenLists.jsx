@@ -46,6 +46,7 @@ const DosenList = () => {
             type="text"
             key="name_dosen"
             label="Nama Dosen"
+            allowClear
             formItemObj={{ labelCol: { span: 24 } }}
             onChange={(value) => {
               searchFilter({ key: "name", value });

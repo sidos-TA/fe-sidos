@@ -72,11 +72,13 @@ const KeputusanEdit = () => {
           submitEndpoint: "addBimbingan",
         })}
         customFetch={(formData) => {
-          FormKeputusan?.setFieldsValue({
-            jdl_from_dosen: formData?.jdl_from_dosen,
-            judul: formData?.judul,
-            bidang: formData?.bidang,
-          });
+          FormKeputusan.setFieldsValue(formData);
+          // FormKeputusan?.setFieldsValue({
+          //   jdl_from_dosen: formData?.jdl_from_dosen,
+          //   judul: formData?.judul,
+          //   bidang: formData?.bidang,
+          //   file_pra_proposal:formData?.file_pra_proposal
+          // });
 
           const arrDatasDospem = formData?.usulans?.map((usul) => usul?.dosen);
           setState((prev) => ({
@@ -114,6 +116,7 @@ const KeputusanEdit = () => {
             label="File Pra Proposal"
             labelProps={{
               href: FormKeputusan.getFieldValue("file_pra_proposal"),
+              target: "_blank",
             }}
           >{`${state?.no_bp}_${FormKeputusan?.getFieldValue(
             "judul"
@@ -159,9 +162,11 @@ const KeputusanEdit = () => {
 
             {state?.statusJudul && (
               <Field
-                {...((state?.statusJudul === "tolak" ||
-                  state?.statusJudul === "revisi") && { required: true })}
-                type="text"
+                required={
+                  state?.statusJudul === "tolak" ||
+                  state?.statusJudul === "revisi"
+                }
+                type="textarea"
                 name="keterangan"
                 label={`Keterangan - ${state?.statusJudul}`}
               />

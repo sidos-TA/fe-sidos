@@ -20,9 +20,14 @@ const BtnActionUsulan = () => {
           position="center"
           type="primary"
           onClick={() => {
-            form.validateFields()?.then(() => {
-              submitUsulan();
-            });
+            form
+              .validateFields()
+              ?.then(() => {
+                submitUsulan();
+              })
+              ?.catch(() => {
+                window.scrollTo(0, 380);
+              });
           }}
         >
           Tentukan Dosen Pembimbing
@@ -38,9 +43,14 @@ const BtnActionUsulan = () => {
           position="center"
           type="primary"
           onClick={() => {
-            form.validateFields()?.then(() => {
-              submitUsulan();
-            });
+            form
+              .validateFields()
+              ?.then(() => {
+                submitUsulan();
+              })
+              ?.catch(() => {
+                window.scrollTo(0, 380);
+              });
           }}
         >
           Usulkan

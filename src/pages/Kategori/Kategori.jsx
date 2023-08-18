@@ -101,6 +101,7 @@ const Kategori = () => {
             arrValueEigenVector,
             setValueEigenVector,
             valueEigenVector,
+            form,
           }}
         >
           <FormSidos
