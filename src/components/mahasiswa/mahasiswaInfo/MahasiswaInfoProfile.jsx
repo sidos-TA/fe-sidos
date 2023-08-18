@@ -99,11 +99,12 @@ const MahasiswaDetailProfile = () => {
             state?.profileIdentity?.semester || stateData?.datas?.semester,
           tahun: state?.profileIdentity?.tahun || stateData?.datas?.tahun,
         }}
-        afterMessageActionClose={(formData) => {
+        beforeSubmit={() => {
           uploadToCloudinary({
-            prodi: formData?.data?.prodi,
+            prodi: state?.profileIdentity?.prodi || stateData?.datas?.prodi,
           });
-
+        }}
+        afterMessageActionClose={() => {
           if (dataCookie?.roles === 2) {
             window.location.href = "/";
           } else {
