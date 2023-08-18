@@ -1,5 +1,5 @@
 import { FileOutlined } from "@ant-design/icons";
-import { Col, message, Row, Typography } from "antd";
+import { Col, message, Row } from "antd";
 import { Fragment, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUsulanFormContext } from "../../context/Usulan/UsulanFormContext";
@@ -94,7 +94,7 @@ const FormSPK = ({ ...props }) => {
               </LabelSidos>
             ) : (
               <Field
-                type="text"
+                type="textarea"
                 required
                 label="Judul"
                 name="judul"
@@ -230,7 +230,10 @@ const FormSPK = ({ ...props }) => {
               </Row>
             ) : (
               <Field
-                required
+                required={
+                  state?.arrUsulanDospem?.length ===
+                  state?.settings?.maksimal_usulan
+                }
                 label="File pra-proposal"
                 name="file_pra_proposal"
                 type="upload"

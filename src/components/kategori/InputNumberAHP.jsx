@@ -1,4 +1,4 @@
-import { Col, Row, Select, Typography } from "antd";
+import { Col, Form, Row, Select, Tooltip, Typography } from "antd";
 import { Suspense } from "react";
 import { useEffect } from "react";
 import { Fragment } from "react";
@@ -9,11 +9,12 @@ import extractNum from "../../lib/src/helpers/extractNum";
 import sumAllArrDatas from "../../lib/src/helpers/sumAllArrDatas";
 
 const { Text } = Typography;
-const InputNumberAHP = ({ item, idxItem }) => {
+const InputNumberAHP = ({ item, idxItem, valueForm }) => {
   let totalEachKriteria = {};
   let timeout;
 
   const {
+    form,
     arrValueEigenVector,
     stateQ2: state,
     setStateQ2: setState,
@@ -127,7 +128,7 @@ const InputNumberAHP = ({ item, idxItem }) => {
 
   return (
     <Fragment>
-      {Object?.entries(item?.skala)?.map((skala) => {
+      {Object?.entries(item?.skala)?.map((skala, skalaIdx) => {
         return (
           <Row
             gutter={[8, 8]}
@@ -136,7 +137,9 @@ const InputNumberAHP = ({ item, idxItem }) => {
             key={skala}
             style={{ marginBottom: 15 }}
           >
-            <Col span="auto">{skala?.[0]}</Col>
+            <Tooltip title={valueForm?.[`kriteria${skalaIdx + 1}`]}>
+              <Col span="auto">{skala?.[0]}</Col>
+            </Tooltip>
             <Col span={6}>
               <Text keyboard>{item?.stringSkala?.[skala[0]]}</Text>{" "}
             </Col>
