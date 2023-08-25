@@ -25,30 +25,27 @@ const UsulanLists = () => {
   const dataCookie = decodeCookie("token");
   const fetch = useFetch();
   const [messageApi, contextHolder] = message.useMessage();
+  const [settingData, setSettingData] = useState({
+    semester: "",
+    tahun: "",
+  });
 
-  const fetchDatas = () => {
-    setIsLoadingFetch(true);
+  const getSetting = () => {
     fetch({
-      endpoint: "getUsulan",
-      payload: {
-        ...payload,
-        ...(dataCookie?.roles === 2 && {
-          no_bp: dataCookie?.no_bp,
-        }),
-      },
+      endpoint: "getSetting",
     })
       ?.then((response) => {
         const res = responseSuccess(response);
         if (res?.status === 200) {
-          setIsMhsUsul(Boolean(res?.data?.length));
-          setArrDataUsulans(res?.data);
+          setSettingData((prev) => ({
+            ...prev,
+            semester: res?.data?.semester,
+            tahun: res?.data?.tahun,
+          }));
         }
       })
       ?.catch((e) => {
         catchHandler({ e, messageApi, navigate });
-      })
-      ?.finally(() => {
-        setIsLoadingFetch(false);
       });
   };
 
@@ -67,37 +64,48 @@ const UsulanLists = () => {
   };
 
   useEffect(() => {
-    fetchDatas();
-  }, [JSON.stringify(payload)]);
+    getSetting();
+  }, []);
 
   return (
     <Fragment>
       {contextHolder}
       <TitlePage
         title="Data Usulan"
-        {...(dataCookie?.roles === 2 && {
-          addRoute: "usulan_Add",
-        })}
-        // {...(!isMhsUsul &&
-        //   dataCookie?.roles === 2 && {
-        //     addRoute: "usulan_Add",
-        //   })}
+        {...(dataCookie?.roles === 2 &&
+          dataCookie?.tahun === settingData?.tahun &&
+          dataCookie?.semester === settingData?.semester && {
+            addRoute: "usulan_Add",
+          })}
       />
       {dataCookie?.roles === 1 && (
         <FilterSemester payloadState={payload} setStatePayload={setPayload} />
       )}
       <TableSidos
+        usePaginateBE
         endpoint="getUsulan"
         payload={{
           ...payload,
           ...(dataCookie?.roles === 2 && {
             no_bp: dataCookie?.no_bp,
+            tahun: dataCookie?.tahun,
+            semester: dataCookie?.semester,
           }),
         }}
-        // arrDatas={arrDataUsulans}
         tableLayout="fixed"
-        // isLoading={isLoadingFetch}
         customFilter={[
+          <InputSidos
+            label="Nama Mahasiswa"
+            formItemObj={{ labelCol: { span: 24 } }}
+            key="namamhs"
+            placeholder="Nama Mahasiswa"
+            onChange={(value) => {
+              searchFilter({
+                key: "name",
+                value,
+              });
+            }}
+          />,
           <SelectSidos
             key="bidang"
             label="bidang"

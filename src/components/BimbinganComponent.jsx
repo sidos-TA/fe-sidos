@@ -21,7 +21,7 @@ const BimbinganComponent = ({
       (data) => data?.judul === title
     );
     return {
-      key: `${title}_${idx}`,
+      key: idx,
       label: (
         <Typography.Text
           style={{ width: 100 }}

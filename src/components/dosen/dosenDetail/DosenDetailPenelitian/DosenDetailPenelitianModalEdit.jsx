@@ -43,7 +43,11 @@ const DosenDetailPenelitianModalEdit = ({
           nip: state?.datas?.nip,
         }}
       >
-        <Field type="text" name="judulPenelitian" label="Judul Penelitian" />
+        <Field
+          type="textarea"
+          name="judulPenelitian"
+          label="Judul Penelitian"
+        />
         <Field type="text" name="link" label="Link" />
         <Field type="text" name="tahun" label="Tahun" />
       </FormSidos>

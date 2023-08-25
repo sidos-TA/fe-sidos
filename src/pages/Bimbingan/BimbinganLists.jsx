@@ -115,7 +115,13 @@ const BimbinganLists = () => {
             );
           }}
         />
-        <Column title="Keterangan" dataIndex="keterangan" />
+        <Column
+          title="Keterangan"
+          dataIndex="keterangan"
+          render={(keterangan) => {
+            return keterangan || "Tidak ada catatan tambahan";
+          }}
+        />
         <Column title="Dosen Pembimbing 1" dataIndex="dosen_pembimbing1" />
         <Column title="Dosen Pembimbing 2" dataIndex="dosen_pembimbing2" />
       </TableSidos>

@@ -20,6 +20,7 @@ const UsulanFormModalSimilaritasJudul = () => {
         onOk={() => {
           openModalSimilaritasJudul(false);
         }}
+        destroyOnClose
       >
         <TableSidos pagination={false} arrDatas={state?.arrSimilarJudul}>
           <Column

@@ -21,6 +21,7 @@ const DosenAddUploadFile = () => {
         jabatan: jabatanList,
         pendidikan: pendidikanList,
       }}
+      pKey="nip"
     />
   );
 };

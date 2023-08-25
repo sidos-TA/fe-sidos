@@ -10,7 +10,7 @@ import FilterSemester from "../../FilterSemester";
 import IllustrasiSidos from "../../IllustrasiSidos";
 import decodeCookie from "../../../lib/src/helpers/decodeCookie";
 import sameArrObj from "../../../lib/src/helpers/sameArrObj";
-import { FileExcelFilled } from "@ant-design/icons";
+import { FilePdfFilled } from "@ant-design/icons";
 
 const MahasiswaDetailJudulTA = () => {
   const { state, payload, setPayload } = useTabsContext();
@@ -93,8 +93,8 @@ const MahasiswaDetailJudulTA = () => {
                     {data?.status_judul}
                   </TagSidos>
                   <Tooltip title={`${data?.judul}.pdf`}>
-                    <FileExcelFilled
-                      style={{ color: "green", marginRight: 10 }}
+                    <FilePdfFilled
+                      style={{ color: "#FF0000", marginRight: 10 }}
                     />
                     <Typography.Link
                       style={{ width: 300 }}

@@ -1,4 +1,4 @@
-import { Divider, Form, Space } from "antd";
+import { Divider, Form, Space, Typography } from "antd";
 import { Fragment, useState } from "react";
 import { useParams } from "react-router-dom";
 import BimbinganComponent from "../../components/BimbinganComponent";
@@ -8,6 +8,7 @@ import noDospemIllustrate from "../../assets/noDospem.svg";
 import LabelSidos from "../../lib/src/components/FormSidos/fields/LabelSidos";
 import TagSidos from "../../lib/src/components/TagSidos";
 import colorTagHandler from "../../lib/src/helpers/colorTagHandler";
+import ImageSidos from "../../lib/src/components/ImageSidos";
 
 const BimbinganInfo = () => {
   const [FormKeputusan] = Form.useForm();
@@ -18,12 +19,22 @@ const BimbinganInfo = () => {
     tingkatan: "",
     statusJudul: "",
     keterangan: "",
-    mhs_name: "",
+    mhs_profile: {},
   });
 
   return (
     <Fragment>
       <TitlePage title="Detail Bimbingan" backRoute="/bimbingan" />
+
+      <Space
+        style={{ textAlign: "center", width: "100%", marginBottom: 50 }}
+        direction="vertical"
+      >
+        <ImageSidos src={state?.mhs_profile?.photo} />
+        <Typography.Text strong>{state?.mhs_profile?.name}</Typography.Text>
+        <Typography.Text strong>{state?.mhs_profile?.no_bp}</Typography.Text>
+        <Typography.Text strong>{state?.mhs_profile?.prodi}</Typography.Text>
+      </Space>
 
       <LabelSidos
         position="center"
@@ -56,6 +67,13 @@ const BimbinganInfo = () => {
             keterangan: formData?.keterangan,
             statusJudul: formData?.status_judul,
             mhs_name: formData?.name,
+            mhs_profile: {
+              name: formData?.name,
+              photo: formData?.photo,
+              prodi: formData?.prodi,
+              no_bp: formData?.no_bp,
+            },
+            photo: formData?.photo,
           }));
         }}
       >
@@ -79,7 +97,7 @@ const BimbinganInfo = () => {
             }}
             label="File Pra Proposal"
           >
-            {`${state?.mhs_name} - File Pra Proposal.pdf`}
+            {`${state?.mhs_profile?.name} - File Pra Proposal.pdf`}
           </LabelSidos>
         </Space>
         <Divider orientation="center">Dosen Pembimbing</Divider>
@@ -93,7 +111,9 @@ const BimbinganInfo = () => {
           textNoData="Belum ada dosen pembimbing"
         />
 
-        <LabelSidos label="Keterangan : ">{state?.keterangan}</LabelSidos>
+        <LabelSidos label="Keterangan : ">
+          {state?.keterangan || "Tidak ada catatan tambahan"}
+        </LabelSidos>
       </FormSidos>
     </Fragment>
   );

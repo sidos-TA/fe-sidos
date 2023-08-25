@@ -22,6 +22,12 @@ const ForbiddenMethodsAddUploadFile = () => {
       endpointSelectField={{
         bidang: "getDataBidang",
       }}
+      selectLabelSelectField={{
+        bidang: "bidang",
+      }}
+      selectValueSelectField={{
+        bidang: "bidang",
+      }}
     />
   );
 };

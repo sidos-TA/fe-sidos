@@ -19,13 +19,12 @@ import { useEffect } from "react";
 import { lazy } from "react";
 import catchHandler from "../../lib/src/helpers/catchHandler";
 import sameArr from "../../lib/src/helpers/sameArr";
+import ModalSimilaritasJudul from "../../components/ModalSimilaritasJudul";
+import useGetSimilaritasJudul from "../../lib/src/helpers/useGetSimilaritasJudul";
 
-const UsulanFormModalSimilaritasJudul = lazy(() =>
-  import("../../components/usulan/UsulanFormModalSimilaritasJudul")
-);
-const UsulanDetailModal = lazy(() =>
-  import("../../components/usulan/usulanDetail/UsulanDetailModal")
-);
+// const UsulanDetailModal = lazy(() =>
+//   import("../../components/usulan/usulanDetail/UsulanDetailModal")
+// );
 
 const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
   const [form] = Form.useForm();
@@ -33,6 +32,7 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
   const fetch = useFetch();
   const { pathname } = useLocation();
   const params = useParams();
+  const [loadingUpload, setLoadingUpload] = useState(false);
 
   const dataCookie = decodeCookie("token");
 
@@ -59,6 +59,18 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
     isLoadingGetSimilar: false,
     no_bp: "",
     dsnNameJdlFromDosen: "",
+    tahun: "",
+    semester: "",
+  });
+
+  const [stateDetailDosen, setStateDetailDosen] = useState({
+    isOpenModal: false,
+    objDosenDetail: {},
+  });
+
+  const [stateSimilar, setStateSimilar] = useGetSimilaritasJudul({
+    messageApi,
+    judul: form?.getFieldValue("judul"),
   });
 
   const getSimilarJudul = () => {
@@ -81,42 +93,47 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
         openModalSimilaritasJudul(true);
       })
       ?.catch((e) => {
-        const err = responseError(e);
-        messageApi?.open({
-          type: "error",
-          content: err?.error,
-        });
+        catchHandler({ e, messageApi, navigate });
       })
       ?.finally(() => {
         setState((prev) => ({ ...prev, isLoadingGetSimilar: false }));
       });
   };
 
-  const openModalHandler = (record) => {
-    setState((prev) => ({
-      ...prev,
-      isOpenModal: true,
-      objDosenDetail: record,
-    }));
+  const isDisableRow = (selectedRowKeys) => {
+    // kalau kaprodi
+    if (dataCookie?.roles === 1 && selectedRowKeys?.length === 2) {
+      return true;
+    }
+    // kalau mhs akhir
+    else if (
+      dataCookie?.roles === 2 &&
+      selectedRowKeys?.length === state?.settings?.maksimal_usulan
+    ) {
+      return true;
+    } else {
+      return false;
+    }
   };
 
   const rowSelectionHandler = (selectedRowKeys) => {
     setState((prev) => ({
       ...prev,
       arrUsulanDospem: selectedRowKeys,
-      ...(selectedRowKeys?.length === state?.settings?.maksimal_usulan && {
-        arrDatasSPK: state?.arrDatasSPK?.map((spk) => {
-          if (!selectedRowKeys?.includes(spk?.nip)) {
-            return {
-              ...spk,
-              isDisable: true,
-            };
-          }
+      arrDatasSPK: state?.arrDatasSPK?.map((spk) => {
+        if (
+          !selectedRowKeys?.includes(String(spk?.nip)) &&
+          isDisableRow(selectedRowKeys)
+        ) {
           return {
             ...spk,
-            isDisable: false,
+            isDisable: true,
           };
-        }),
+        }
+        return {
+          ...spk,
+          isDisable: false,
+        };
       }),
     }));
   };
@@ -202,6 +219,8 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
         ...(type === "edit" && {
           tingkatan: state?.tingkatan,
           id_usulan: params?.id_usulan,
+          tahun: state?.tahun,
+          semester: state?.semester,
         }),
         file_pra_proposal: form?.getFieldValue("file_pra_proposal"),
       },
@@ -213,6 +232,7 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
             type: "success",
             key: "success_submit_usulan",
             content: response?.message,
+            duration: 0.8,
             onClose: () => {
               navigate(
                 type === "edit" && state?.arrUsulanDospem?.length === 2
@@ -242,6 +262,8 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
         tingkatan: formData?.tingkatan,
         no_bp: formData?.no_bp,
         dsnNameJdlFromDosen: formData?.jdl_from_dosen?.name,
+        tahun: formData?.tahun,
+        semester: formData?.semester,
       }));
 
       form.setFieldsValue({
@@ -251,6 +273,8 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
         jdl_from_dosen: formData?.jdl_from_dosen?.nip,
         file_pra_proposal: formData?.file_pra_proposal,
       });
+
+      // visibleSPKTable();
     },
     [state, form.getFieldsValue()]
   );
@@ -296,9 +320,9 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
   );
 
   useEffect(() => {
-    if (type === "add" && dataCookie?.roles === 2) {
-      fetchSettings();
-    }
+    // if (type === "add" && dataCookie?.roles === 2) {
+    // }
+    fetchSettings();
   }, []);
 
   useEffect(() => {
@@ -320,12 +344,13 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
           state,
           setState,
           form,
-          openModalHandler,
           rowSelectionHandler,
           type,
           submitUsulan,
           openModalSimilaritasJudul,
           getSimilarJudul,
+          loadingUpload,
+          setLoadingUpload,
         }}
       >
         <TitlePage
@@ -338,6 +363,16 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
         <FormSPK
           form={form}
           state={state}
+          isFromDosen={state?.isJdlFromDosen === "ya"}
+          getSimilarHandler={() => {
+            form.validateFields(["judul"])?.then(() => {
+              setStateSimilar((prev) => ({
+                ...prev,
+                isLoadingGetSimilar: true,
+              }));
+            });
+          }}
+          stateSimilar={stateSimilar}
           setState={setState}
           {...(type === "edit" && {
             customFetch: customFetchHandler,
@@ -350,7 +385,10 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
         <BtnSidos
           // disabled={type === "edit" && state?.arrUsulanDospem?.length === 2 || }
           disabled={
-            state?.arrUsulanDospem?.length >= state?.settings?.maksimal_usulan
+            dataCookie?.roles === 1
+              ? state?.arrUsulanDospem?.length === 2
+              : state?.arrUsulanDospem?.length >=
+                state?.settings?.maksimal_usulan
           }
           loading={state?.isLoadingSPK}
           position="center"
@@ -361,13 +399,30 @@ const UsulanForm = ({ submitEndpoint, titlePage, type = "" }) => {
         </BtnSidos>
         {state?.isVisibleSPK && (
           <Fragment>
-            <TableSPK />
+            <TableSPK
+              isKaprodi={dataCookie?.roles === 1}
+              arrDatasSPK={state?.arrDatasSPK}
+              loadingSPK={state?.isLoadingSPK}
+              stateModalDetail={stateDetailDosen}
+              setStateModalDetail={setStateDetailDosen}
+            />
 
             {state?.status_usulan !== "confirmed" && <BtnActionUsulan />}
           </Fragment>
         )}
-        <UsulanDetailModal />
-        <UsulanFormModalSimilaritasJudul />
+        {/* <UsulanDetailModal /> */}
+        {/* <UsulanFormModalSimilaritasJudul /> */}
+        <ModalSimilaritasJudul
+          arrDatas={stateSimilar?.arrDatas}
+          open={stateSimilar?.openModal}
+          closeModal={() => {
+            setStateSimilar((prev) => ({
+              ...prev,
+              openModal: false,
+            }));
+          }}
+          judul={form?.getFieldValue("judul")}
+        />
       </UsulanFormContext.Provider>
     </>
   );

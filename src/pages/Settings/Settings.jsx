@@ -113,21 +113,21 @@ const Settings = () => {
           type="number"
           name="maksimal_usulan"
           label="Maksimal Usulan"
-          rules={[
-            {
-              validator: (_, value) => {
-                if (value <= 2) {
-                  return Promise.reject(
-                    new Error(
-                      "Mohon berikan lebih dari 2 untuk alternatif para mahasiswa"
-                    )
-                  );
-                } else {
-                  return Promise.resolve();
-                }
-              },
-            },
-          ]}
+          // rules={[
+          //   {
+          //     validator: (_, value) => {
+          //       if (value <= 2) {
+          //         return Promise.reject(
+          //           new Error(
+          //             "Mohon berikan lebih dari 2 untuk alternatif para mahasiswa"
+          //           )
+          //         );
+          //       } else {
+          //         return Promise.resolve();
+          //       }
+          //     },
+          //   },
+          // ]}
         />
         <LabelSidos label="Update data Kaprodi">
           <BtnSidos onClick={() => openHandler(true)}>Update Kaprodi</BtnSidos>

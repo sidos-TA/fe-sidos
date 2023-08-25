@@ -1,3 +1,4 @@
+import semesterList from "../../../constants/semesterList";
 import { exampleFileMhs } from "../../../lib/src/constants";
 import UploadFileAddData from "../../uploadFileInsert/UploadFileAddData";
 
@@ -17,13 +18,20 @@ const DosenAddUploadFile = () => {
       exampleFile={fileList}
       endpointSelectField={{
         prodi: "getAllProdi",
+        tahun: "getTahun",
       }}
       selectLabelSelectField={{
         prodi: "prodiName",
+        tahun: "tahun",
       }}
       selectValueSelectField={{
         prodi: "prodiName",
+        tahun: "tahun",
       }}
+      listOptionsSelectField={{
+        semester: semesterList,
+      }}
+      pKey="no_bp"
     />
   );
 };

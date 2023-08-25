@@ -9,6 +9,7 @@ import Field from "../../../../lib/src/components/FormSidos/fields/Field";
 import FormSidos from "../../../../lib/src/components/FormSidos/form/FormSidos";
 import ImageSidos from "../../../../lib/src/components/ImageSidos";
 import LoadingSidos from "../../../../lib/src/components/LoadingSidos";
+import decodeCookie from "../../../../lib/src/helpers/decodeCookie";
 import { responseSuccess } from "../../../../lib/src/helpers/formatRespons";
 import getBase64 from "../../../../lib/src/helpers/getBase64";
 import useFetch from "../../../../lib/src/helpers/useFetch";
@@ -27,6 +28,7 @@ const DosenDetailProfile = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
   const navigate = useNavigate();
+  const dataCookie = decodeCookie("token");
 
   const fetch = useFetch();
 
@@ -133,7 +135,9 @@ const DosenDetailProfile = () => {
           form={form}
           submitEndpoint="updateDataDosen"
           submitText="Perbarui"
-          deleteEndpoint="deleteDataDosen"
+          {...(dataCookie?.roles === 1 && {
+            deleteEndpoint: "deleteDataDosen",
+          })}
           payloadDelete={{
             nip: stateTabs?.datas?.nip,
           }}

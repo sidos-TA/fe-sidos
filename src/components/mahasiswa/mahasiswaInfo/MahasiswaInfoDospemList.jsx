@@ -35,7 +35,7 @@ const MahasiswaDetailDospemList = () => {
         propBody="jabatan"
         isUseTabs
       />
-      <Divider orientation="center">Dosen yang diusulkan</Divider>
+      {/* <Divider orientation="center">Dosen yang diusulkan</Divider>
       <BimbinganComponent
         src={noDospemIllustrate}
         textNoData={`${state?.datas?.name} belum melakukan pengusulan judul TA`}
@@ -45,7 +45,7 @@ const MahasiswaDetailDospemList = () => {
         propSubInfo="pendidikan"
         propBody="jabatan"
         isUseTabs
-      />
+      /> */}
     </Suspense>
   );
 };
