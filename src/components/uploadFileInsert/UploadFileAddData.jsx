@@ -1,6 +1,14 @@
 import { Fragment } from "react";
 import { read, utils } from "xlsx";
-import { Card, Divider, message, Popover, Space, Typography } from "antd";
+import {
+  Badge,
+  Card,
+  Divider,
+  message,
+  Popover,
+  Space,
+  Typography,
+} from "antd";
 import { useState } from "react";
 import ModalPerData from "./ModalPerData";
 import TitleSection from "../TitleSection";
@@ -11,6 +19,9 @@ import useFetch from "../../lib/src/helpers/useFetch";
 import { responseSuccess } from "../../lib/src/helpers/formatRespons";
 import { useNavigate } from "react-router-dom";
 import catchHandler from "../../lib/src/helpers/catchHandler";
+import CardResult from "./CardResult";
+import { CloseCircleFilled, PlusOutlined } from "@ant-design/icons";
+import ModalAddData from "./ModalAddData";
 
 const UploadFileAddData = ({
   exampleFile,
@@ -21,6 +32,7 @@ const UploadFileAddData = ({
   selectLabelSelectField = {},
   selectValueSelectField = {},
   submitEndpoint,
+  pKey,
 }) => {
   const [state, setState] = useState({
     isShowPreviewUploadFile: false,
@@ -36,6 +48,8 @@ const UploadFileAddData = ({
     data: {},
     visible: false,
   });
+
+  const [openModalAdd, setOpenModalAdd] = useState(false);
 
   const fetch = useFetch();
 
@@ -101,6 +115,15 @@ const UploadFileAddData = ({
       });
   };
 
+  const deleteEachResult = (id) => {
+    const newDatas = state?.arrDatasFiles?.filter((data) => data?.id !== id);
+
+    setState((prev) => ({
+      ...prev,
+      arrDatasFiles: newDatas,
+    }));
+  };
+
   return (
     <Fragment>
       {contextHolderMessage}
@@ -126,59 +149,50 @@ const UploadFileAddData = ({
           {state?.isShowPreviewUploadFile && (
             <Fragment>
               <Divider orientation="center">Preview</Divider>
-              {state?.arrDatasFiles?.length ? (
-                <div style={{ textAlign: "center" }}>
-                  <Space wrap size="large" style={{ justifyContent: "center" }}>
-                    {state?.arrDatasFiles?.map((data, idx) => {
-                      return (
-                        <Popover
-                          key={idx}
-                          style={{ color: "white" }}
-                          content={
-                            <Space direction="vertical">
-                              {Object.keys(data)
-                                ?.filter((dataKey) => dataKey !== "id")
-                                ?.map((keyDataFile, idxKeyDataFile) => (
-                                  <Typography.Text key={idxKeyDataFile}>
-                                    <span style={{ fontWeight: "bold" }}>
-                                      {keyDataFile}
-                                    </span>{" "}
-                                    : {data?.[keyDataFile]}
-                                  </Typography.Text>
-                                ))}
-                            </Space>
-                          }
-                        >
-                          <Card
-                            style={{ cursor: "pointer", width: 300 }}
+              <div style={{ textAlign: "center" }}>
+                <Space wrap size="large" style={{ justifyContent: "center" }}>
+                  {state?.arrDatasFiles?.length ? (
+                    <Fragment>
+                      {state?.arrDatasFiles?.map((data, idx) => {
+                        return (
+                          <Badge
                             key={idx}
-                            onClick={() => {
-                              setModalState((prev) => ({
-                                ...prev,
-                                data,
-                                visible: true,
-                              }));
-                            }}
-                            title={
-                              <Typography.Text style={{ width: 100 }}>
-                                {data?.[propsCardTitle]}
-                              </Typography.Text>
+                            count={
+                              <CloseCircleFilled
+                                style={{
+                                  fontSize: 32,
+                                  color: "red",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => deleteEachResult(data?.id)}
+                              />
                             }
                           >
-                            {
-                              <Typography.Text style={{ width: 100 }}>
-                                {data?.[propsCardSubtitle]}
-                              </Typography.Text>
-                            }
-                          </Card>
-                        </Popover>
-                      );
-                    })}
-                  </Space>
-                </div>
-              ) : (
-                <Fragment />
-              )}
+                            <CardResult
+                              data={data}
+                              propsCardSubtitle={propsCardSubtitle}
+                              propsCardTitle={propsCardTitle}
+                              setModalState={setModalState}
+                            />
+                          </Badge>
+                        );
+                      })}
+                    </Fragment>
+                  ) : (
+                    <Fragment />
+                  )}
+
+                  <Card
+                    style={{ cursor: "pointer", border: "1px dashed #c1c1c1" }}
+                    onClick={() => setOpenModalAdd(true)}
+                  >
+                    <Space>
+                      <PlusOutlined />
+                      <Typography.Text>Tambah</Typography.Text>
+                    </Space>
+                  </Card>
+                </Space>
+              </div>
             </Fragment>
           )}
         </Fragment>
@@ -207,6 +221,19 @@ const UploadFileAddData = ({
         endpointSelectField={endpointSelectField}
         selectLabelSelectField={selectLabelSelectField}
         selectValueSelectField={selectValueSelectField}
+        pKey={pKey}
+      />
+
+      <ModalAddData
+        openModalAdd={openModalAdd}
+        setOpenModalAdd={setOpenModalAdd}
+        state={state}
+        setState={setState}
+        listOptionsSelectField={listOptionsSelectField}
+        endpointSelectField={endpointSelectField}
+        selectLabelSelectField={selectLabelSelectField}
+        selectValueSelectField={selectValueSelectField}
+        pKey={pKey}
       />
     </Fragment>
   );

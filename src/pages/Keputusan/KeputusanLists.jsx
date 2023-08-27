@@ -75,6 +75,12 @@ const KeputusanLists = () => {
           }}
         />
         <Column
+          title="No. Bp"
+          render={(record) => {
+            return record?.mh?.no_bp;
+          }}
+        />
+        <Column
           title="Prodi"
           render={(record) => {
             return record?.mh?.prodi;

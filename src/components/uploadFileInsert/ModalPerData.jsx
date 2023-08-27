@@ -1,6 +1,7 @@
-import { Modal, Space } from "antd";
+import { Form, Modal, Space } from "antd";
 import { useState } from "react";
 import LabelSidos from "../../lib/src/components/FormSidos/fields/LabelSidos";
+import FormSidos from "../../lib/src/components/FormSidos/form/FormSidos";
 
 const ModalPerData = ({
   state,
@@ -11,8 +12,11 @@ const ModalPerData = ({
   endpointSelectField,
   selectValueSelectField,
   selectLabelSelectField,
+  pKey,
 }) => {
   const [profileIdentity, setProfileIdentity] = useState({});
+
+  const [FormModalEdit] = Form.useForm();
 
   const updateField = ({ field, val }) => {
     setProfileIdentity({
@@ -25,7 +29,6 @@ const ModalPerData = ({
     const selectData = state?.arrDatasFiles?.find(
       (data) => data?.id === modalState?.data?.id
     );
-
     const arrKeysSelectData = Object.keys(selectData);
     const newSelectData = {};
 
@@ -61,10 +64,12 @@ const ModalPerData = ({
     <Modal
       destroyOnClose
       maskClosable={false}
-      title="Informasi"
+      title="Informasi Detail"
       onOk={() => {
-        updateDataHandler();
-        clearState();
+        FormModalEdit?.validateFields()?.then(() => {
+          updateDataHandler();
+          clearState();
+        });
       }}
       open={modalState?.visible}
       onCancel={() => {
@@ -73,37 +78,61 @@ const ModalPerData = ({
       }}
       okText="Update"
     >
-      <Space direction="vertical">
-        {Object.keys(modalState?.data)
-          ?.filter((keyModalData) => keyModalData !== "id")
-          ?.map((keyData, idx) => {
-            const type = state?.objDataFileType?.[keyData];
-            return (
-              <LabelSidos
-                key={idx + 1}
-                isEditable
-                type={type}
-                {...(type === "select" && {
-                  listOptions: listOptionsSelectField?.[keyData],
-                  endpoint: endpointSelectField?.[keyData],
-                  ...(endpointSelectField?.[keyData] && {
-                    selectValue: selectValueSelectField?.[keyData],
-                    selectLabel: selectLabelSelectField?.[keyData],
-                  }),
-                })}
-                label={keyData}
-                defaultValue={
-                  profileIdentity?.[keyData] || modalState?.data?.[keyData]
-                }
-                onChange={(val) => {
-                  updateField({ field: keyData, val });
-                }}
-              >
-                {profileIdentity?.[keyData] || modalState?.data?.[keyData]}
-              </LabelSidos>
-            );
-          })}
-      </Space>
+      <FormSidos form={FormModalEdit}>
+        <Space direction="vertical">
+          {Object.keys(modalState?.data)
+            ?.filter((keyModalData) => keyModalData !== "id")
+            ?.map((keyData, idx) => {
+              const type = state?.objDataFileType?.[keyData];
+
+              return (
+                <LabelSidos
+                  key={idx + 1}
+                  isEditable
+                  required
+                  name={keyData}
+                  type={type}
+                  {...(type === "select" && {
+                    listOptions: listOptionsSelectField?.[keyData],
+                    endpoint: endpointSelectField?.[keyData],
+                    ...(endpointSelectField?.[keyData] && {
+                      selectValue: selectValueSelectField?.[keyData],
+                      selectLabel: selectLabelSelectField?.[keyData],
+                    }),
+                  })}
+                  label={keyData}
+                  defaultValue={
+                    profileIdentity?.[keyData] || modalState?.data?.[keyData]
+                  }
+                  onChange={(val) => {
+                    updateField({ field: keyData, val });
+                  }}
+                  {...(pKey &&
+                    keyData === pKey && {
+                      rules: [
+                        {
+                          validator: (_, value) => {
+                            if (
+                              state?.arrDatasFiles?.some(
+                                (data) => String(data?.[pKey]) === String(value)
+                              )
+                            ) {
+                              return Promise.reject(
+                                new Error(`${pKey} telah ada`)
+                              );
+                            }
+                            return Promise.resolve();
+                          },
+                        },
+                      ],
+                    })}
+                >
+                  {profileIdentity?.[keyData] || modalState?.data?.[keyData]}
+                </LabelSidos>
+              );
+            })}
+        </Space>
+      </FormSidos>
     </Modal>
   );
 };

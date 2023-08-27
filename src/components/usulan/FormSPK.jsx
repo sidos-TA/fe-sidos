@@ -13,8 +13,14 @@ import { responseSuccess } from "../../lib/src/helpers/formatRespons";
 import isIncludeEmot from "../../lib/src/helpers/isIncludeEmot";
 import useFetch from "../../lib/src/helpers/useFetch";
 
-const FormSPK = ({ ...props }) => {
-  const { form, state, setState, type, getSimilarJudul } =
+const FormSPK = ({
+  isFromKeputusan = false,
+  stateSimilar,
+  getSimilarHandler,
+  isFromDosen = false,
+  ...props
+}) => {
+  const { form, state, setState, type, loadingUpload, setLoadingUpload } =
     useUsulanFormContext();
   const dataCookie = decodeCookie("token");
 
@@ -22,7 +28,6 @@ const FormSPK = ({ ...props }) => {
     original_filename: "",
     secure_url: "",
   });
-  const [loadingUpload, setLoadingUpload] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
 
@@ -87,6 +92,9 @@ const FormSPK = ({ ...props }) => {
           <Col span={19}>
             {type === "edit" ? (
               <LabelSidos
+                labelProps={{
+                  copyable: true,
+                }}
                 defaultValue={form?.getFieldValue("judul")}
                 label="Judul"
               >
@@ -125,12 +133,10 @@ const FormSPK = ({ ...props }) => {
           <Col span={2}>
             <BtnSidos
               type="dashed"
-              loading={state?.isLoadingGetSimilar}
-              disabled={state?.isLoadingGetSimilar}
+              loading={stateSimilar?.isLoadingGetSimilar}
+              disabled={stateSimilar?.isLoadingGetSimilar}
               onClick={() => {
-                form.validateFields(["judul"])?.then(() => {
-                  getSimilarJudul();
-                });
+                getSimilarHandler();
               }}
             >
               Cek Similaritas Judul
@@ -142,6 +148,9 @@ const FormSPK = ({ ...props }) => {
           <LabelSidos
             defaultValue={form?.getFieldValue("bidang")}
             label="Bidang"
+            labelProps={{
+              copyable: true,
+            }}
           >
             {form?.getFieldValue("bidang")}
           </LabelSidos>
@@ -174,29 +183,31 @@ const FormSPK = ({ ...props }) => {
               </Row>
             ) : (
               <Fragment>
-                <Field
-                  type="radio"
-                  label="Apakah Judul Dari Dosen"
-                  name="isJdlFromDosen"
-                  listOptions={[
-                    {
-                      label: "Ya",
-                      value: "ya",
-                    },
-                    {
-                      label: "Tidak",
-                      value: "tidak",
-                    },
-                  ]}
-                  onChange={(value) => {
-                    setState({
-                      ...state,
-                      isJdlFromDosen: value,
-                    });
-                  }}
-                />
+                {!isFromKeputusan && (
+                  <Field
+                    type="radio"
+                    label="Apakah Judul Dari Dosen"
+                    name="isJdlFromDosen"
+                    listOptions={[
+                      {
+                        label: "Ya",
+                        value: "ya",
+                      },
+                      {
+                        label: "Tidak",
+                        value: "tidak",
+                      },
+                    ]}
+                    onChange={(value) => {
+                      setState({
+                        ...state,
+                        isJdlFromDosen: value,
+                      });
+                    }}
+                  />
+                )}
 
-                {state?.isJdlFromDosen === "ya" && (
+                {isFromDosen && (
                   <Field
                     label="Nama Dosen"
                     name="jdl_from_dosen"
@@ -205,63 +216,70 @@ const FormSPK = ({ ...props }) => {
                     selectLabel="name"
                     selectValue="nip"
                     required
+                    payload={{
+                      usePaginate: false,
+                    }}
                   />
                 )}
               </Fragment>
             )}
 
-            {type === "edit" ? (
-              <Row gutter={8} align="middle">
-                <Col>
-                  <FileOutlined />
-                </Col>
-                <Col>
-                  <LabelSidos
-                    label="File Pra Proposal"
-                    isLink
-                    labelProps={{
-                      href: form?.getFieldValue("file_pra_proposal"),
-                      target: "_blank",
+            {!isFromKeputusan && (
+              <Fragment>
+                {type === "edit" ? (
+                  <Row gutter={8} align="middle">
+                    <Col>
+                      <FileOutlined />
+                    </Col>
+                    <Col>
+                      <LabelSidos
+                        label="File Pra Proposal"
+                        isLink
+                        labelProps={{
+                          href: form?.getFieldValue("file_pra_proposal"),
+                          target: "_blank",
+                        }}
+                      >
+                        {`${state?.mhsName} - File Pra Proposal.pdf`}
+                      </LabelSidos>
+                    </Col>
+                  </Row>
+                ) : (
+                  <Field
+                    required={
+                      state?.arrUsulanDospem?.length ===
+                      state?.settings?.maksimal_usulan
+                    }
+                    label="File pra-proposal"
+                    name="file_pra_proposal"
+                    type="upload"
+                    beforeUpload={(file) => {
+                      beforeUpload(file);
+                      return false;
                     }}
+                    showUploadList={{
+                      showDownloadIcon: type === "edit",
+                      showRemoveIcon: type !== "edit",
+                    }}
+                    {...(linkPDF?.secure_url && {
+                      fileList: [
+                        {
+                          name: `${
+                            loadingUpload
+                              ? "Sedang upload, mohon ditunggu"
+                              : `${linkPDF?.original_filename}.pdf`
+                          }`,
+                          status: loadingUpload ? "uploading" : "done",
+                          url: linkPDF?.secure_url,
+                        },
+                      ],
+                    })}
+                    accept=".pdf"
                   >
-                    {`${state?.mhsName} - File Pra Proposal.pdf`}
-                  </LabelSidos>
-                </Col>
-              </Row>
-            ) : (
-              <Field
-                required={
-                  state?.arrUsulanDospem?.length ===
-                  state?.settings?.maksimal_usulan
-                }
-                label="File pra-proposal"
-                name="file_pra_proposal"
-                type="upload"
-                beforeUpload={(file) => {
-                  beforeUpload(file);
-                  return false;
-                }}
-                showUploadList={{
-                  showDownloadIcon: type === "edit",
-                  showRemoveIcon: type !== "edit",
-                }}
-                {...(linkPDF?.secure_url && {
-                  fileList: [
-                    {
-                      name: `${
-                        loadingUpload
-                          ? "Sedang upload, mohon ditunggu"
-                          : linkPDF?.original_filename
-                      }.pdf`,
-                      status: loadingUpload ? "uploading" : "done",
-                      url: linkPDF?.secure_url,
-                    },
-                  ],
-                })}
-                accept=".pdf"
-              >
-                <BtnSidos>Upload</BtnSidos>
-              </Field>
+                    <BtnSidos>Upload</BtnSidos>
+                  </Field>
+                )}
+              </Fragment>
             )}
           </Fragment>
         ) : (

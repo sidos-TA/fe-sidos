@@ -29,6 +29,7 @@ const DosenList = () => {
     <Fragment>
       <TitlePage title="Data Dosen" addRoute="dosen_Add/input_manual" />
       <TableSidos
+        usePaginateBE
         useFilterSemester
         excelOptions={{
           endpoint: "download_dosen",

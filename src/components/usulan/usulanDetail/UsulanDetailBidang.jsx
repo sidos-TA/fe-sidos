@@ -5,8 +5,6 @@ import TagSidos from "../../../lib/src/components/TagSidos";
 const UsulanDetailBidang = () => {
   const { state } = useUsulanFormContext();
 
-  console.log(state);
-
   return (
     <Fragment>
       {state?.objDosenDetail?.bidangs?.map((dsnBidang, idx) => (

@@ -4,13 +4,12 @@ import {
   PlusOutlined,
   ReloadOutlined,
 } from "@ant-design/icons";
-import { Button, Form, message, Modal, Table, Tooltip } from "antd";
-import { useEffect, useState } from "react";
+import { Form, message, Modal, Table, Tooltip } from "antd";
+import { useState } from "react";
 import { Fragment } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTabsContext } from "../../../context/TabsContext";
 import BtnSidos from "../../../lib/src/components/BtnSidos";
-import InputSidos from "../../../lib/src/components/FormSidos/fields/InputSidos";
 import LoadingSidos from "../../../lib/src/components/LoadingSidos";
 import TableSidos from "../../../lib/src/components/TableSidos/TableSidos";
 import catchHandler from "../../../lib/src/helpers/catchHandler";
@@ -31,7 +30,6 @@ const Penelitian = () => {
   const fetch = useFetch();
   const [messageApi, contextHolder] = message.useMessage();
   const [modalApi, contextHolderModal] = Modal.useModal();
-  let timeout;
 
   const [visibleModal, setVisibleModal] = useState(false);
   const [visibleModalAdd, setVisibleModalAdd] = useState(false);
@@ -39,7 +37,6 @@ const Penelitian = () => {
     data: {},
     visible: false,
   });
-  const [rilDataPenelitians, setRilDataPenelitians] = useState([]);
 
   const [refetchLoading, setRefetchLoading] = useState(false);
 
@@ -189,7 +186,8 @@ const Penelitian = () => {
           arrDatas={sortedArrObj({
             arrDatas: state?.datas?.penelitians,
             sortType: "DESC",
-            key: "id",
+            // key: "id",
+            key: "tahun",
           })}
           tableLayout="fixed"
         >

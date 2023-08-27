@@ -4,7 +4,8 @@ import BtnSidos from "../../lib/src/components/BtnSidos";
 import decodeCookie from "../../lib/src/helpers/decodeCookie";
 
 const BtnActionUsulan = () => {
-  const { state, form, type, submitUsulan } = useUsulanFormContext();
+  const { state, form, type, submitUsulan, loadingUpload, setLoadingUpload } =
+    useUsulanFormContext();
   const dataCookie = decodeCookie("token");
 
   if (Object?.keys(dataCookie)?.length) {
@@ -30,14 +31,15 @@ const BtnActionUsulan = () => {
               });
           }}
         >
-          Tentukan Dosen Pembimbing
+          Tentukan Dosen Pembimbing Sementara
         </BtnSidos>
       );
     } else if (dataCookie?.roles === 2 && type !== "edit") {
       return (
         <BtnSidos
-          loading={state?.isLoadingAdd}
+          loading={loadingUpload || state?.isLoadingAdd}
           disabled={
+            loadingUpload ||
             state?.arrUsulanDospem?.length !== state?.settings?.maksimal_usulan
           }
           position="center"
